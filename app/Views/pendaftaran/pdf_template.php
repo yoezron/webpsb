@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -48,8 +49,8 @@
             margin: 0 auto 15px;
             background: white;
             border-radius: 50%;
-            padding: 10px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            padding: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         }
 
         .header-logo img {
@@ -60,25 +61,22 @@
 
         .header h1 {
             color: #ffffff;
-            font-size: 22pt;
-            margin-bottom: 5px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-            font-weight: bold;
+            font-size: 20pt;
+            margin-bottom: 3px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
         }
 
         .header h2 {
             color: #ffffff;
-            font-size: 18pt;
-            margin-bottom: 10px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-            font-weight: bold;
+            font-size: 16pt;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
         }
 
         .header p {
             font-size: 9pt;
             color: #ffffff;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-            line-height: 1.6;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
 
         .card-title {
@@ -90,7 +88,7 @@
             font-size: 16pt;
             font-weight: bold;
             text-transform: uppercase;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .nomor-qr-container {
@@ -168,7 +166,7 @@
             border-radius: 5px;
             margin-bottom: 12px;
             font-size: 12pt;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         table {
@@ -276,6 +274,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Watermark -->
     <div class="watermark">PERSIS 31</div>
@@ -290,8 +289,8 @@
             <?php endif; ?>
             <h1>PESANTREN PERSATUAN ISLAM 31</h1>
             <h2>BANJARAN</h2>
-            <p>Jl. Raya Banjaran No. 123, Bandung, Jawa Barat 40377</p>
-            <p>Telp: (022) 1234567 | Email: info@persis31.com | Website: www.persis31.com</p>
+            <p>Jl. Pajagalan No. 115, Banjaran, Kabupaten Bandung, Jawa Barat 40377</p>
+            <p>Telp: (022) 5940303 | Email: pesantrenpersis31@gmail.com | Website: mapersis31banjaran.sch.id</p>
         </div>
 
         <!-- Card Title -->
@@ -308,12 +307,12 @@
                 </div>
             </div>
             <?php if (!empty($qrCode)): ?>
-            <div class="qr-section">
-                <div class="qr-code">
-                    <img src="<?= $qrCode ?>" alt="QR Code">
+                <div class="qr-section">
+                    <div class="qr-code">
+                        <img src="<?= $qrCode ?>" alt="QR Code">
+                    </div>
+                    <div class="qr-label">Scan untuk verifikasi</div>
                 </div>
-                <div class="qr-label">Scan untuk verifikasi</div>
-            </div>
             <?php endif; ?>
         </div>
 
@@ -349,14 +348,14 @@
                     <td><strong><?= esc($pendaftar['jalur_pendaftaran']) ?></strong></td>
                 </tr>
                 <?php if (isset($sekolah) && $sekolah): ?>
-                <tr>
-                    <td>Asal Sekolah</td>
-                    <td><?= esc($sekolah['nama_asal_sekolah']) ?></td>
-                </tr>
-                <tr>
-                    <td>NPSN</td>
-                    <td><?= esc($sekolah['npsn']) ?: '-' ?></td>
-                </tr>
+                    <tr>
+                        <td>Asal Sekolah</td>
+                        <td><?= esc($sekolah['nama_asal_sekolah']) ?></td>
+                    </tr>
+                    <tr>
+                        <td>NPSN</td>
+                        <td><?= esc($sekolah['npsn']) ?: '-' ?></td>
+                    </tr>
                 <?php endif; ?>
                 <tr>
                     <td>Tanggal Pendaftaran</td>
@@ -383,8 +382,8 @@
                 <div class="name"><?= esc($pendaftar['nama_lengkap']) ?></div>
             </div>
             <div class="signature-box">
-                <div class="label">Panitia PSB,</div>
-                <div class="name">(__________________)</div>
+                <div class="label">Ketua Panitia PSB,</div>
+                <div class="name">(Hilman Latief, M.Pd.)</div>
             </div>
         </div>
 
@@ -398,4 +397,5 @@
         </div>
     </div>
 </body>
+
 </html>
