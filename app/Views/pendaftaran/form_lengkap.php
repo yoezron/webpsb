@@ -426,7 +426,7 @@
                 <?php endif; ?>
 
                 <!-- Main Form -->
-                <form id="main-form" method="post" action="<?= base_url('pendaftaran/submit/' . strtolower($jalur_label)) ?>">
+                <form id="main-form" method="post" action="<?= base_url('pendaftaran/submit/' . strtolower($jalur)) ?>">
                     <?= csrf_field() ?>
                     <input type="hidden" name="jalur" value="<?= esc($jalur) ?>">
 
