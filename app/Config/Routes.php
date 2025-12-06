@@ -9,6 +9,7 @@ use CodeIgniter\Router\RouteCollection;
 // Landing Page
 $routes->get('/', 'Landing::index');
 
-// Pendaftaran Routes (will be implemented in future sprints)
-// $routes->get('/pendaftaran/tsanawiyyah', 'Pendaftaran::tsanawiyyah');
-// $routes->get('/pendaftaran/muallimin', 'Pendaftaran::muallimin');
+// Pendaftaran Routes
+$routes->match(['get', 'post'], 'pendaftaran/tsanawiyyah', 'Pendaftaran::tsanawiyyah');
+$routes->match(['get', 'post'], 'pendaftaran/muallimin', 'Pendaftaran::muallimin');
+$routes->get('pendaftaran/sukses/(:any)', 'Pendaftaran::sukses/$1');
