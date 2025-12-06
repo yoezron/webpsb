@@ -504,6 +504,9 @@ class PendaftaranLengkap extends BaseController
      */
     public function downloadKartu($nomorPendaftaran = null)
     {
+        // Ensure composer autoloader is loaded (critical for vendor packages)
+        $this->ensureVendorAutoloaded();
+
         if (!$nomorPendaftaran) {
             return redirect()->to(base_url('/'));
         }
@@ -561,20 +564,42 @@ class PendaftaranLengkap extends BaseController
     }
 
     /**
+     * Ensure vendor autoloader is loaded
+     * Fixes autoloading issues in web server environment
+     */
+    private function ensureVendorAutoloaded(): void
+    {
+        static $loaded = false;
+
+        if ($loaded) {
+            return;
+        }
+
+        // Check if vendor classes are available
+        if (!class_exists('\Dompdf\Dompdf') || !class_exists('\Endroid\QrCode\QrCode')) {
+            $autoloadPath = ROOTPATH . 'vendor/autoload.php';
+
+            if (file_exists($autoloadPath)) {
+                require_once $autoloadPath;
+                $loaded = true;
+
+                $this->logPendaftaran('info', 'Manually loaded vendor autoloader', [
+                    'dompdf_available' => class_exists('\Dompdf\Dompdf'),
+                    'qrcode_available' => class_exists('\Endroid\QrCode\QrCode'),
+                ]);
+            }
+        } else {
+            $loaded = true;
+        }
+    }
+
+    /**
      * Generate QR Code for registration number
      */
     private function generateQRCode(string $nomorPendaftaran): string
     {
         try {
-            // Ensure composer autoloader is loaded (fallback for web server issues)
-            if (!class_exists('\Endroid\QrCode\QrCode')) {
-                $autoloadPath = ROOTPATH . 'vendor/autoload.php';
-                if (file_exists($autoloadPath)) {
-                    require_once $autoloadPath;
-                }
-            }
-
-            // Check again if class is available
+            // Check if class is available
             if (!class_exists('\Endroid\QrCode\QrCode')) {
                 throw new \Exception('Endroid QR Code library not available');
             }
