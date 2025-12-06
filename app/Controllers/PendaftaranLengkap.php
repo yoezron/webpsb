@@ -504,8 +504,11 @@ class PendaftaranLengkap extends BaseController
      */
     public function downloadKartu($nomorPendaftaran = null)
     {
-        // Ensure composer autoloader is loaded (critical for vendor packages)
-        $this->ensureVendorAutoloaded();
+        // CRITICAL: Load vendor autoloader FIRST - direct inline require
+        $vendorPath = __DIR__ . '/../../vendor/autoload.php';
+        if (file_exists($vendorPath)) {
+            require_once $vendorPath;
+        }
 
         if (!$nomorPendaftaran) {
             return redirect()->to(base_url('/'));
