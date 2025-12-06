@@ -36,6 +36,19 @@
             border-bottom: 3px solid #1AB34A;
             padding-bottom: 20px;
             margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .header h1 {
@@ -168,6 +181,9 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
+            <div class="header-logo">
+                <img src="<?= base_url('assets/images/logo/01.png') ?>" alt="Logo Pesantren Persatuan Islam 31 Banjaran">
+            </div>
             <h1>PESANTREN PERSATUAN ISLAM 31</h1>
             <h2>BANJARAN</h2>
             <p>Jl. Raya Banjaran No. 123, Bandung, Jawa Barat 40377</p>

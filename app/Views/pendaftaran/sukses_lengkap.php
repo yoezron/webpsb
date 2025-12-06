@@ -51,6 +51,24 @@
             text-align: center;
         }
 
+        .success-logo {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 15px;
+            background: white;
+            padding: 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .success-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
         .success-icon {
             width: 100px;
             height: 100px;
@@ -224,6 +242,9 @@
         <div class="success-container animate__animated animate__fadeIn">
             <!-- Header -->
             <div class="success-header">
+                <div class="success-logo">
+                    <img src="<?= base_url('assets/images/logo/01.png') ?>" alt="Logo Pesantren Persatuan Islam 31 Banjaran">
+                </div>
                 <div class="success-icon">
                     <i class="icofont-check-circled"></i>
                 </div>

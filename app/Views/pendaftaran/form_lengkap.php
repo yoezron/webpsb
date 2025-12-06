@@ -50,6 +50,25 @@
             text-align: center;
         }
 
+        .form-header-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: white;
+            padding: 10px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-header-logo img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
         .form-header h1 {
             font-size: 2rem;
             font-weight: 700;
@@ -322,7 +341,11 @@
         <div class="form-container">
             <!-- Header -->
             <div class="form-header">
-                <h1><i class="icofont-graduate-alt"></i> Form Pendaftaran <?= esc($jalur_label) ?></h1>
+                <div class="form-header-logo">
+                    <img src="<?= base_url('assets/images/logo/01.png') ?>" alt="Logo Pesantren Persatuan Islam 31 Banjaran">
+                </div>
+                <h1>Form Pendaftaran <?= esc($jalur_label) ?></h1>
+                <p>Pesantren Persatuan Islam 31 Banjaran</p>
                 <p>Tahun Ajaran <?= esc($year) ?>/<?= esc($year + 1) ?></p>
             </div>
 
