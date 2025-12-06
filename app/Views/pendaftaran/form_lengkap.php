@@ -641,9 +641,9 @@
             // Auto save every 30 seconds
             setInterval(saveToLocalStorage, 30000);
 
-            // Auto dismiss alerts
+            // Auto dismiss alerts (only dismissible alerts, not the confirmation checkbox)
             setTimeout(function() {
-                $('.alert').fadeOut('slow');
+                $('.alert-dismissible').fadeOut('slow');
             }, 5000);
         });
     </script>
