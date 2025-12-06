@@ -35,7 +35,7 @@
         .header {
             text-align: center;
             background: linear-gradient(135deg, #1AB34A 0%, #F3C623 100%);
-            padding: 20px;
+            padding: 25px 20px;
             margin: -15px -15px 20px -15px;
             border-radius: 8px 8px 0 0;
             color: white;
@@ -43,13 +43,13 @@
         }
 
         .header-logo {
-            width: 70px;
-            height: 70px;
-            margin: 0 auto 10px;
+            width: 85px;
+            height: 85px;
+            margin: 0 auto 15px;
             background: white;
             border-radius: 50%;
-            padding: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            padding: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }
 
         .header-logo img {
@@ -60,22 +60,25 @@
 
         .header h1 {
             color: #ffffff;
-            font-size: 20pt;
-            margin-bottom: 3px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            font-size: 22pt;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            font-weight: bold;
         }
 
         .header h2 {
             color: #ffffff;
-            font-size: 16pt;
-            margin-bottom: 8px;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            font-size: 18pt;
+            margin-bottom: 10px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            font-weight: bold;
         }
 
         .header p {
             font-size: 9pt;
             color: #ffffff;
             text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+            line-height: 1.6;
         }
 
         .card-title {
@@ -280,10 +283,11 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <!-- Logo removed temporarily to prevent PDF generation hanging -->
-            <!-- <div class="header-logo">
-                <img src="<?= base_url('assets/images/logo/01.png') ?>" alt="Logo Pesantren Persatuan Islam 31 Banjaran">
-            </div> -->
+            <?php if (!empty($logo)): ?>
+            <div class="header-logo">
+                <img src="<?= $logo ?>" alt="Logo Pesantren Persatuan Islam 31 Banjaran">
+            </div>
+            <?php endif; ?>
             <h1>PESANTREN PERSATUAN ISLAM 31</h1>
             <h2>BANJARAN</h2>
             <p>Jl. Raya Banjaran No. 123, Bandung, Jawa Barat 40377</p>
