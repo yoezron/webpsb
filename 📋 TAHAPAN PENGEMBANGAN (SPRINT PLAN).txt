@@ -1,0 +1,396 @@
+📋 TAHAPAN PENGEMBANGAN (SPRINT PLANNING)
+Sistem Pendaftaran Santri Baru Pesantren Persis 31 Banjaran
+
+🎯 SPRINT 0: Persiapan & Setup Awal (3-5 Hari)
+Deliverables:
+
+✅ Setup environment development (PHP 8.x, MySQL, Composer)
+✅ Install CodeIgniter 4 (versi terbaru LTS)
+✅ Setup Git repository & version control
+✅ Konfigurasi database dan .env
+✅ Setup Hafsa Main HTML Template di folder public/assets
+✅ Buat struktur folder dasar CI4
+✅ Install library pendukung:
+
+Dompdf untuk PDF generation
+PhpSpreadsheet untuk export Excel
+
+
+✅ Dokumentasi setup & requirements
+
+Checklist:
+
+ CodeIgniter 4 terinstall
+ Database connection berhasil
+ Template Hafsa terintegrasi
+ Git repository aktif
+ Environment .env configured
+
+
+🗄️ SPRINT 1: Database Design & Migration (3-4 Hari)
+Deliverables:
+
+✅ Buat file migration untuk semua tabel:
+
+pendaftar
+alamat_pendaftar
+data_ayah
+data_ibu
+data_wali
+bansos_pendaftar
+asal_sekolah
+admin_panitia
+
+
+✅ Buat seeder untuk data dummy (admin & sample pendaftar)
+✅ Buat Model untuk setiap tabel
+✅ Testing koneksi database & migration
+
+Checklist:
+
+ Migration files complete
+ Seeder berjalan tanpa error
+ Model classes ready
+ Foreign key constraints working
+ Dokumentasi struktur database
+
+
+🏠 SPRINT 2: Landing Page & Routing (2-3 Hari)
+Deliverables:
+
+✅ Controller Landing.php
+✅ View landing/index.php menggunakan Hafsa template
+✅ Implementasi warna hijau-kuning branding
+✅ Hero section dengan informasi pendaftaran
+✅ Dua tombol CTA:
+
+"Daftar Tingkat Tsanawiyyah"
+"Daftar Tingkat Mu'allimin"
+
+
+✅ Responsive design (mobile-first)
+✅ Routing setup di app/Config/Routes.php
+
+Checklist:
+
+ Landing page tampil sempurna
+ Button CTA berfungsi
+ Mobile responsive
+ Warna branding konsisten
+ SEO meta tags
+
+
+📝 SPRINT 3: Form Pendaftaran - Part 1 (Data Diri & Alamat) (5-7 Hari)
+Deliverables:
+
+✅ Controller Pendaftaran.php dengan method:
+
+tsanawiyyah()
+muallimin()
+
+
+✅ View form dengan step/section:
+
+Section 1: Data Diri (20+ fields)
+Section 2: Data Tempat Tinggal (13+ fields)
+
+
+✅ Auto-generate nomor pendaftaran:
+
+Format: T2026-001 (Tsanawiyyah)
+Format: M2026-001 (Mu'allimin)
+
+
+✅ Client-side validation (JavaScript)
+✅ Server-side validation (CI4 Validation)
+✅ CSRF Protection
+✅ Session management untuk multi-step form
+
+Checklist:
+
+ Form rendering sempurna
+ Validation berjalan baik
+ Auto-number generation working
+ Session data tersimpan
+ Error handling baik
+
+
+👨‍👩‍👧‍👦 SPRINT 4: Form Pendaftaran - Part 2 (Data Keluarga) (4-5 Hari)
+Deliverables:
+
+✅ View form section:
+
+Section 3: Data Ayah (9 fields)
+Section 4: Data Ibu (9 fields)
+Section 5: Data Wali (7 fields)
+
+
+✅ Conditional logic (jika wali required)
+✅ Form validation untuk semua field keluarga
+✅ Data persistence dalam session
+
+Checklist:
+
+ Form keluarga complete
+ Validation rules applied
+ Optional wali logic working
+ Session management smooth
+
+
+🎓 SPRINT 5: Form Pendaftaran - Part 3 (Bantuan & Asal Sekolah) (3-4 Hari)
+Deliverables:
+
+✅ View form section:
+
+Section 6: Data Bantuan Pemerintah (KKS, PKH, KIP)
+Section 7: Data Asal Sekolah (6 fields)
+
+
+✅ Final validation
+✅ Halaman Review Data
+✅ Logic untuk edit data sebelum submit
+
+Checklist:
+
+ All sections complete
+ Review page shows all data
+ Edit functionality works
+ Data formatting correct
+
+
+💾 SPRINT 6: Submit & Database Insert (3-4 Hari)
+Deliverables:
+
+✅ Method submitPendaftaran() di Controller
+✅ Insert data ke 7 tabel secara transactional
+✅ Error handling & rollback jika gagal
+✅ Success page dengan konfirmasi
+✅ Logging sistem pendaftaran
+
+Checklist:
+
+ Transaction working properly
+ Data masuk ke semua tabel
+ Foreign key relationships intact
+ Error logging aktif
+ Success message displayed
+
+
+📄 SPRINT 7: PDF Generator - Kartu Pendaftaran (4-5 Hari)
+Deliverables:
+
+✅ Setup Dompdf library
+✅ Buat template PDF kartu pendaftaran
+✅ Design PDF dengan branding (hijau-kuning)
+✅ Method downloadKartu() di Controller
+✅ Include data:
+
+Nomor Pendaftar
+Nama Lengkap
+TTL, NISN
+Asal Sekolah
+Tanggal Pendaftaran
+
+
+✅ QR Code (optional)
+
+Checklist:
+
+ PDF generation working
+ Design professional
+ Download button functional
+ File naming correct
+ Print-ready quality
+
+
+🔐 SPRINT 8: Authentication & Authorization (3-4 Hari)
+Deliverables:
+
+✅ Login system untuk panitia
+✅ Controller Auth.php
+✅ View login.php
+✅ Session-based authentication
+✅ Role management:
+
+tsanawiyyah
+muallimin
+superadmin
+
+
+✅ Middleware/Filter untuk protect routes
+✅ Logout functionality
+
+Checklist:
+
+ Login working
+ Session secure
+ Role-based access control
+ Protected routes
+ Logout functional
+
+
+📊 SPRINT 9: Dashboard Panitia - Tsanawiyyah (4-5 Hari)
+Deliverables:
+
+✅ Controller Dashboard.php
+✅ Method tsanawiyyah()
+✅ View dashboard dengan template Hafsa
+✅ Tabel data pendaftar Tsanawiyyah:
+
+Pagination
+Search/Filter
+Sort by column
+
+
+✅ Tombol aksi:
+
+Lihat Detail
+Download Excel/CSV
+
+
+✅ Statistics cards (total pendaftar, dll)
+
+Checklist:
+
+ Dashboard loading fast
+ Table interactive
+ Search working
+ Pagination smooth
+ Stats accurate
+
+
+📊 SPRINT 10: Dashboard Panitia - Mu'allimin (3-4 Hari)
+Deliverables:
+
+✅ Method muallimin() di Dashboard controller
+✅ View dashboard Mu'allimin (mirror Tsanawiyyah)
+✅ Semua fitur sama seperti dashboard Tsanawiyyah
+✅ Filter by role di superadmin
+
+Checklist:
+
+ Dashboard Mu'allimin working
+ All features functional
+ Role separation working
+ Data filtering correct
+
+
+🔍 SPRINT 11: Detail Pendaftar & Export (4-5 Hari)
+Deliverables:
+
+✅ Method detailPendaftar($id)
+✅ View detail dengan layout accordion/tabs
+✅ Tampilkan semua data dari 7 tabel
+✅ Tombol Print/Download PDF detail
+✅ Export to Excel/CSV:
+
+PhpSpreadsheet integration
+Custom column selection
+Date range filter
+
+
+
+Checklist:
+
+ Detail page complete
+ All data displayed correctly
+ PDF export working
+ Excel export functional
+ File download smooth
+
+
+🎨 SPRINT 12: UI/UX Polish & Integration (3-4 Hari)
+Deliverables:
+
+✅ Finalisasi template Hafsa di semua halaman
+✅ Konsistensi warna hijau-kuning
+✅ Loading indicators
+✅ Toast notifications
+✅ Form UX improvements:
+
+Progress bar
+Auto-save draft (optional)
+
+
+✅ Mobile optimization
+✅ Accessibility (a11y) improvements
+
+Checklist:
+
+ UI consistent across pages
+ Loading states working
+ Notifications clear
+ Mobile experience smooth
+ No console errors
+
+
+🧪 SPRINT 13: Testing & Bug Fixing (5-7 Hari)
+Deliverables:
+
+✅ Unit testing (Model & Controller)
+✅ Integration testing (Form submission flow)
+✅ Browser compatibility testing
+✅ Security testing:
+
+SQL Injection
+XSS
+CSRF
+
+
+✅ Performance testing
+✅ User Acceptance Testing (UAT)
+✅ Bug tracking & fixing
+
+Checklist:
+
+ All tests passing
+ Security vulnerabilities fixed
+ Performance optimized
+ Cross-browser compatible
+ UAT approved
+
+
+📚 SPRINT 14: Documentation & Deployment (3-4 Hari)
+Deliverables:
+
+✅ Dokumentasi instalasi (README.md)
+✅ Dokumentasi API/struktur kode
+✅ User manual (PDF):
+
+Untuk pendaftar
+Untuk panitia
+
+
+✅ Database documentation (ERD diagram)
+✅ Deployment guide
+✅ Backup & restore procedures
+✅ Training material untuk panitia
+
+Checklist:
+
+ Documentation complete
+ User manuals ready
+ Deployment successful
+ Backup system in place
+ Training completed
+
+
+🚀 SPRINT 15: Go Live & Monitoring (Ongoing)
+Deliverables:
+
+✅ Production deployment
+✅ SSL certificate setup
+✅ Domain configuration
+✅ Database migration to production
+✅ Admin accounts creation
+✅ Monitoring & logging setup
+✅ Feedback collection system
+✅ Bug hotfix procedure
+
+Checklist:
+
+ Site live & accessible
+ HTTPS working
+ Database populated
+ Monitoring active
+ Support system ready
