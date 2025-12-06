@@ -36,7 +36,7 @@
         .header {
             text-align: center;
             background: linear-gradient(135deg, #1AB34A 0%, #F3C623 100%);
-            padding: 20px;
+            padding: 25px 20px;
             margin: -15px -15px 20px -15px;
             border-radius: 8px 8px 0 0;
             color: white;
@@ -44,9 +44,9 @@
         }
 
         .header-logo {
-            width: 70px;
-            height: 70px;
-            margin: 0 auto 10px;
+            width: 85px;
+            height: 85px;
+            margin: 0 auto 15px;
             background: white;
             border-radius: 50%;
             padding: 8px;
@@ -282,10 +282,11 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <!-- Logo removed temporarily to prevent PDF generation hanging -->
-            <!-- <div class="header-logo">
-                <img src="<?= base_url('assets/images/logo/01.png') ?>" alt="Logo Pesantren Persatuan Islam 31 Banjaran">
-            </div> -->
+            <?php if (!empty($logo)): ?>
+            <div class="header-logo">
+                <img src="<?= $logo ?>" alt="Logo Pesantren Persatuan Islam 31 Banjaran">
+            </div>
+            <?php endif; ?>
             <h1>PESANTREN PERSATUAN ISLAM 31</h1>
             <h2>BANJARAN</h2>
             <p>Jl. Pajagalan No. 115, Banjaran, Kabupaten Bandung, Jawa Barat 40377</p>

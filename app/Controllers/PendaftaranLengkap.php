@@ -526,11 +526,15 @@ class PendaftaranLengkap extends BaseController
         // Generate QR Code
         $qrCodeDataUri = $this->generateQRCode($nomorPendaftaran);
 
+        // Generate Logo Data URI
+        $logoDataUri = $this->generateLogoDataUri();
+
         // Prepare data for PDF template
         $data = [
             'pendaftar' => $pendaftar,
             'sekolah' => $sekolah,
             'qrCode' => $qrCodeDataUri,
+            'logo' => $logoDataUri,
         ];
 
         // Generate HTML from template
@@ -645,6 +649,49 @@ class PendaftaranLengkap extends BaseController
             ]);
 
             // Return empty string - PDF will generate without QR code
+            return '';
+        }
+    }
+
+    /**
+     * Generate logo as base64 data URI for embedding in PDF
+     * This avoids issues with remote resources in Dompdf
+     */
+    private function generateLogoDataUri(): string
+    {
+        try {
+            // Define logo path - relative to FCPATH (public directory)
+            $logoPath = FCPATH . 'assets/images/logo/01.png';
+
+            // Check if logo file exists
+            if (!file_exists($logoPath)) {
+                throw new \Exception('Logo file not found at: ' . $logoPath);
+            }
+
+            // Read logo file contents
+            $imageData = file_get_contents($logoPath);
+            if ($imageData === false) {
+                throw new \Exception('Failed to read logo file');
+            }
+
+            // Get image mime type
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $mimeType = finfo_file($finfo, $logoPath);
+            finfo_close($finfo);
+
+            // Convert to base64 data URI
+            $base64 = base64_encode($imageData);
+            $dataUri = 'data:' . $mimeType . ';base64,' . $base64;
+
+            return $dataUri;
+        } catch (\Throwable $e) {
+            // Log error and return empty string if logo generation fails
+            $this->logPendaftaran('warning', 'Logo generation failed - PDF will generate without logo', [
+                'error' => $e->getMessage(),
+                'logo_path' => $logoPath ?? 'unknown',
+            ]);
+
+            // Return empty string - PDF will generate without logo (graceful degradation)
             return '';
         }
     }
