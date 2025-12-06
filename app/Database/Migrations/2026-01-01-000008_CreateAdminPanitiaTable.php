@@ -61,9 +61,9 @@ class CreateAdminPanitiaTable extends Migration
         ]);
 
         $this->forge->addKey('id_admin', true);
-        $this->forge->addKey('username');
+        // Note: username already has UNIQUE constraint which creates an index
         $this->forge->addKey('role_panitia');
-        
+
         $this->forge->createTable('admin_panitia', true);
     }
 
