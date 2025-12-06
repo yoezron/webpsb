@@ -566,14 +566,15 @@ class PendaftaranLengkap extends BaseController
     private function generateQRCode(string $nomorPendaftaran): string
     {
         try {
-            $qrCode = \Endroid\QrCode\Builder\Builder::create()
-                ->data($nomorPendaftaran)
-                ->size(200)
-                ->margin(10)
-                ->build();
+            $builder = new \Endroid\QrCode\Builder\Builder();
+            $result = $builder->build(
+                data: $nomorPendaftaran,
+                size: 200,
+                margin: 10
+            );
 
             // Convert to data URI for embedding in PDF
-            $dataUri = $qrCode->getDataUri();
+            $dataUri = $result->getDataUri();
 
             return $dataUri;
         } catch (\Exception $e) {
