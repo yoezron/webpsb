@@ -620,7 +620,21 @@
             loadFromLocalStorage();
 
             // Clear localStorage on successful submit
-            $('#main-form').on('submit', function() {
+            $('#main-form').on('submit', function(e) {
+                // Validate confirm_data checkbox on step 8
+                if (currentStep === 8) {
+                    if (!$('#confirm_data').is(':checked')) {
+                        e.preventDefault();
+                        alert('Anda harus mencentang pernyataan konfirmasi data sebelum melanjutkan!');
+                        $('#confirm_data').focus();
+                        return false;
+                    }
+                }
+
+                // Show loading state on submit button
+                $('#btn-submit').prop('disabled', true);
+                $('#btn-submit').html('<i class="icofont-spinner icofont-spin"></i> Menyimpan...');
+
                 localStorage.removeItem('pendaftaran_form');
             });
 

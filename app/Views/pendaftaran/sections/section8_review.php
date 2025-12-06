@@ -14,7 +14,7 @@
 
     <div class="alert alert-success mt-4">
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="confirm_data" name="confirm_data" value="1" required>
+            <input class="form-check-input" type="checkbox" id="confirm_data" name="confirm_data" value="1">
             <label class="form-check-label" for="confirm_data">
                 <strong>Saya menyatakan bahwa data yang saya isikan adalah benar dan dapat dipertanggungjawabkan</strong>
             </label>
