@@ -409,7 +409,18 @@
 
                 <?php if (session()->getFlashdata('error')): ?>
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <i class="icofont-warning"></i> <?= session()->getFlashdata('error') ?>
+                        <i class="icofont-warning"></i> <strong><?= session()->getFlashdata('error') ?></strong>
+
+                        <?php if (session()->getFlashdata('validation_errors')): ?>
+                            <hr style="margin: 10px 0; border-color: rgba(114, 28, 36, 0.3);">
+                            <small><strong>Detail Error:</strong></small>
+                            <ul style="margin: 5px 0 0 0; padding-left: 20px;">
+                                <?php foreach (session()->getFlashdata('validation_errors') as $field => $error): ?>
+                                    <li><small><?= esc($error) ?></small></li>
+                                <?php endforeach; ?>
+                            </ul>
+                        <?php endif; ?>
+
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 <?php endif; ?>
@@ -641,10 +652,37 @@
             // Auto save every 30 seconds
             setInterval(saveToLocalStorage, 30000);
 
+            // Highlight fields with validation errors
+            <?php if (session()->getFlashdata('validation_errors')): ?>
+                const validationErrors = <?= json_encode(array_keys(session()->getFlashdata('validation_errors'))) ?>;
+                validationErrors.forEach(function(fieldName) {
+                    const field = $('#' + fieldName);
+                    if (field.length) {
+                        field.addClass('is-invalid');
+                        // Add error message below field if not exists
+                        if (!field.next('.invalid-feedback').length) {
+                            field.after('<div class="invalid-feedback" style="display: block;">' +
+                                <?= json_encode(session()->getFlashdata('validation_errors')) ?>[fieldName] +
+                                '</div>');
+                        }
+                    }
+                });
+
+                // Scroll to first error field
+                if (validationErrors.length > 0) {
+                    const firstErrorField = $('#' + validationErrors[0]);
+                    if (firstErrorField.length) {
+                        $('html, body').animate({
+                            scrollTop: firstErrorField.offset().top - 100
+                        }, 500);
+                    }
+                }
+            <?php endif; ?>
+
             // Auto dismiss alerts (only dismissible alerts, not the confirmation checkbox)
             setTimeout(function() {
                 $('.alert-dismissible').fadeOut('slow');
-            }, 5000);
+            }, 10000); // Increased to 10 seconds so user can read error details
         });
     </script>
 </body>
