@@ -35,22 +35,22 @@
 
         .header {
             text-align: center;
-            background: linear-gradient(135deg, #1AB34A 0%, #F3C623 100%);
-            padding: 25px 20px;
-            margin: -15px -15px 20px -15px;
+            background: #1AB34A;
+            padding: 20px 20px 25px 20px;
+            margin: -15px -15px 0 -15px;
             border-radius: 8px 8px 0 0;
             color: white;
             position: relative;
         }
 
         .header-logo {
-            width: 85px;
-            height: 85px;
-            margin: 0 auto 15px;
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 12px;
             background: white;
             border-radius: 50%;
-            padding: 8px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
         }
 
         .header-logo img {
@@ -62,33 +62,36 @@
         .header h1 {
             color: #ffffff;
             font-size: 20pt;
-            margin-bottom: 3px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            margin: 0 0 4px 0;
+            font-weight: bold;
+            letter-spacing: 0.5px;
         }
 
         .header h2 {
             color: #ffffff;
             font-size: 16pt;
-            margin-bottom: 8px;
-            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+            margin: 0 0 12px 0;
+            font-weight: bold;
+            letter-spacing: 1px;
         }
 
         .header p {
             font-size: 9pt;
             color: #ffffff;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            line-height: 1.5;
+            margin: 2px 0;
         }
 
         .card-title {
             text-align: center;
             background: #F3C623;
             color: #333;
-            padding: 12px;
-            margin: 20px -15px;
-            font-size: 16pt;
+            padding: 15px 12px;
+            margin: 0 -15px 20px -15px;
+            font-size: 15pt;
             font-weight: bold;
             text-transform: uppercase;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
         }
 
         .nomor-qr-container {
@@ -112,31 +115,31 @@
         }
 
         .nomor-pendaftaran {
-            background: linear-gradient(135deg, #e8f5e9 0%, #fff9e6 100%);
+            background: #e8f5e9;
             border: 3px dashed #1AB34A;
-            padding: 20px;
+            padding: 18px 20px;
             text-align: center;
             border-radius: 8px;
         }
 
         .nomor-pendaftaran .label {
-            font-size: 10pt;
-            color: #666;
+            font-size: 9pt;
+            color: #555;
             text-transform: uppercase;
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
 
         .nomor-pendaftaran .value {
-            font-size: 24pt;
+            font-size: 26pt;
             font-weight: bold;
-            color: #158a3a;
-            letter-spacing: 2px;
+            color: #1AB34A;
+            letter-spacing: 1px;
         }
 
         .qr-code {
             border: 3px solid #1AB34A;
-            padding: 8px;
+            padding: 10px;
             background: white;
             border-radius: 8px;
             display: inline-block;
@@ -144,39 +147,42 @@
 
         .qr-code img {
             display: block;
-            width: 130px;
-            height: 130px;
+            width: 120px;
+            height: 120px;
         }
 
         .qr-label {
             font-size: 8pt;
             color: #666;
-            margin-top: 5px;
+            margin-top: 8px;
             text-align: center;
+            font-style: italic;
         }
 
         .data-section {
-            margin: 20px 0;
+            margin: 25px 0 20px 0;
         }
 
         .data-section h3 {
-            background: linear-gradient(135deg, #1AB34A 0%, #158a3a 100%);
+            background: #1AB34A;
             color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            margin-bottom: 12px;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
             font-size: 12pt;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            background: white;
         }
 
         table td {
-            padding: 7px 10px;
+            padding: 10px 12px;
             border-bottom: 1px solid #e8f5e9;
         }
 
@@ -184,28 +190,40 @@
             border-bottom: none;
         }
 
+        table tr:nth-child(odd) {
+            background: #f9fef9;
+        }
+
         table td:first-child {
             font-weight: bold;
-            width: 40%;
+            width: 42%;
             color: #1AB34A;
+            font-size: 10pt;
         }
 
         table td:last-child {
-            width: 60%;
+            width: 58%;
             color: #333;
+            font-size: 10pt;
         }
 
         .footer {
-            margin-top: 30px;
+            margin-top: 25px;
             border-top: 3px solid #F3C623;
-            padding-top: 15px;
+            padding-top: 12px;
             text-align: center;
-            font-size: 9pt;
+            font-size: 8pt;
             color: #666;
+            line-height: 1.6;
+        }
+
+        .footer p {
+            margin: 4px 0;
         }
 
         .signature-section {
-            margin-top: 30px;
+            margin-top: 25px;
+            margin-bottom: 20px;
             display: table;
             width: 100%;
         }
@@ -214,10 +232,11 @@
             display: table-cell;
             text-align: center;
             width: 50%;
+            padding: 10px;
         }
 
         .signature-box .label {
-            margin-bottom: 60px;
+            margin-bottom: 55px;
             font-weight: bold;
             color: #1AB34A;
             font-size: 10pt;
@@ -225,34 +244,39 @@
 
         .signature-box .name {
             border-top: 2px solid #333;
-            padding-top: 5px;
+            padding-top: 8px;
             display: inline-block;
-            min-width: 180px;
+            min-width: 160px;
             font-size: 10pt;
+            font-weight: 500;
         }
 
         .note {
-            background: linear-gradient(135deg, #fff9e6 0%, #fffef5 100%);
+            background: #fffef5;
             border-left: 5px solid #F3C623;
-            padding: 12px 15px;
-            margin: 15px 0;
+            padding: 15px;
+            margin: 20px 0;
             font-size: 9pt;
             border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         .note strong {
             color: #856404;
             font-size: 10pt;
+            display: block;
+            margin-bottom: 8px;
         }
 
         .note ul {
-            margin: 8px 0 0 0;
-            padding-left: 18px;
+            margin: 0;
+            padding-left: 20px;
         }
 
         .note li {
-            margin-bottom: 4px;
-            color: #666;
+            margin-bottom: 6px;
+            color: #555;
+            line-height: 1.6;
         }
 
         .watermark {
@@ -260,11 +284,12 @@
             bottom: 50%;
             left: 50%;
             transform: translate(-50%, 50%) rotate(-45deg);
-            font-size: 80pt;
-            color: rgba(26, 179, 74, 0.05);
+            font-size: 90pt;
+            color: rgba(26, 179, 74, 0.04);
             font-weight: bold;
             z-index: -1;
             pointer-events: none;
+            letter-spacing: 8px;
         }
 
         @media print {
