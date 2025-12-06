@@ -280,9 +280,10 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="header-logo">
+            <!-- Logo removed temporarily to prevent PDF generation hanging -->
+            <!-- <div class="header-logo">
                 <img src="<?= base_url('assets/images/logo/01.png') ?>" alt="Logo Pesantren Persatuan Islam 31 Banjaran">
-            </div>
+            </div> -->
             <h1>PESANTREN PERSATUAN ISLAM 31</h1>
             <h2>BANJARAN</h2>
             <p>Jl. Raya Banjaran No. 123, Bandung, Jawa Barat 40377</p>

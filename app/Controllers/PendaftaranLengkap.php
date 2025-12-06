@@ -539,7 +539,7 @@ class PendaftaranLengkap extends BaseController
         // Initialize Dompdf
         $options = new \Dompdf\Options();
         $options->set('isHtml5ParserEnabled', true);
-        $options->set('isRemoteEnabled', true);
+        $options->set('isRemoteEnabled', false); // Disable to prevent hanging on remote resources
         $options->set('defaultFont', 'Arial');
         $options->set('chroot', FCPATH);
 
