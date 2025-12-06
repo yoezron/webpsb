@@ -9,7 +9,14 @@ use CodeIgniter\Router\RouteCollection;
 // Landing Page
 $routes->get('/', 'Landing::index');
 
-// Pendaftaran Routes
+// Pendaftaran Routes (Old - 2 Step Form)
 $routes->match(['get', 'post'], 'pendaftaran/tsanawiyyah', 'Pendaftaran::tsanawiyyah');
 $routes->match(['get', 'post'], 'pendaftaran/muallimin', 'Pendaftaran::muallimin');
 $routes->get('pendaftaran/sukses/(:any)', 'Pendaftaran::sukses/$1');
+
+// Pendaftaran Routes (New - Complete 8 Step Form)
+$routes->get('daftar/tsanawiyyah', 'PendaftaranLengkap::tsanawiyyah');
+$routes->get('daftar/muallimin', 'PendaftaranLengkap::muallimin');
+$routes->post('pendaftaran/submit/(:any)', 'PendaftaranLengkap::submit/$1');
+$routes->get('pendaftaran/download-pdf/(:any)', 'PendaftaranLengkap::downloadPdf/$1');
+$routes->get('pendaftaran/success/(:any)', 'PendaftaranLengkap::sukses/$1');
