@@ -621,7 +621,7 @@ class PendaftaranLengkap extends BaseController
             'status_sekolah' => 'permit_empty|in_list[Negeri,Swasta]',
             'npsn' => 'permit_empty|numeric|exact_length[8]',
             'lokasi_sekolah' => 'permit_empty|max_length[255]',
-            'asal_jenjang' => 'permit_empty|in_list[Ibtidaiyyah,Tsanawiyyah]',
+            'asal_jenjang' => 'permit_empty|max_length[200]',
 
             // =====================================================
             // Confirmation
