@@ -19,4 +19,5 @@ $routes->get('daftar/tsanawiyyah', 'PendaftaranLengkap::tsanawiyyah');
 $routes->get('daftar/muallimin', 'PendaftaranLengkap::muallimin');
 $routes->post('pendaftaran/submit/(:any)', 'PendaftaranLengkap::submit/$1');
 $routes->get('pendaftaran/download-pdf/(:any)', 'PendaftaranLengkap::downloadPdf/$1');
+$routes->get('pendaftaran/download-kartu/(:any)', 'PendaftaranLengkap::downloadKartu/$1');
 $routes->get('pendaftaran/success/(:any)', 'PendaftaranLengkap::sukses/$1');
