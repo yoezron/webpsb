@@ -10,8 +10,8 @@ use CodeIgniter\Router\RouteCollection;
 $routes->get('/', 'Landing::index');
 
 // Pendaftaran Routes (Old - 2 Step Form)
-$routes->match(['get', 'post'], 'pendaftaran/tsanawiyyah', 'Pendaftaran::tsanawiyyah');
-$routes->match(['get', 'post'], 'pendaftaran/muallimin', 'Pendaftaran::muallimin');
+$routes->match(['GET', 'POST'], 'pendaftaran/tsanawiyyah', 'Pendaftaran::tsanawiyyah');
+$routes->match(['GET', 'POST'], 'pendaftaran/muallimin', 'Pendaftaran::muallimin');
 $routes->get('pendaftaran/sukses/(:any)', 'Pendaftaran::sukses/$1');
 
 // Pendaftaran Routes (New - Complete 8 Step Form)
