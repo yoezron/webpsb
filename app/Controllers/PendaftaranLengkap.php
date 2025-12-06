@@ -492,9 +492,17 @@ class PendaftaranLengkap extends BaseController
     }
 
     /**
-     * Download PDF registration card
+     * Download PDF registration card with QR code
      */
     public function downloadPdf($nomorPendaftaran = null)
+    {
+        return $this->downloadKartu($nomorPendaftaran);
+    }
+
+    /**
+     * Generate and download registration card as PDF
+     */
+    public function downloadKartu($nomorPendaftaran = null)
     {
         if (!$nomorPendaftaran) {
             return redirect()->to(base_url('/'));
@@ -509,19 +517,74 @@ class PendaftaranLengkap extends BaseController
         // Get related data
         $sekolah = $this->sekolahModel->where('id_pendaftar', $pendaftar['id_pendaftar'])->first();
 
-        // Generate PDF (simple HTML to PDF)
+        // Generate QR Code
+        $qrCodeDataUri = $this->generateQRCode($nomorPendaftaran);
+
+        // Prepare data for PDF template
         $data = [
             'pendaftar' => $pendaftar,
             'sekolah' => $sekolah,
+            'qrCode' => $qrCodeDataUri,
         ];
 
+        // Generate HTML from template
         $html = view('pendaftaran/pdf_template', $data);
 
-        // Set headers for PDF download
-        $this->response->setHeader('Content-Type', 'text/html');
-        $this->response->setHeader('Content-Disposition', 'attachment; filename="Kartu_Pendaftaran_' . $nomorPendaftaran . '.html"');
+        // Initialize Dompdf
+        $options = new \Dompdf\Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+        $options->set('defaultFont', 'Arial');
+        $options->set('chroot', FCPATH);
 
-        return $this->response->setBody($html);
+        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf->loadHtml($html);
+
+        // Set paper size and orientation
+        $dompdf->setPaper('A4', 'portrait');
+
+        // Render PDF
+        $dompdf->render();
+
+        // Log PDF generation
+        $this->logPendaftaran('info', 'PDF Kartu Pendaftaran downloaded', [
+            'nomor_pendaftaran' => $nomorPendaftaran,
+            'nama' => $pendaftar['nama_lengkap'],
+        ]);
+
+        // Stream PDF to browser for download
+        $filename = 'Kartu_Pendaftaran_' . $nomorPendaftaran . '.pdf';
+        $dompdf->stream($filename, [
+            'Attachment' => true,
+            'compress' => true,
+        ]);
+    }
+
+    /**
+     * Generate QR Code for registration number
+     */
+    private function generateQRCode(string $nomorPendaftaran): string
+    {
+        try {
+            $qrCode = \Endroid\QrCode\Builder\Builder::create()
+                ->data($nomorPendaftaran)
+                ->size(200)
+                ->margin(10)
+                ->build();
+
+            // Convert to data URI for embedding in PDF
+            $dataUri = $qrCode->getDataUri();
+
+            return $dataUri;
+        } catch (\Exception $e) {
+            // Log error and return empty string if QR code generation fails
+            $this->logPendaftaran('error', 'QR Code generation failed', [
+                'nomor_pendaftaran' => $nomorPendaftaran,
+                'error' => $e->getMessage(),
+            ]);
+
+            return '';
+        }
     }
 
     /**

@@ -7,7 +7,7 @@
     <style>
         @page {
             size: A4;
-            margin: 20mm;
+            margin: 15mm;
         }
 
         * {
@@ -17,32 +17,39 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            font-size: 12pt;
-            line-height: 1.6;
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
             color: #333;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 100%;
             margin: 0 auto;
-            padding: 20px;
-            border: 3px solid #1AB34A;
-            border-radius: 10px;
+            padding: 15px;
+            border: 4px solid #1AB34A;
+            border-radius: 8px;
+            background: #ffffff;
         }
 
         .header {
             text-align: center;
-            border-bottom: 3px solid #1AB34A;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
+            background: linear-gradient(135deg, #1AB34A 0%, #F3C623 100%);
+            padding: 20px;
+            margin: -15px -15px 20px -15px;
+            border-radius: 8px 8px 0 0;
+            color: white;
             position: relative;
         }
 
         .header-logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 15px;
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 10px;
+            background: white;
+            border-radius: 50%;
+            padding: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
 
         .header-logo img {
@@ -52,132 +59,224 @@
         }
 
         .header h1 {
-            color: #1AB34A;
-            font-size: 24pt;
-            margin-bottom: 5px;
+            color: #ffffff;
+            font-size: 20pt;
+            margin-bottom: 3px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
         .header h2 {
-            color: #158a3a;
-            font-size: 18pt;
-            margin-bottom: 10px;
+            color: #ffffff;
+            font-size: 16pt;
+            margin-bottom: 8px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
         }
 
         .header p {
-            font-size: 11pt;
-            color: #666;
+            font-size: 9pt;
+            color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .card-title {
+            text-align: center;
+            background: #F3C623;
+            color: #333;
+            padding: 12px;
+            margin: 20px -15px;
+            font-size: 16pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .nomor-qr-container {
+            display: table;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        .nomor-section {
+            display: table-cell;
+            width: 70%;
+            vertical-align: middle;
+            padding-right: 15px;
+        }
+
+        .qr-section {
+            display: table-cell;
+            width: 30%;
+            text-align: center;
+            vertical-align: middle;
         }
 
         .nomor-pendaftaran {
-            background: #e8f5e9;
-            border: 2px dashed #1AB34A;
+            background: linear-gradient(135deg, #e8f5e9 0%, #fff9e6 100%);
+            border: 3px dashed #1AB34A;
             padding: 20px;
             text-align: center;
-            margin: 30px 0;
-            border-radius: 10px;
+            border-radius: 8px;
         }
 
         .nomor-pendaftaran .label {
-            font-size: 11pt;
+            font-size: 10pt;
             color: #666;
             text-transform: uppercase;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .nomor-pendaftaran .value {
-            font-size: 28pt;
+            font-size: 24pt;
             font-weight: bold;
             color: #158a3a;
-            letter-spacing: 3px;
+            letter-spacing: 2px;
+        }
+
+        .qr-code {
+            border: 3px solid #1AB34A;
+            padding: 8px;
+            background: white;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .qr-code img {
+            display: block;
+            width: 130px;
+            height: 130px;
+        }
+
+        .qr-label {
+            font-size: 8pt;
+            color: #666;
+            margin-top: 5px;
+            text-align: center;
         }
 
         .data-section {
-            margin: 30px 0;
+            margin: 20px 0;
         }
 
         .data-section h3 {
-            background: #1AB34A;
+            background: linear-gradient(135deg, #1AB34A 0%, #158a3a 100%);
             color: white;
-            padding: 10px;
+            padding: 10px 15px;
             border-radius: 5px;
-            margin-bottom: 15px;
-            font-size: 14pt;
+            margin-bottom: 12px;
+            font-size: 12pt;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         table td {
-            padding: 8px;
-            border-bottom: 1px solid #e0e0e0;
+            padding: 7px 10px;
+            border-bottom: 1px solid #e8f5e9;
+        }
+
+        table tr:last-child td {
+            border-bottom: none;
         }
 
         table td:first-child {
             font-weight: bold;
             width: 40%;
-            color: #666;
+            color: #1AB34A;
         }
 
         table td:last-child {
             width: 60%;
+            color: #333;
         }
 
         .footer {
-            margin-top: 50px;
-            border-top: 2px solid #1AB34A;
-            padding-top: 20px;
+            margin-top: 30px;
+            border-top: 3px solid #F3C623;
+            padding-top: 15px;
             text-align: center;
-            font-size: 10pt;
+            font-size: 9pt;
             color: #666;
         }
 
         .signature-section {
-            margin-top: 50px;
-            display: flex;
-            justify-content: space-between;
+            margin-top: 30px;
+            display: table;
+            width: 100%;
         }
 
         .signature-box {
+            display: table-cell;
             text-align: center;
-            width: 45%;
+            width: 50%;
         }
 
         .signature-box .label {
-            margin-bottom: 80px;
+            margin-bottom: 60px;
             font-weight: bold;
+            color: #1AB34A;
+            font-size: 10pt;
         }
 
         .signature-box .name {
-            border-top: 1px solid #333;
+            border-top: 2px solid #333;
             padding-top: 5px;
             display: inline-block;
-            min-width: 200px;
+            min-width: 180px;
+            font-size: 10pt;
         }
 
         .note {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            margin: 20px 0;
-            font-size: 10pt;
+            background: linear-gradient(135deg, #fff9e6 0%, #fffef5 100%);
+            border-left: 5px solid #F3C623;
+            padding: 12px 15px;
+            margin: 15px 0;
+            font-size: 9pt;
+            border-radius: 5px;
         }
 
         .note strong {
             color: #856404;
+            font-size: 10pt;
+        }
+
+        .note ul {
+            margin: 8px 0 0 0;
+            padding-left: 18px;
+        }
+
+        .note li {
+            margin-bottom: 4px;
+            color: #666;
+        }
+
+        .watermark {
+            position: fixed;
+            bottom: 50%;
+            left: 50%;
+            transform: translate(-50%, 50%) rotate(-45deg);
+            font-size: 80pt;
+            color: rgba(26, 179, 74, 0.05);
+            font-weight: bold;
+            z-index: -1;
+            pointer-events: none;
         }
 
         @media print {
             .container {
-                border: 2px solid #1AB34A;
+                border: 3px solid #1AB34A;
             }
         }
     </style>
 </head>
 <body>
+    <!-- Watermark -->
+    <div class="watermark">PERSIS 31</div>
+
     <div class="container">
         <!-- Header -->
         <div class="header">
@@ -190,13 +289,27 @@
             <p>Telp: (022) 1234567 | Email: info@persis31.com | Website: www.persis31.com</p>
         </div>
 
-        <h2 style="text-align: center; color: #1AB34A; margin: 20px 0;">KARTU BUKTI PENDAFTARAN</h2>
-        <p style="text-align: center; margin-bottom: 20px;">Tahun Ajaran <?= date('Y') ?>/<?= date('Y') + 1 ?></p>
+        <!-- Card Title -->
+        <div class="card-title">KARTU BUKTI PENDAFTARAN<br>
+            <span style="font-size: 11pt; font-weight: normal;">Tahun Ajaran <?= date('Y') ?>/<?= date('Y') + 1 ?></span>
+        </div>
 
-        <!-- Nomor Pendaftaran -->
-        <div class="nomor-pendaftaran">
-            <div class="label">Nomor Pendaftaran</div>
-            <div class="value"><?= esc($pendaftar['nomor_pendaftaran']) ?></div>
+        <!-- Nomor Pendaftaran & QR Code -->
+        <div class="nomor-qr-container">
+            <div class="nomor-section">
+                <div class="nomor-pendaftaran">
+                    <div class="label">Nomor Pendaftaran</div>
+                    <div class="value"><?= esc($pendaftar['nomor_pendaftaran']) ?></div>
+                </div>
+            </div>
+            <?php if (!empty($qrCode)): ?>
+            <div class="qr-section">
+                <div class="qr-code">
+                    <img src="<?= $qrCode ?>" alt="QR Code">
+                </div>
+                <div class="qr-label">Scan untuk verifikasi</div>
+            </div>
+            <?php endif; ?>
         </div>
 
         <!-- Data Pendaftar -->
