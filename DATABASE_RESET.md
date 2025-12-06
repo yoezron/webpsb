@@ -4,6 +4,23 @@
 
 This script will drop all tables and reset the database for a fresh migration.
 
+**Your MySQL Password:** `Behaviorisme90`
+
+## 🚀 EASIEST WAY: Use the Automated Script
+
+Simply run this command from your project directory:
+
+```bash
+reset_database.bat
+```
+
+This will automatically:
+1. Drop the existing database
+2. Create a new database
+3. Run all migrations
+
+---
+
 ## Option 1: Using phpMyAdmin (Recommended)
 
 1. Open phpMyAdmin: http://localhost/phpmyadmin
@@ -23,11 +40,9 @@ This script will drop all tables and reset the database for a fresh migration.
 Open Laragon Terminal or Command Prompt:
 
 ```bash
-# Navigate to MySQL bin directory
-cd C:\laragon\bin\mysql\mysql-8.0.x\bin
-
-# Login to MySQL
-mysql -u root
+# Login to MySQL with password
+mysql -u root -p
+# Enter password: Behaviorisme90
 
 # Drop and recreate database
 DROP DATABASE IF EXISTS psb_persis31;
@@ -37,6 +52,14 @@ SHOW TABLES;
 
 EXIT;
 ```
+
+**Or use one-liner with password:**
+
+```bash
+mysql -u root -pBehaviorisme90 -e "DROP DATABASE IF EXISTS psb_persis31; CREATE DATABASE psb_persis31 CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+```
+
+**Note:** No space between `-p` and password!
 
 ## Option 3: Drop Individual Table (If you only need to drop pendaftar table)
 
