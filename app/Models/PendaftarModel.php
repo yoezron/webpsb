@@ -44,7 +44,7 @@ class PendaftarModel extends Model
 
     // Validation
     protected $validationRules = [
-        'nomor_pendaftaran' => 'required|is_unique[pendaftar.nomor_pendaftaran]',
+        'nomor_pendaftaran' => 'permit_empty|is_unique[pendaftar.nomor_pendaftaran]',
         'jalur_pendaftaran' => 'required|in_list[TSANAWIYYAH,MUALLIMIN]',
         'nama_lengkap'      => 'required|min_length[3]|max_length[150]',
         'jenis_kelamin'     => 'required|in_list[L,P]',
@@ -52,7 +52,6 @@ class PendaftarModel extends Model
 
     protected $validationMessages = [
         'nomor_pendaftaran' => [
-            'required'   => 'Nomor pendaftaran harus diisi',
             'is_unique'  => 'Nomor pendaftaran sudah digunakan',
         ],
         'jalur_pendaftaran' => [
