@@ -575,21 +575,33 @@ class PendaftaranLengkap extends BaseController
             return;
         }
 
-        // Check if vendor classes are available
-        if (!class_exists('\Dompdf\Dompdf') || !class_exists('\Endroid\QrCode\QrCode')) {
-            $autoloadPath = ROOTPATH . 'vendor/autoload.php';
+        // Always load vendor autoloader to ensure all packages are available
+        $possiblePaths = [
+            ROOTPATH . 'vendor/autoload.php',
+            __DIR__ . '/../../vendor/autoload.php',
+            dirname(dirname(dirname(__DIR__))) . '/vendor/autoload.php',
+        ];
 
-            if (file_exists($autoloadPath)) {
-                require_once $autoloadPath;
+        foreach ($possiblePaths as $path) {
+            if (file_exists($path)) {
+                require_once $path;
                 $loaded = true;
 
-                $this->logPendaftaran('info', 'Manually loaded vendor autoloader', [
+                // Log what happened
+                $this->logPendaftaran('info', 'Vendor autoloader loaded', [
+                    'path' => $path,
                     'dompdf_available' => class_exists('\Dompdf\Dompdf'),
                     'qrcode_available' => class_exists('\Endroid\QrCode\QrCode'),
                 ]);
+
+                break;
             }
-        } else {
-            $loaded = true;
+        }
+
+        if (!$loaded) {
+            $this->logPendaftaran('error', 'Failed to load vendor autoloader', [
+                'tried_paths' => $possiblePaths,
+            ]);
         }
     }
 
