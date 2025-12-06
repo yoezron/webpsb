@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -91,7 +92,7 @@
             display: flex;
             align-items: center;
             background: linear-gradient(135deg, rgba(26, 179, 74, 0.95) 0%, rgba(21, 138, 58, 0.95) 100%),
-                        url('<?= base_url('assets/images/banner/01.png') ?>') center/cover;
+                url('<?= base_url('assets/images/banner/01.png') ?>') center/cover;
             position: relative;
             padding: 80px 0;
         }
@@ -113,20 +114,27 @@
         }
 
         .hero-logo {
-            width: 150px;
-            height: 150px;
+            width: 250px;
+            /* Ubah height menjadi auto agar mengikuti proporsi logo asli */
+            height: auto;
             margin: 0 auto 30px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 50%;
-            padding: 15px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+
+            /* Baris berikut dihapus/dikomentari agar tidak ada latar lingkaran */
+            /* background: rgba(255, 255, 255, 0.95); */
+            /* border-radius: 50%; */
+            /* padding: 15px; */
+            /* box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2); */
+
             animation: fadeInDown 1s ease;
         }
 
         .hero-logo img {
             width: 100%;
-            height: 100%;
-            object-fit: contain;
+            height: auto;
+            /* Pastikan rasio gambar tetap terjaga */
+            display: block;
+            /* Menghilangkan celah default pada elemen inline */
+            filter: drop-shadow(0 10px 10px rgba(0, 0, 0, 0.3));
         }
 
         .hero-title {
@@ -185,7 +193,7 @@
         /* Features Section */
         .features-section {
             padding: 80px 0;
-            background: #f8f9fa;
+            background: linear-gradient(135deg, rgba(243, 198, 35, 0.4) 0%, rgba(21, 138, 58, 0.95) 100%), url('<?= base_url('assets/images/banner/01.png') ?>') center/cover;
         }
 
         .feature-card {
@@ -271,8 +279,8 @@
 
         @media (max-width: 576px) {
             .hero-logo {
-                width: 100px;
-                height: 100px;
+                width: 150px;
+                height: 150px;
                 margin-bottom: 15px;
                 padding: 10px;
             }
@@ -308,6 +316,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <!-- Hero Section -->
@@ -365,7 +374,7 @@
             <div class="row">
                 <div class="col-lg-12 text-center mb-5">
                     <h2 style="font-size: 2.5rem; font-weight: 700; color: #333;">Mengapa Memilih Kami?</h2>
-                    <p style="color: #666; font-size: 1.1rem;">Keunggulan Pesantren Persatuan Islam 31 Banjaran</p>
+                    <p style="color: rgba(255, 255, 255, 0.95); font-size: 1.1rem;">Keunggulan Pesantren Persatuan Islam 31 Banjaran</p>
                 </div>
             </div>
 
@@ -404,7 +413,7 @@
                         </div>
                         <h3 class="feature-title">Fasilitas Lengkap</h3>
                         <p class="feature-text">
-                            Asrama nyaman, masjid luas, perpustakaan, laboratorium, dan fasilitas olahraga yang memadai.
+                            Ruang kelas nyaman, masjid luas, perpustakaan, laboratorium, dan fasilitas olahraga yang memadai.
                         </p>
                     </div>
                 </div>
@@ -491,4 +500,5 @@
         new WOW().init();
     </script>
 </body>
+
 </html>

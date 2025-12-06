@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,21 +52,28 @@
         }
 
         .form-header-logo {
-            width: 80px;
-            height: 80px;
+            width: 150px;
+            /* Ubah height menjadi auto agar rasio gambar tetap terjaga */
+            height: auto;
             margin: 0 auto 20px;
-            background: white;
-            padding: 10px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+
+            /* Properti berikut dihapus/dinonaktifkan agar tidak ada lingkaran putih */
+            /* background: white; */
+            /* padding: 10px; */
+            /* border-radius: 50%; */
+            /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); */
+
+            /* Flexbox juga bisa dihapus karena container sekarang hanya pembungkus biasa */
+            /* display: flex; */
+            /* align-items: center; */
+            /* justify-content: center; */
         }
 
         .form-header-logo img {
-            max-width: 100%;
-            max-height: 100%;
+            width: 100%;
+            height: auto;
+            display: block;
+            /* Menghilangkan celah baris pada elemen inline */
             object-fit: contain;
         }
 
@@ -180,19 +188,22 @@
             color: var(--danger-red);
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             padding: 12px 15px;
             transition: all 0.3s ease;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             border-color: var(--primary-green);
             box-shadow: 0 0 0 0.2rem rgba(26, 179, 74, 0.25);
         }
 
-        .form-control.is-invalid, .form-select.is-invalid {
+        .form-control.is-invalid,
+        .form-select.is-invalid {
             border-color: var(--danger-red);
         }
 
@@ -336,6 +347,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <div class="form-container">
@@ -501,7 +513,9 @@
                 }
 
                 // Scroll to top
-                $('html, body').animate({ scrollTop: 0 }, 500);
+                $('html, body').animate({
+                    scrollTop: 0
+                }, 500);
             }
 
             // Validate step
@@ -620,4 +634,5 @@
         });
     </script>
 </body>
+
 </html>
