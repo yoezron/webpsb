@@ -733,6 +733,11 @@
                     return false;
                 }
 
+                // Disable button and show loading
+                var submitButton = $(this).find('button[type="submit"]');
+                submitButton.prop('disabled', true);
+                submitButton.html('<i class="icofont-spinner icofont-spin"></i> Menyimpan...');
+
                 return true;
             });
 
@@ -746,6 +751,23 @@
                 var val = parseInt(this.value);
                 if (val < 0) this.value = '';
                 if (val > 20) this.value = 20;
+            });
+
+            // Client-side validation for Data Alamat
+            $('#form-data-alamat').submit(function(e) {
+                var submitButton = $(this).find('button[type="submit"]');
+
+                // Disable button and show loading
+                submitButton.prop('disabled', true);
+                submitButton.html('<i class="icofont-spinner icofont-spin"></i> Menyimpan...');
+
+                // Re-enable after 5 seconds (in case of error)
+                setTimeout(function() {
+                    submitButton.prop('disabled', false);
+                    submitButton.html('<i class="icofont-check-circled"></i> Simpan & Submit Pendaftaran');
+                }, 5000);
+
+                return true;
             });
 
             // Auto dismiss alerts after 5 seconds
