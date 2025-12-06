@@ -17,9 +17,13 @@
     <meta property="og:description" content="<?= esc($meta_description) ?>">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="id_ID">
+    <meta property="og:image" content="<?= base_url('assets/images/logo/01.png') ?>">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="<?= base_url('favicon.ico') ?>">
+    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/images/logo/favicon.ico') ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/images/logo/favicon-16x16.png') ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= base_url('assets/images/logo/favicon-32x32.png') ?>">
+    <link rel="apple-touch-icon" href="<?= base_url('assets/images/logo/01.png') ?>">
 
     <!-- Hafsa Template CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
@@ -106,6 +110,23 @@
             position: relative;
             z-index: 2;
             color: white;
+        }
+
+        .hero-logo {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 30px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 50%;
+            padding: 15px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: fadeInDown 1s ease;
+        }
+
+        .hero-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
 
         .hero-title {
@@ -210,6 +231,12 @@
 
         /* Responsive Design */
         @media (max-width: 768px) {
+            .hero-logo {
+                width: 120px;
+                height: 120px;
+                margin-bottom: 20px;
+            }
+
             .hero-title {
                 font-size: 2rem;
             }
@@ -243,6 +270,13 @@
         }
 
         @media (max-width: 576px) {
+            .hero-logo {
+                width: 100px;
+                height: 100px;
+                margin-bottom: 15px;
+                padding: 10px;
+            }
+
             .hero-title {
                 font-size: 1.8rem;
             }
@@ -282,6 +316,11 @@
             <div class="row align-items-center">
                 <div class="col-lg-12">
                     <div class="hero-content text-center">
+                        <!-- Logo -->
+                        <div class="hero-logo">
+                            <img src="<?= base_url('assets/images/logo/01.png') ?>" alt="Logo Pesantren Persatuan Islam 31 Banjaran">
+                        </div>
+
                         <!-- Info Badge -->
                         <div class="info-badge">
                             <h3>Tahun Ajaran <?= esc($year) ?>/<?= esc($year + 1) ?></h3>
