@@ -134,11 +134,11 @@ class CreatePendaftarTable extends Migration
         ]);
 
         $this->forge->addKey('id_pendaftar', true);
-        $this->forge->addKey('nomor_pendaftaran');
+        // Note: nomor_pendaftaran already has UNIQUE constraint which creates an index
         $this->forge->addKey('jalur_pendaftaran');
         $this->forge->addKey('tanggal_daftar');
         $this->forge->addKey('nama_lengkap');
-        
+
         $this->forge->createTable('pendaftar', true);
     }
 
