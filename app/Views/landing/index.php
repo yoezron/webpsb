@@ -307,10 +307,10 @@
 
                         <!-- CTA Buttons -->
                         <div class="cta-buttons justify-content-center animate__animated animate__fadeInUp">
-                            <a href="<?= base_url('pendaftaran/tsanawiyyah') ?>" class="btn btn-primary-custom">
+                            <a href="<?= base_url('daftar/tsanawiyyah') ?>" class="btn btn-primary-custom">
                                 <i class="icofont-book-alt"></i> Daftar Tingkat Tsanawiyyah
                             </a>
-                            <a href="<?= base_url('pendaftaran/muallimin') ?>" class="btn btn-secondary-custom">
+                            <a href="<?= base_url('daftar/muallimin') ?>" class="btn btn-secondary-custom">
                                 <i class="icofont-graduate-alt"></i> Daftar Tingkat Mu'allimin
                             </a>
                         </div>
@@ -417,7 +417,7 @@
                         Siap Bergabung Bersama Kami?
                     </h3>
                     <div class="cta-buttons justify-content-center">
-                        <a href="<?= base_url('pendaftaran/tsanawiyyah') ?>" class="btn btn-primary-custom">
+                        <a href="<?= base_url('daftar/tsanawiyyah') ?>" class="btn btn-primary-custom">
                             <i class="icofont-book-alt"></i> Daftar Sekarang
                         </a>
                     </div>
