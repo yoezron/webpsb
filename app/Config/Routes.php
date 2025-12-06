@@ -5,4 +5,10 @@ use CodeIgniter\Router\RouteCollection;
 /**
  * @var RouteCollection $routes
  */
-$routes->get('/', 'Home::index');
+
+// Landing Page
+$routes->get('/', 'Landing::index');
+
+// Pendaftaran Routes (will be implemented in future sprints)
+// $routes->get('/pendaftaran/tsanawiyyah', 'Pendaftaran::tsanawiyyah');
+// $routes->get('/pendaftaran/muallimin', 'Pendaftaran::muallimin');
