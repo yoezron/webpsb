@@ -73,25 +73,39 @@
             <label for="jarak_ke_sekolah" class="form-label">Jarak ke Sekolah</label>
             <select class="form-select" id="jarak_ke_sekolah" name="jarak_ke_sekolah">
                 <option value="">Pilih Jarak</option>
-                <option value="Kurang dari 5 km" <?= old('jarak_ke_sekolah') === 'Kurang dari 5 km' ? 'selected' : '' ?>>Kurang dari 5 km</option>
+                <option value="< 1 km" <?= old('jarak_ke_sekolah') === '< 1 km' ? 'selected' : '' ?>>< 1 km</option>
+                <option value="1-5 km" <?= old('jarak_ke_sekolah') === '1-5 km' ? 'selected' : '' ?>>1-5 km</option>
                 <option value="5-10 km" <?= old('jarak_ke_sekolah') === '5-10 km' ? 'selected' : '' ?>>5-10 km</option>
                 <option value="10-20 km" <?= old('jarak_ke_sekolah') === '10-20 km' ? 'selected' : '' ?>>10-20 km</option>
-                <option value="Lebih dari 20 km" <?= old('jarak_ke_sekolah') === 'Lebih dari 20 km' ? 'selected' : '' ?>>Lebih dari 20 km</option>
+                <option value="> 20 km" <?= old('jarak_ke_sekolah') === '> 20 km' ? 'selected' : '' ?>>> 20 km</option>
             </select>
         </div>
 
         <!-- Waktu Tempuh -->
         <div class="col-md-6 mb-3">
             <label for="waktu_tempuh" class="form-label">Waktu Tempuh ke Sekolah</label>
-            <input type="text" class="form-control" id="waktu_tempuh" name="waktu_tempuh"
-                value="<?= old('waktu_tempuh') ?>" placeholder="Contoh: 30 menit">
+            <select class="form-select" id="waktu_tempuh" name="waktu_tempuh">
+                <option value="">Pilih Waktu Tempuh</option>
+                <option value="< 15 menit" <?= old('waktu_tempuh') === '< 15 menit' ? 'selected' : '' ?>>< 15 menit</option>
+                <option value="15-30 menit" <?= old('waktu_tempuh') === '15-30 menit' ? 'selected' : '' ?>>15-30 menit</option>
+                <option value="30-60 menit" <?= old('waktu_tempuh') === '30-60 menit' ? 'selected' : '' ?>>30-60 menit</option>
+                <option value="> 60 menit" <?= old('waktu_tempuh') === '> 60 menit' ? 'selected' : '' ?>>> 60 menit</option>
+            </select>
         </div>
 
         <!-- Transportasi -->
         <div class="col-md-6 mb-3">
             <label for="transportasi" class="form-label">Moda Transportasi</label>
-            <input type="text" class="form-control" id="transportasi" name="transportasi"
-                value="<?= old('transportasi') ?>" placeholder="Contoh: Motor, Mobil, Angkutan Umum">
+            <select class="form-select" id="transportasi" name="transportasi">
+                <option value="">Pilih Transportasi</option>
+                <option value="Jalan Kaki" <?= old('transportasi') === 'Jalan Kaki' ? 'selected' : '' ?>>Jalan Kaki</option>
+                <option value="Sepeda" <?= old('transportasi') === 'Sepeda' ? 'selected' : '' ?>>Sepeda</option>
+                <option value="Motor" <?= old('transportasi') === 'Motor' ? 'selected' : '' ?>>Motor</option>
+                <option value="Mobil" <?= old('transportasi') === 'Mobil' ? 'selected' : '' ?>>Mobil</option>
+                <option value="Angkutan Umum" <?= old('transportasi') === 'Angkutan Umum' ? 'selected' : '' ?>>Angkutan Umum</option>
+                <option value="Ojek Online" <?= old('transportasi') === 'Ojek Online' ? 'selected' : '' ?>>Ojek Online</option>
+                <option value="Lainnya" <?= old('transportasi') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
+            </select>
         </div>
 
         <!-- Email -->

@@ -18,12 +18,15 @@
             <select class="form-select" id="jenjang_sekolah" name="jenjang_sekolah">
                 <option value="">Pilih Jenjang</option>
                 <?php if ($jalur === 'TSANAWIYYAH'): ?>
-                    <option value="MI" <?= old('jenjang_sekolah') === 'MI' ? 'selected' : '' ?>>MI (Madrasah Ibtidaiyah)</option>
                     <option value="SD" <?= old('jenjang_sekolah') === 'SD' ? 'selected' : '' ?>>SD (Sekolah Dasar)</option>
+                    <option value="MI" <?= old('jenjang_sekolah') === 'MI' ? 'selected' : '' ?>>MI (Madrasah Ibtidaiyah)</option>
+                    <option value="Paket A" <?= old('jenjang_sekolah') === 'Paket A' ? 'selected' : '' ?>>Paket A</option>
                 <?php else: ?>
-                    <option value="MTs" <?= old('jenjang_sekolah') === 'MTs' ? 'selected' : '' ?>>MTs (Madrasah Tsanawiyah)</option>
                     <option value="SMP" <?= old('jenjang_sekolah') === 'SMP' ? 'selected' : '' ?>>SMP (Sekolah Menengah Pertama)</option>
+                    <option value="MTs" <?= old('jenjang_sekolah') === 'MTs' ? 'selected' : '' ?>>MTs (Madrasah Tsanawiyah)</option>
+                    <option value="Paket B" <?= old('jenjang_sekolah') === 'Paket B' ? 'selected' : '' ?>>Paket B</option>
                 <?php endif; ?>
+                <option value="Lainnya" <?= old('jenjang_sekolah') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
             </select>
         </div>
 
