@@ -566,6 +566,19 @@ class PendaftaranLengkap extends BaseController
     private function generateQRCode(string $nomorPendaftaran): string
     {
         try {
+            // Ensure composer autoloader is loaded (fallback for web server issues)
+            if (!class_exists('\Endroid\QrCode\QrCode')) {
+                $autoloadPath = ROOTPATH . 'vendor/autoload.php';
+                if (file_exists($autoloadPath)) {
+                    require_once $autoloadPath;
+                }
+            }
+
+            // Check again if class is available
+            if (!class_exists('\Endroid\QrCode\QrCode')) {
+                throw new \Exception('Endroid QR Code library not available');
+            }
+
             // Create QR code instance
             $qrCode = new \Endroid\QrCode\QrCode(
                 data: $nomorPendaftaran,
@@ -583,13 +596,15 @@ class PendaftaranLengkap extends BaseController
             $dataUri = $result->getDataUri();
 
             return $dataUri;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             // Log error and return empty string if QR code generation fails
-            $this->logPendaftaran('error', 'QR Code generation failed', [
+            $this->logPendaftaran('warning', 'QR Code generation failed - PDF will generate without QR code', [
                 'nomor_pendaftaran' => $nomorPendaftaran,
                 'error' => $e->getMessage(),
+                'error_class' => get_class($e),
             ]);
 
+            // Return empty string - PDF will generate without QR code
             return '';
         }
     }
