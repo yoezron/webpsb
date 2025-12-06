@@ -260,7 +260,7 @@
                     <div class="nomor-pendaftaran-value"><?= esc($pendaftar['nomor_pendaftaran']) ?></div>
                 </div>
 
-                <!-- Info Card -->
+                <!-- Info Card: Data Pendaftar -->
                 <div class="info-card">
                     <h5><i class="icofont-ui-user"></i> Data Pendaftar</h5>
                     <div class="info-item">
@@ -272,27 +272,126 @@
                         <div class="info-value"><?= esc($pendaftar['nisn']) ?: '-' ?></div>
                     </div>
                     <div class="info-item">
+                        <div class="info-label">NIK:</div>
+                        <div class="info-value"><?= esc($pendaftar['nik']) ?: '-' ?></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Jenis Kelamin:</div>
+                        <div class="info-value"><?= $pendaftar['jenis_kelamin'] === 'L' ? 'Laki-laki' : 'Perempuan' ?></div>
+                    </div>
+                    <div class="info-item">
                         <div class="info-label">Tempat, Tanggal Lahir:</div>
                         <div class="info-value">
-                            <?= esc($pendaftar['tempat_lahir']) ?>,
+                            <?= esc($pendaftar['tempat_lahir']) ?: '-' ?>,
                             <?= $pendaftar['tanggal_lahir'] ? date('d F Y', strtotime($pendaftar['tanggal_lahir'])) : '-' ?>
                         </div>
                     </div>
                     <div class="info-item">
                         <div class="info-label">Jalur Pendaftaran:</div>
-                        <div class="info-value"><?= esc($pendaftar['jalur_pendaftaran']) ?></div>
+                        <div class="info-value"><strong><?= esc($pendaftar['jalur_pendaftaran']) ?></strong></div>
                     </div>
-                    <?php if (isset($sekolah) && $sekolah): ?>
-                        <div class="info-item">
-                            <div class="info-label">Asal Sekolah:</div>
-                            <div class="info-value"><?= esc($sekolah['nama_asal_sekolah']) ?></div>
-                        </div>
-                    <?php endif; ?>
+                    <div class="info-item">
+                        <div class="info-label">No. HP:</div>
+                        <div class="info-value"><?= esc($pendaftar['no_hp']) ?: '-' ?></div>
+                    </div>
                     <div class="info-item">
                         <div class="info-label">Tanggal Daftar:</div>
                         <div class="info-value"><?= date('d F Y, H:i', strtotime($pendaftar['tanggal_daftar'])) ?> WIB</div>
                     </div>
                 </div>
+
+                <!-- Info Card: Data Alamat -->
+                <?php if (isset($alamat) && $alamat): ?>
+                <div class="info-card">
+                    <h5><i class="icofont-location-pin"></i> Data Alamat</h5>
+                    <div class="info-item">
+                        <div class="info-label">Alamat:</div>
+                        <div class="info-value"><?= esc($alamat['alamat']) ?: '-' ?></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Desa/Kelurahan:</div>
+                        <div class="info-value"><?= esc($alamat['desa']) ?: '-' ?></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Kecamatan:</div>
+                        <div class="info-value"><?= esc($alamat['kecamatan']) ?: '-' ?></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Kabupaten/Kota:</div>
+                        <div class="info-value"><?= esc($alamat['kabupaten']) ?: '-' ?></div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Provinsi:</div>
+                        <div class="info-value"><?= esc($alamat['provinsi']) ?: '-' ?></div>
+                    </div>
+                    <?php if (!empty($alamat['email'])): ?>
+                    <div class="info-item">
+                        <div class="info-label">Email:</div>
+                        <div class="info-value"><?= esc($alamat['email']) ?></div>
+                    </div>
+                    <?php endif; ?>
+                </div>
+                <?php endif; ?>
+
+                <!-- Info Card: Data Orang Tua -->
+                <?php if ((isset($ayah) && $ayah) || (isset($ibu) && $ibu)): ?>
+                <div class="info-card">
+                    <h5><i class="icofont-users-alt-4"></i> Data Orang Tua</h5>
+                    <?php if (isset($ayah) && $ayah && !empty($ayah['nama_ayah'])): ?>
+                    <div class="info-item">
+                        <div class="info-label">Nama Ayah:</div>
+                        <div class="info-value"><?= esc($ayah['nama_ayah']) ?></div>
+                    </div>
+                    <?php if (!empty($ayah['hp_ayah'])): ?>
+                    <div class="info-item">
+                        <div class="info-label">No. HP Ayah:</div>
+                        <div class="info-value"><?= esc($ayah['hp_ayah']) ?></div>
+                    </div>
+                    <?php endif; ?>
+                    <?php endif; ?>
+                    <?php if (isset($ibu) && $ibu && !empty($ibu['nama_ibu'])): ?>
+                    <div class="info-item">
+                        <div class="info-label">Nama Ibu:</div>
+                        <div class="info-value"><?= esc($ibu['nama_ibu']) ?></div>
+                    </div>
+                    <?php if (!empty($ibu['hp_ibu'])): ?>
+                    <div class="info-item">
+                        <div class="info-label">No. HP Ibu:</div>
+                        <div class="info-value"><?= esc($ibu['hp_ibu']) ?></div>
+                    </div>
+                    <?php endif; ?>
+                    <?php endif; ?>
+                </div>
+                <?php endif; ?>
+
+                <!-- Info Card: Asal Sekolah -->
+                <?php if (isset($sekolah) && $sekolah): ?>
+                <div class="info-card">
+                    <h5><i class="icofont-education"></i> Asal Sekolah</h5>
+                    <div class="info-item">
+                        <div class="info-label">Nama Sekolah:</div>
+                        <div class="info-value"><?= esc($sekolah['nama_asal_sekolah']) ?: '-' ?></div>
+                    </div>
+                    <?php if (!empty($sekolah['npsn'])): ?>
+                    <div class="info-item">
+                        <div class="info-label">NPSN:</div>
+                        <div class="info-value"><?= esc($sekolah['npsn']) ?></div>
+                    </div>
+                    <?php endif; ?>
+                    <?php if (!empty($sekolah['jenjang_sekolah'])): ?>
+                    <div class="info-item">
+                        <div class="info-label">Jenjang:</div>
+                        <div class="info-value"><?= esc($sekolah['jenjang_sekolah']) ?></div>
+                    </div>
+                    <?php endif; ?>
+                    <?php if (!empty($sekolah['lokasi_sekolah'])): ?>
+                    <div class="info-item">
+                        <div class="info-label">Lokasi:</div>
+                        <div class="info-value"><?= esc($sekolah['lokasi_sekolah']) ?></div>
+                    </div>
+                    <?php endif; ?>
+                </div>
+                <?php endif; ?>
 
                 <!-- Important Note -->
                 <div class="important-note">
