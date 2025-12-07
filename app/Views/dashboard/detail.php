@@ -509,10 +509,10 @@
 
                 <!-- Action Buttons -->
                 <div class="action-buttons">
-                    <a href="<?= base_url('pendaftaran/download-pdf/' . $pendaftar['id_pendaftar']) ?>" class="btn-action btn-primary-custom" target="_blank">
+                    <a href="<?= base_url('pendaftaran/download-pdf/' . $pendaftar['nomor_pendaftaran']) ?>" class="btn-action btn-primary-custom" target="_blank">
                         <i class="icofont-file-pdf"></i> Download PDF Lengkap
                     </a>
-                    <a href="<?= base_url('pendaftaran/download-kartu/' . $pendaftar['id_pendaftar']) ?>" class="btn-action btn-danger-custom" target="_blank">
+                    <a href="<?= base_url('pendaftaran/download-kartu/' . $pendaftar['nomor_pendaftaran']) ?>" class="btn-action btn-danger-custom" target="_blank">
                         <i class="icofont-id-card"></i> Download Kartu Pendaftaran
                     </a>
                     <button onclick="window.print()" class="btn-action btn-primary-custom">

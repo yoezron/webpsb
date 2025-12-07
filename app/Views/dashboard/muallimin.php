@@ -889,7 +889,7 @@
                                             <a href="<?= base_url('dashboard/detail/' . $p['id_pendaftar']) ?>" class="btn-action view" title="Lihat Detail">
                                                 <i class="icofont-eye-alt"></i>
                                             </a>
-                                            <a href="<?= base_url('pendaftaran/download-kartu/' . $p['id_pendaftar']) ?>" class="btn-action pdf" title="Download PDF" target="_blank">
+                                            <a href="<?= base_url('pendaftaran/download-kartu/' . $p['nomor_pendaftaran']) ?>" class="btn-action pdf" title="Download PDF" target="_blank">
                                                 <i class="icofont-file-pdf"></i>
                                             </a>
                                         </td>
