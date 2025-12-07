@@ -165,12 +165,12 @@ class Dashboard extends BaseController
         ];
 
         $incomeData = $db->table('data_ayah')
-            ->select('penghasilan')
+            ->select('penghasilan_ayah')
             ->get()
             ->getResultArray();
 
         foreach ($incomeData as $row) {
-            $income = (int)$row['penghasilan'];
+            $income = (int)$row['penghasilan_ayah'];
             if ($income < 1000000) {
                 $incomeRanges['below_1m']++;
             } elseif ($income >= 1000000 && $income < 3000000) {
@@ -467,14 +467,14 @@ class Dashboard extends BaseController
                       alamat_pendaftar.jalan, alamat_pendaftar.kode_pos, alamat_pendaftar.jarak_ke_sekolah,
                       alamat_pendaftar.transportasi,
                       data_ayah.nama_ayah, data_ayah.nik_ayah, data_ayah.pendidikan_ayah,
-                      data_ayah.pekerjaan_ayah, data_ayah.penghasilan as penghasilan_ayah,
-                      data_ayah.no_hp_ayah, data_ayah.status_ayah,
+                      data_ayah.pekerjaan_ayah, data_ayah.penghasilan_ayah,
+                      data_ayah.hp_ayah, data_ayah.status_ayah,
                       data_ibu.nama_ibu, data_ibu.nik_ibu, data_ibu.pendidikan_ibu,
-                      data_ibu.pekerjaan_ibu, data_ibu.penghasilan as penghasilan_ibu,
-                      data_ibu.no_hp_ibu, data_ibu.status_ibu,
+                      data_ibu.pekerjaan_ibu, data_ibu.penghasilan_ibu,
+                      data_ibu.hp_ibu, data_ibu.status_ibu,
                       data_wali.nama_wali, data_wali.nik_wali, data_wali.pendidikan_wali,
-                      data_wali.pekerjaan_wali, data_wali.penghasilan as penghasilan_wali,
-                      data_wali.no_hp_wali, data_wali.hubungan_wali,
+                      data_wali.pekerjaan_wali, data_wali.penghasilan_wali,
+                      data_wali.hp_wali, data_wali.hubungan_wali,
                       bansos_pendaftar.jenis_bansos, bansos_pendaftar.nama_bansos,
                       asal_sekolah.npsn, asal_sekolah.nama_asal_sekolah, asal_sekolah.jenjang_sekolah,
                       asal_sekolah.status_sekolah, asal_sekolah.lokasi_sekolah, asal_sekolah.asal_jenjang')
@@ -600,7 +600,7 @@ class Dashboard extends BaseController
                 $row['pendidikan_ayah'] ?? '-',
                 $row['pekerjaan_ayah'] ?? '-',
                 !empty($row['penghasilan_ayah']) ? 'Rp ' . number_format($row['penghasilan_ayah'], 0, ',', '.') : '-',
-                $row['no_hp_ayah'] ?? '-',
+                $row['hp_ayah'] ?? '-',
                 $row['status_ayah'] ?? '-',
                 // Data Ibu
                 $row['nama_ibu'] ?? '-',
@@ -608,7 +608,7 @@ class Dashboard extends BaseController
                 $row['pendidikan_ibu'] ?? '-',
                 $row['pekerjaan_ibu'] ?? '-',
                 !empty($row['penghasilan_ibu']) ? 'Rp ' . number_format($row['penghasilan_ibu'], 0, ',', '.') : '-',
-                $row['no_hp_ibu'] ?? '-',
+                $row['hp_ibu'] ?? '-',
                 $row['status_ibu'] ?? '-',
                 // Data Wali
                 $row['nama_wali'] ?? '-',
@@ -616,7 +616,7 @@ class Dashboard extends BaseController
                 $row['pendidikan_wali'] ?? '-',
                 $row['pekerjaan_wali'] ?? '-',
                 !empty($row['penghasilan_wali']) ? 'Rp ' . number_format($row['penghasilan_wali'], 0, ',', '.') : '-',
-                $row['no_hp_wali'] ?? '-',
+                $row['hp_wali'] ?? '-',
                 $row['hubungan_wali'] ?? '-',
                 // Bansos
                 $row['jenis_bansos'] ?? '-',
@@ -656,14 +656,14 @@ class Dashboard extends BaseController
                       alamat_pendaftar.jalan, alamat_pendaftar.kode_pos, alamat_pendaftar.jarak_ke_sekolah,
                       alamat_pendaftar.transportasi,
                       data_ayah.nama_ayah, data_ayah.nik_ayah, data_ayah.pendidikan_ayah,
-                      data_ayah.pekerjaan_ayah, data_ayah.penghasilan as penghasilan_ayah,
-                      data_ayah.no_hp_ayah, data_ayah.status_ayah,
+                      data_ayah.pekerjaan_ayah, data_ayah.penghasilan_ayah,
+                      data_ayah.hp_ayah, data_ayah.status_ayah,
                       data_ibu.nama_ibu, data_ibu.nik_ibu, data_ibu.pendidikan_ibu,
-                      data_ibu.pekerjaan_ibu, data_ibu.penghasilan as penghasilan_ibu,
-                      data_ibu.no_hp_ibu, data_ibu.status_ibu,
+                      data_ibu.pekerjaan_ibu, data_ibu.penghasilan_ibu,
+                      data_ibu.hp_ibu, data_ibu.status_ibu,
                       data_wali.nama_wali, data_wali.nik_wali, data_wali.pendidikan_wali,
-                      data_wali.pekerjaan_wali, data_wali.penghasilan as penghasilan_wali,
-                      data_wali.no_hp_wali, data_wali.hubungan_wali,
+                      data_wali.pekerjaan_wali, data_wali.penghasilan_wali,
+                      data_wali.hp_wali, data_wali.hubungan_wali,
                       bansos_pendaftar.jenis_bansos, bansos_pendaftar.nama_bansos,
                       asal_sekolah.npsn, asal_sekolah.nama_asal_sekolah, asal_sekolah.jenjang_sekolah,
                       asal_sekolah.status_sekolah, asal_sekolah.lokasi_sekolah, asal_sekolah.asal_jenjang')
