@@ -492,11 +492,81 @@ class PendaftaranLengkap extends BaseController
     }
 
     /**
-     * Download PDF registration card with QR code
+     * Download comprehensive PDF with all registration data
      */
     public function downloadPdf($nomorPendaftaran = null)
     {
-        return $this->downloadKartu($nomorPendaftaran);
+        // CRITICAL: Load vendor autoloader FIRST
+        $vendorPath = __DIR__ . '/../../vendor/autoload.php';
+        if (file_exists($vendorPath)) {
+            require_once $vendorPath;
+        }
+
+        if (!$nomorPendaftaran) {
+            return redirect()->to(base_url('/'));
+        }
+
+        // Get pendaftar with all related data from 7 tables
+        $pendaftar = $this->pendaftarModel->where('nomor_pendaftaran', $nomorPendaftaran)->first();
+
+        if (!$pendaftar) {
+            return redirect()->to(base_url('/'))->with('error', 'Data pendaftaran tidak ditemukan.');
+        }
+
+        // Get all related data from 7 tables
+        $alamat = $this->alamatModel->where('id_pendaftar', $pendaftar['id_pendaftar'])->first();
+        $ayah = $this->ayahModel->where('id_pendaftar', $pendaftar['id_pendaftar'])->first();
+        $ibu = $this->ibuModel->where('id_pendaftar', $pendaftar['id_pendaftar'])->first();
+        $wali = $this->waliModel->where('id_pendaftar', $pendaftar['id_pendaftar'])->first();
+        $bansos = $this->bansosModel->where('id_pendaftar', $pendaftar['id_pendaftar'])->first();
+        $sekolah = $this->sekolahModel->where('id_pendaftar', $pendaftar['id_pendaftar'])->first();
+
+        // Generate Logo Data URI
+        $logoDataUri = $this->generateLogoDataUri();
+
+        // Prepare comprehensive data for PDF template
+        $data = [
+            'pendaftar' => $pendaftar,
+            'alamat' => $alamat,
+            'ayah' => $ayah,
+            'ibu' => $ibu,
+            'wali' => $wali,
+            'bansos' => $bansos,
+            'sekolah' => $sekolah,
+            'logo' => $logoDataUri,
+        ];
+
+        // Generate HTML from comprehensive template
+        $html = view('pendaftaran/pdf_lengkap_template', $data);
+
+        // Initialize Dompdf
+        $options = new \Dompdf\Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', false);
+        $options->set('defaultFont', 'Arial');
+        $options->set('chroot', FCPATH);
+
+        $dompdf = new \Dompdf\Dompdf($options);
+        $dompdf->loadHtml($html);
+
+        // Set paper size and orientation
+        $dompdf->setPaper('A4', 'portrait');
+
+        // Render PDF
+        $dompdf->render();
+
+        // Log PDF generation
+        $this->logPendaftaran('info', 'PDF Lengkap downloaded', [
+            'nomor_pendaftaran' => $nomorPendaftaran,
+            'nama' => $pendaftar['nama_lengkap'],
+        ]);
+
+        // Stream PDF to browser for download
+        $filename = 'Data_Lengkap_' . $nomorPendaftaran . '.pdf';
+        $dompdf->stream($filename, [
+            'Attachment' => true,
+            'compress' => true,
+        ]);
     }
 
     /**
