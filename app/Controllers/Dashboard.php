@@ -48,8 +48,8 @@ class Dashboard extends BaseController
 
         // Get recent registrations
         $recentRegistrations = $this->pendaftarModel
-            ->select('pendaftar.*, alamat.kelurahan, alamat.kecamatan')
-            ->join('alamat', 'alamat.id_alamat = pendaftar.id_alamat', 'left')
+            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan')
+            ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->orderBy('pendaftar.created_at', 'DESC')
             ->limit(10)
             ->find();
@@ -78,8 +78,8 @@ class Dashboard extends BaseController
 
         // Get recent Tsanawiyyah registrations
         $registrations = $this->pendaftarModel
-            ->select('pendaftar.*, alamat.kelurahan, alamat.kecamatan')
-            ->join('alamat', 'alamat.id_alamat = pendaftar.id_alamat', 'left')
+            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan')
+            ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->where('pendaftar.jalur_pendaftaran', 'tsanawiyyah')
             ->orderBy('pendaftar.created_at', 'DESC')
             ->limit(20)
@@ -106,8 +106,8 @@ class Dashboard extends BaseController
 
         // Get recent Muallimin registrations
         $registrations = $this->pendaftarModel
-            ->select('pendaftar.*, alamat.kelurahan, alamat.kecamatan')
-            ->join('alamat', 'alamat.id_alamat = pendaftar.id_alamat', 'left')
+            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan')
+            ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->where('pendaftar.jalur_pendaftaran', 'muallimin')
             ->orderBy('pendaftar.created_at', 'DESC')
             ->limit(20)
