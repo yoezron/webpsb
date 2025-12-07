@@ -216,30 +216,87 @@
         <div class="row">
             <div class="col-12">
                 <div class="table-card">
-                    <h5>
-                        <i class="icofont-users-alt-2 me-2"></i>
-                        Daftar Pendaftar <?= esc($jalur) ?>
-                    </h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">
+                            <i class="icofont-users-alt-2 me-2"></i>
+                            Daftar Pendaftar <?= esc($jalur) ?>
+                        </h5>
+                        <form method="get" class="d-flex gap-2">
+                            <input type="text" name="search" class="form-control" placeholder="Cari nama, NISN, NIK..."
+                                   value="<?= esc($search) ?>" style="width: 300px;">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="icofont-search me-1"></i> Cari
+                            </button>
+                            <?php if (!empty($search)): ?>
+                                <a href="<?= current_url() ?>" class="btn btn-secondary">
+                                    <i class="icofont-close me-1"></i> Reset
+                                </a>
+                            <?php endif; ?>
+                        </form>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Nama Lengkap</th>
-                                    <th>Jenis Kelamin</th>
-                                    <th>Tempat Lahir</th>
+                                    <th>
+                                        <a href="?sort=nama_lengkap&dir=<?= $sortBy === 'nama_lengkap' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"
+                                           class="text-white text-decoration-none">
+                                            Nama Lengkap
+                                            <?php if ($sortBy === 'nama_lengkap'): ?>
+                                                <i class="icofont-<?= $sortDir === 'ASC' ? 'arrow-up' : 'arrow-down' ?>"></i>
+                                            <?php endif; ?>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="?sort=jenis_kelamin&dir=<?= $sortBy === 'jenis_kelamin' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"
+                                           class="text-white text-decoration-none">
+                                            Jenis Kelamin
+                                            <?php if ($sortBy === 'jenis_kelamin'): ?>
+                                                <i class="icofont-<?= $sortDir === 'ASC' ? 'arrow-up' : 'arrow-down' ?>"></i>
+                                            <?php endif; ?>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="?sort=tempat_lahir&dir=<?= $sortBy === 'tempat_lahir' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"
+                                           class="text-white text-decoration-none">
+                                            Tempat Lahir
+                                            <?php if ($sortBy === 'tempat_lahir'): ?>
+                                                <i class="icofont-<?= $sortDir === 'ASC' ? 'arrow-up' : 'arrow-down' ?>"></i>
+                                            <?php endif; ?>
+                                        </a>
+                                    </th>
                                     <th>Tanggal Lahir</th>
                                     <th>Asal Sekolah</th>
-                                    <th>Lokasi</th>
-                                    <th>Tanggal Daftar</th>
+                                    <th>
+                                        <a href="?sort=kecamatan&dir=<?= $sortBy === 'kecamatan' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"
+                                           class="text-white text-decoration-none">
+                                            Lokasi
+                                            <?php if ($sortBy === 'kecamatan'): ?>
+                                                <i class="icofont-<?= $sortDir === 'ASC' ? 'arrow-up' : 'arrow-down' ?>"></i>
+                                            <?php endif; ?>
+                                        </a>
+                                    </th>
+                                    <th>
+                                        <a href="?sort=tanggal_daftar&dir=<?= $sortBy === 'tanggal_daftar' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"
+                                           class="text-white text-decoration-none">
+                                            Tanggal Daftar
+                                            <?php if ($sortBy === 'tanggal_daftar'): ?>
+                                                <i class="icofont-<?= $sortDir === 'ASC' ? 'arrow-up' : 'arrow-down' ?>"></i>
+                                            <?php endif; ?>
+                                        </a>
+                                    </th>
                                     <th>Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php if (!empty($registrations)): ?>
-                                    <?php foreach ($registrations as $index => $reg): ?>
+                                    <?php
+                                    $startIndex = ($pager->getCurrentPage() - 1) * $pager->getPerPage();
+                                    foreach ($registrations as $index => $reg):
+                                    ?>
                                         <tr>
-                                            <td><?= $index + 1 ?></td>
+                                            <td><?= $startIndex + $index + 1 ?></td>
                                             <td><strong><?= esc($reg['nama_lengkap']) ?></strong></td>
                                             <td>
                                                 <i class="<?= $reg['jenis_kelamin'] === 'L' ? 'icofont-boy' : 'icofont-girl' ?> me-1"></i>
@@ -268,6 +325,20 @@
                             </tbody>
                         </table>
                     </div>
+
+                    <!-- Pagination -->
+                    <?php if ($pager->getPageCount() > 1): ?>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                Menampilkan <?= ($pager->getCurrentPage() - 1) * $pager->getPerPage() + 1 ?>
+                                sampai <?= min($pager->getCurrentPage() * $pager->getPerPage(), $total_registrations) ?>
+                                dari <?= $total_registrations ?> data
+                            </div>
+                            <nav>
+                                <?= $pager->links('default', 'default_full') ?>
+                            </nav>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
