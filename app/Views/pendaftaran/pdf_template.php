@@ -44,13 +44,9 @@
         }
 
         .header-logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 12px;
-            background: white;
-            border-radius: 50%;
-            padding: 10px;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.25);
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
         }
 
         .header-logo img {
