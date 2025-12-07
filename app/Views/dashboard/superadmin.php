@@ -292,7 +292,7 @@
                                             <td><?= esc($reg['jenis_kelamin']) === 'L' ? 'Laki-laki' : 'Perempuan' ?></td>
                                             <td><?= esc($reg['asal_sekolah'] ?? '-') ?></td>
                                             <td><?= esc($reg['kecamatan'] ?? '-') ?></td>
-                                            <td><?= date('d/m/Y H:i', strtotime($reg['created_at'])) ?></td>
+                                            <td><?= date('d/m/Y H:i', strtotime($reg['tanggal_daftar'])) ?></td>
                                             <td>
                                                 <a href="<?= base_url('pendaftaran/download-kartu/' . $reg['id_pendaftar']) ?>"
                                                    class="btn btn-sm btn-success" title="Download Kartu">
