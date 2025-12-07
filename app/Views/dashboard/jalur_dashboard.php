@@ -249,7 +249,7 @@
                                             <td><?= !empty($reg['tanggal_lahir']) ? date('d/m/Y', strtotime($reg['tanggal_lahir'])) : '-' ?></td>
                                             <td><?= esc($reg['asal_sekolah'] ?? '-') ?></td>
                                             <td><?= esc($reg['kecamatan'] ?? '-') ?></td>
-                                            <td><?= date('d/m/Y', strtotime($reg['created_at'])) ?></td>
+                                            <td><?= date('d/m/Y', strtotime($reg['tanggal_daftar'])) ?></td>
                                             <td>
                                                 <a href="<?= base_url('pendaftaran/download-kartu/' . $reg['id_pendaftar']) ?>"
                                                    class="btn btn-sm btn-success" title="Download Kartu">

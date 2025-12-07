@@ -50,7 +50,7 @@ class Dashboard extends BaseController
         $recentRegistrations = $this->pendaftarModel
             ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan')
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
-            ->orderBy('pendaftar.created_at', 'DESC')
+            ->orderBy('pendaftar.tanggal_daftar', 'DESC')
             ->limit(10)
             ->find();
 
@@ -81,7 +81,7 @@ class Dashboard extends BaseController
             ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan')
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->where('pendaftar.jalur_pendaftaran', 'tsanawiyyah')
-            ->orderBy('pendaftar.created_at', 'DESC')
+            ->orderBy('pendaftar.tanggal_daftar', 'DESC')
             ->limit(20)
             ->find();
 
@@ -109,7 +109,7 @@ class Dashboard extends BaseController
             ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan')
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->where('pendaftar.jalur_pendaftaran', 'muallimin')
-            ->orderBy('pendaftar.created_at', 'DESC')
+            ->orderBy('pendaftar.tanggal_daftar', 'DESC')
             ->limit(20)
             ->find();
 
