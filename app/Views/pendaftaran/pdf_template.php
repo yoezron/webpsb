@@ -44,14 +44,14 @@
         }
 
         .header-logo {
-            width: 100px;
-            height: 100px;
+            width: 250px;
+            height: auto;
             margin: 0 auto 15px;
         }
 
         .header-logo img {
             width: 100%;
-            height: 100%;
+            height: auto;
             object-fit: contain;
         }
 
