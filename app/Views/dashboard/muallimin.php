@@ -948,7 +948,37 @@
             url.searchParams.set('page', 1);
             window.location.href = url.toString();
         }
+
+        // Enhanced UX
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add loading state to export buttons
+            const exportButtons = document.querySelectorAll('a[href*="export"]');
+            exportButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    showLoading('Mengekspor data...');
+                    setTimeout(() => hideLoading(), 3000);
+                });
+            });
+
+            // Add loading state to action buttons
+            document.querySelectorAll('.btn-primary, .btn-success').forEach(button => {
+                button.addEventListener('click', function(e) {
+                    if (this.href && this.href.includes('download')) {
+                        showLoading('Mengunduh file...');
+                        setTimeout(() => hideLoading(), 2000);
+                    } else if (this.href && this.href.includes('detail')) {
+                        showLoading('Memuat detail...');
+                    }
+                });
+            });
+
+            console.log('Muallimin dashboard initialized');
+        });
     </script>
+
+    <!-- Include Components -->
+    <?php include APPPATH . 'Views/components/toast.php'; ?>
+    <?php include APPPATH . 'Views/components/loading.php'; ?>
 
 </body>
 

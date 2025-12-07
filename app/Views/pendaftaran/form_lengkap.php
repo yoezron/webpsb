@@ -93,6 +93,31 @@
             padding: 40px 30px;
         }
 
+        /* Progress Bar */
+        .progress-bar-container {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-green), var(--dark-green));
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            position: relative;
+        }
+
+        .progress-percentage {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--dark-green);
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+
         .step-indicator {
             display: flex;
             justify-content: space-between;
@@ -363,6 +388,12 @@
 
             <!-- Body -->
             <div class="form-body">
+                <!-- Progress Bar -->
+                <div class="progress-bar-container" role="progressbar" aria-valuenow="12.5" aria-valuemin="0" aria-valuemax="100" aria-label="Form progress">
+                    <div class="progress-bar-fill" id="progress-bar" style="width: 12.5%;"></div>
+                </div>
+                <div class="progress-percentage" id="progress-percentage">12.5% - Step 1 of 8</div>
+
                 <!-- Step Indicator -->
                 <div class="step-indicator">
                     <div class="step-item active" data-step="1">
@@ -456,6 +487,10 @@
         </div>
     </div>
 
+    <!-- Include Components -->
+    <?php include APPPATH . 'Views/components/toast.php'; ?>
+    <?php include APPPATH . 'Views/components/loading.php'; ?>
+
     <!-- JS -->
     <script src="<?= base_url('assets/js/jquery.js') ?>"></script>
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
@@ -495,6 +530,12 @@
                 // Show current section
                 $('#section-' + step).removeClass('hidden').addClass('active');
 
+                // Update progress bar
+                const percentage = (step / totalSteps) * 100;
+                $('#progress-bar').css('width', percentage + '%');
+                $('#progress-bar').parent().attr('aria-valuenow', percentage);
+                $('#progress-percentage').text(`${percentage.toFixed(1)}% - Step ${step} of ${totalSteps}`);
+
                 // Update step indicators
                 $('.step-item').each(function() {
                     const itemStep = $(this).data('step');
@@ -523,10 +564,20 @@
                     $('#btn-submit').addClass('hidden');
                 }
 
-                // Scroll to top
+                // Scroll to top with smooth animation
                 $('html, body').animate({
                     scrollTop: 0
                 }, 500);
+
+                // Announce to screen readers
+                const announcement = `Step ${step} of ${totalSteps}`;
+                const srAnnounce = document.createElement('div');
+                srAnnounce.setAttribute('role', 'status');
+                srAnnounce.setAttribute('aria-live', 'polite');
+                srAnnounce.className = 'sr-only';
+                srAnnounce.textContent = announcement;
+                document.body.appendChild(srAnnounce);
+                setTimeout(() => document.body.removeChild(srAnnounce), 1000);
             }
 
             // Validate step
@@ -548,7 +599,7 @@
                 });
 
                 if (!isValid) {
-                    alert('Mohon lengkapi semua field yang wajib diisi!');
+                    showToast('Mohon lengkapi semua field yang wajib diisi!', 'warning', 5000);
                 }
 
                 return isValid;
@@ -558,6 +609,7 @@
             function saveToLocalStorage() {
                 const formData = $('#main-form').serializeArray();
                 localStorage.setItem('pendaftaran_form', JSON.stringify(formData));
+                console.log('Auto-save: Form data saved to localStorage');
             }
 
             // Load from localStorage
@@ -636,21 +688,31 @@
                 if (currentStep === 8) {
                     if (!$('#confirm_data').is(':checked')) {
                         e.preventDefault();
-                        alert('Anda harus mencentang pernyataan konfirmasi data sebelum melanjutkan!');
+                        showToast('Anda harus mencentang pernyataan konfirmasi data sebelum melanjutkan!', 'warning');
                         $('#confirm_data').focus();
                         return false;
                     }
                 }
 
-                // Show loading state on submit button
-                $('#btn-submit').prop('disabled', true);
-                $('#btn-submit').html('<i class="icofont-spinner icofont-spin"></i> Menyimpan...');
+                // Show loading state
+                showLoading('Menyimpan data pendaftaran...');
+                setButtonLoading($('#btn-submit')[0], true, 'Menyimpan...');
 
+                // Clear localStorage on successful submission
                 localStorage.removeItem('pendaftaran_form');
             });
 
             // Auto save every 30 seconds
-            setInterval(saveToLocalStorage, 30000);
+            setInterval(function() {
+                saveToLocalStorage();
+                // Show subtle notification (optional - commented out to avoid annoyance)
+                // showToast('Formulir tersimpan otomatis', 'info', 2000);
+            }, 30000);
+
+            // Save on input change
+            $('#main-form input, #main-form select, #main-form textarea').on('change', function() {
+                saveToLocalStorage();
+            });
 
             // Highlight fields with validation errors
             <?php if (session()->getFlashdata('validation_errors')): ?>
@@ -682,7 +744,36 @@
             // Auto dismiss alerts (only dismissible alerts, not the confirmation checkbox)
             setTimeout(function() {
                 $('.alert-dismissible').fadeOut('slow');
-            }, 10000); // Increased to 10 seconds so user can read error details
+            }, 10000);
+
+            // Screen reader only class for accessibility
+            if (!$('.sr-only').length) {
+                $('<style>.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0}</style>').appendTo('head');
+            }
+
+            // Keyboard navigation for step indicator
+            $('.step-item').attr('tabindex', '0').on('keypress', function(e) {
+                if (e.which === 13 || e.which === 32) { // Enter or Space
+                    const targetStep = $(this).data('step');
+                    if (targetStep < currentStep) {
+                        currentStep = targetStep;
+                        showStep(currentStep);
+                    }
+                }
+            });
+
+            // Add aria-labels to form inputs without labels
+            $('input, select, textarea').each(function() {
+                const $this = $(this);
+                if (!$this.attr('aria-label') && !$this.attr('aria-labelledby')) {
+                    const label = $this.closest('.mb-3').find('label').text().trim();
+                    if (label) {
+                        $this.attr('aria-label', label);
+                    }
+                }
+            });
+
+            console.log('Form initialized successfully');
         });
     </script>
 </body>

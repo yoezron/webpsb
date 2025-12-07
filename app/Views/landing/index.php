@@ -486,6 +486,10 @@
         </div>
     </footer>
 
+    <!-- Include Components -->
+    <?php include APPPATH . 'Views/components/toast.php'; ?>
+    <?php include APPPATH . 'Views/components/loading.php'; ?>
+
     <!-- Hafsa Template JS -->
     <script src="<?= base_url('assets/js/jquery.js') ?>"></script>
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
@@ -498,6 +502,29 @@
     <!-- Initialize WOW.js for animations -->
     <script>
         new WOW().init();
+
+        // Enhanced UX for landing page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add loading state to CTA buttons
+            const ctaButtons = document.querySelectorAll('.btn-primary-custom, .btn-secondary-custom');
+            ctaButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    showLoading('Memuat formulir pendaftaran...');
+                });
+            });
+
+            // Accessibility improvements
+            document.querySelectorAll('a').forEach(link => {
+                if (link.href && !link.getAttribute('aria-label')) {
+                    const text = link.textContent.trim();
+                    if (text) {
+                        link.setAttribute('aria-label', text);
+                    }
+                }
+            });
+
+            console.log('Landing page initialized successfully');
+        });
     </script>
 </body>
 
