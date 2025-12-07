@@ -563,7 +563,7 @@ class Dashboard extends BaseController
             // Asal Sekolah
             'NPSN', 'Nama Asal Sekolah', 'Jenjang Sekolah', 'Status Sekolah',
             'Lokasi Sekolah', 'Asal Jenjang'
-        ]);
+        ], ',', '"', '\\');
 
         // Comprehensive CSV Data
         $no = 1;
@@ -603,7 +603,7 @@ class Dashboard extends BaseController
                 $row['nik_ayah'] ?? '-',
                 $row['pendidikan_ayah'] ?? '-',
                 $row['pekerjaan_ayah'] ?? '-',
-                !empty($row['penghasilan_ayah']) ? 'Rp ' . number_format($row['penghasilan_ayah'], 0, ',', '.') : '-',
+                $row['penghasilan_ayah'] ?? '-',
                 $row['hp_ayah'] ?? '-',
                 $row['status_ayah'] ?? '-',
                 // Data Ibu
@@ -611,7 +611,7 @@ class Dashboard extends BaseController
                 $row['nik_ibu'] ?? '-',
                 $row['pendidikan_ibu'] ?? '-',
                 $row['pekerjaan_ibu'] ?? '-',
-                !empty($row['penghasilan_ibu']) ? 'Rp ' . number_format($row['penghasilan_ibu'], 0, ',', '.') : '-',
+                $row['penghasilan_ibu'] ?? '-',
                 $row['hp_ibu'] ?? '-',
                 $row['status_ibu'] ?? '-',
                 // Data Wali
@@ -619,7 +619,7 @@ class Dashboard extends BaseController
                 $row['nik_wali'] ?? '-',
                 $row['pendidikan_wali'] ?? '-',
                 $row['pekerjaan_wali'] ?? '-',
-                !empty($row['penghasilan_wali']) ? 'Rp ' . number_format($row['penghasilan_wali'], 0, ',', '.') : '-',
+                $row['penghasilan_wali'] ?? '-',
                 $row['hp_wali'] ?? '-',
                 // Bansos
                 $row['no_kks'] ?? '-',
@@ -632,7 +632,7 @@ class Dashboard extends BaseController
                 $row['status_sekolah'] ?? '-',
                 $row['lokasi_sekolah'] ?? '-',
                 $row['asal_jenjang'] ?? '-'
-            ]);
+            ], ',', '"', '\\');
         }
 
         fclose($output);
