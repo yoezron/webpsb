@@ -355,16 +355,12 @@
                     </h3>
                     <div class="info-grid">
                         <div class="info-item">
-                            <span class="info-label">Alamat Jalan</span>
-                            <span class="info-value"><?= esc($alamat['alamat_jalan'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">RT/RW</span>
-                            <span class="info-value"><?= esc($alamat['rt'] ?? '-') ?>/<?= esc($alamat['rw'] ?? '-') ?></span>
+                            <span class="info-label">Alamat</span>
+                            <span class="info-value"><?= esc($alamat['alamat'] ?? '-') ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Desa/Kelurahan</span>
-                            <span class="info-value"><?= esc($alamat['desa_kelurahan'] ?? '-') ?></span>
+                            <span class="info-value"><?= esc($alamat['desa'] ?? '-') ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Kecamatan</span>
@@ -372,7 +368,7 @@
                         </div>
                         <div class="info-item">
                             <span class="info-label">Kabupaten/Kota</span>
-                            <span class="info-value"><?= esc($alamat['kabupaten_kota'] ?? '-') ?></span>
+                            <span class="info-value"><?= esc($alamat['kabupaten'] ?? '-') ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Provinsi</span>
@@ -384,7 +380,11 @@
                         </div>
                         <div class="info-item">
                             <span class="info-label">Jarak ke Pesantren</span>
-                            <span class="info-value"><?= esc($alamat['jarak_ke_sekolah'] ?? '-') ?> km</span>
+                            <span class="info-value"><?= esc($alamat['jarak_ke_sekolah'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Transportasi</span>
+                            <span class="info-value"><?= esc($alamat['transportasi'] ?? '-') ?></span>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -426,7 +426,7 @@
                         </div>
                         <div class="info-item">
                             <span class="info-label">No. HP</span>
-                            <span class="info-value"><?= esc($ayah['no_hp_ayah'] ?? '-') ?></span>
+                            <span class="info-value"><?= esc($ayah['hp_ayah'] ?? '-') ?></span>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -468,7 +468,7 @@
                         </div>
                         <div class="info-item">
                             <span class="info-label">No. HP</span>
-                            <span class="info-value"><?= esc($ibu['no_hp_ibu'] ?? '-') ?></span>
+                            <span class="info-value"><?= esc($ibu['hp_ibu'] ?? '-') ?></span>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -482,7 +482,7 @@
                     <div class="info-grid">
                         <div class="info-item">
                             <span class="info-label">Nama Sekolah</span>
-                            <span class="info-value"><?= esc($sekolah['nama_sekolah'] ?? '-') ?></span>
+                            <span class="info-value"><?= esc($sekolah['nama_asal_sekolah'] ?? '-') ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">NPSN</span>
@@ -497,12 +497,12 @@
                             <span class="info-value"><?= esc($sekolah['status_sekolah'] ?? '-') ?></span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">Kabupaten/Kota</span>
-                            <span class="info-value"><?= esc($sekolah['kabupaten_kota_sekolah'] ?? '-') ?></span>
+                            <span class="info-label">Lokasi</span>
+                            <span class="info-value"><?= esc($sekolah['lokasi_sekolah'] ?? '-') ?></span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">Provinsi</span>
-                            <span class="info-value"><?= esc($sekolah['provinsi_sekolah'] ?? '-') ?></span>
+                            <span class="info-label">Asal Jenjang</span>
+                            <span class="info-value"><?= esc($sekolah['asal_jenjang'] ?? '-') ?></span>
                         </div>
                     </div>
                 <?php endif; ?>

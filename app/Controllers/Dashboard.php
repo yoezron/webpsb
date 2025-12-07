@@ -278,11 +278,7 @@ class Dashboard extends BaseController
 
         // Build query
         $builder = $this->pendaftarModel
-            ->select('pendaftar.*, alamat_pendaftar.alamat_jalan, alamat_pendaftar.desa_kelurahan,
-                      alamat_pendaftar.kecamatan, alamat_pendaftar.kabupaten_kota, alamat_pendaftar.provinsi,
-                      asal_sekolah.nama_sekolah, asal_sekolah.npsn,
-                      data_ayah.nama_ayah, data_ayah.no_hp_ayah,
-                      data_ibu.nama_ibu, data_ibu.no_hp_ibu')
+            ->select('pendaftar.*, alamat_pendaftar.alamat, alamat_pendaftar.desa, alamat_pendaftar.kecamatan, alamat_pendaftar.kabupaten, alamat_pendaftar.provinsi, asal_sekolah.nama_asal_sekolah, asal_sekolah.npsn, data_ayah.nama_ayah, data_ayah.hp_ayah, data_ibu.nama_ibu, data_ibu.hp_ibu')
             ->join('alamat_pendaftar', 'pendaftar.id_pendaftar = alamat_pendaftar.id_pendaftar', 'left')
             ->join('asal_sekolah', 'pendaftar.id_pendaftar = asal_sekolah.id_pendaftar', 'left')
             ->join('data_ayah', 'pendaftar.id_pendaftar = data_ayah.id_pendaftar', 'left')
@@ -356,17 +352,17 @@ class Dashboard extends BaseController
                 $row['tempat_lahir'] ?? '',
                 $row['tanggal_lahir'] ?? '',
                 $row['no_hp'] ?? '',
-                $row['alamat_jalan'] ?? '',
-                $row['desa_kelurahan'] ?? '',
+                $row['alamat'] ?? '',
+                $row['desa'] ?? '',
                 $row['kecamatan'] ?? '',
-                $row['kabupaten_kota'] ?? '',
+                $row['kabupaten'] ?? '',
                 $row['provinsi'] ?? '',
-                $row['nama_sekolah'] ?? '',
+                $row['nama_asal_sekolah'] ?? '',
                 $row['npsn'] ?? '',
                 $row['nama_ayah'] ?? '',
-                $row['no_hp_ayah'] ?? '',
+                $row['hp_ayah'] ?? '',
                 $row['nama_ibu'] ?? '',
-                $row['no_hp_ibu'] ?? '',
+                $row['hp_ibu'] ?? '',
                 $row['tanggal_daftar'] ?? '',
             ]);
         }
@@ -438,17 +434,17 @@ class Dashboard extends BaseController
                 <td>' . htmlspecialchars($row['tempat_lahir'] ?? '') . '</td>
                 <td class="center">' . htmlspecialchars($row['tanggal_lahir'] ?? '') . '</td>
                 <td>' . htmlspecialchars($row['no_hp'] ?? '') . '</td>
-                <td>' . htmlspecialchars($row['alamat_jalan'] ?? '') . '</td>
-                <td>' . htmlspecialchars($row['desa_kelurahan'] ?? '') . '</td>
+                <td>' . htmlspecialchars($row['alamat'] ?? '') . '</td>
+                <td>' . htmlspecialchars($row['desa'] ?? '') . '</td>
                 <td>' . htmlspecialchars($row['kecamatan'] ?? '') . '</td>
-                <td>' . htmlspecialchars($row['kabupaten_kota'] ?? '') . '</td>
+                <td>' . htmlspecialchars($row['kabupaten'] ?? '') . '</td>
                 <td>' . htmlspecialchars($row['provinsi'] ?? '') . '</td>
-                <td>' . htmlspecialchars($row['nama_sekolah'] ?? '') . '</td>
+                <td>' . htmlspecialchars($row['nama_asal_sekolah'] ?? '') . '</td>
                 <td>' . htmlspecialchars($row['npsn'] ?? '') . '</td>
                 <td>' . htmlspecialchars($row['nama_ayah'] ?? '') . '</td>
-                <td>' . htmlspecialchars($row['no_hp_ayah'] ?? '') . '</td>
+                <td>' . htmlspecialchars($row['hp_ayah'] ?? '') . '</td>
                 <td>' . htmlspecialchars($row['nama_ibu'] ?? '') . '</td>
-                <td>' . htmlspecialchars($row['no_hp_ibu'] ?? '') . '</td>
+                <td>' . htmlspecialchars($row['hp_ibu'] ?? '') . '</td>
                 <td class="center">' . htmlspecialchars($row['tanggal_daftar'] ?? '') . '</td>
             </tr>';
         }
