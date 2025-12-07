@@ -414,7 +414,7 @@
 
                 <!-- Actions -->
                 <div class="text-center mt-4 no-print">
-                    <a href="<?= base_url('pendaftaran/download-pdf/' . $pendaftar['nomor_pendaftaran']) ?>"
+                    <a href="<?= base_url('pendaftaran/download-kartu/' . $pendaftar['nomor_pendaftaran']) ?>"
                         class="btn btn-primary-custom" target="_blank">
                         <i class="icofont-download"></i> Download Kartu Pendaftaran
                     </a>
@@ -430,8 +430,8 @@
                 <div class="text-center mt-4" style="color: #666; font-size: 0.9rem;">
                     <p>Jika ada pertanyaan, silakan hubungi panitia PSB di:</p>
                     <p>
-                        <i class="icofont-phone"></i> 0812-3456-7890 |
-                        <i class="icofont-email"></i> psb@persis31.com
+                        <i class="icofont-phone"></i> 0813-2020-6395 |
+                        <i class="icofont-email"></i> pesantrenpersis31@gmail.com
                     </p>
                 </div>
             </div>
