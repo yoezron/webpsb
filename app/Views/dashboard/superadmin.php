@@ -432,7 +432,47 @@
 
     </div>
 
+    <!-- Include Components -->
+    <?php include APPPATH . 'Views/components/toast.php'; ?>
+    <?php include APPPATH . 'Views/components/loading.php'; ?>
+
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
+
+    <script>
+        // Enhanced UX for dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add loading state to export buttons
+            const exportButtons = document.querySelectorAll('a[href*="export"]');
+            exportButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    showLoading('Mengekspor data...');
+                    setTimeout(() => hideLoading(), 3000); // Hide after 3 seconds
+                });
+            });
+
+            // Add loading state to detail/download buttons
+            const actionButtons = document.querySelectorAll('.btn-primary, .btn-success');
+            actionButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    if (this.href && this.href.includes('download')) {
+                        showLoading('Mengunduh file...');
+                        setTimeout(() => hideLoading(), 2000);
+                    } else if (this.href && this.href.includes('detail')) {
+                        showLoading('Memuat detail...');
+                    }
+                });
+            });
+
+            // Accessibility: Add aria-labels
+            document.querySelectorAll('.btn').forEach(btn => {
+                if (!btn.getAttribute('aria-label') && btn.title) {
+                    btn.setAttribute('aria-label', btn.title);
+                }
+            });
+
+            console.log('Dashboard initialized successfully');
+        });
+    </script>
 </body>
 
 </html>
