@@ -230,6 +230,114 @@ class Dashboard extends BaseController
     }
 
     /**
+     * Export data to CSV
+     */
+    public function exportCsv()
+    {
+        // Get jalur from query parameter
+        $jalur = $this->request->getGet('jalur') ?? 'all';
+        $search = $this->request->getGet('search') ?? '';
+        $sortBy = $this->request->getGet('sort') ?? 'tanggal_daftar';
+        $sortDir = $this->request->getGet('dir') ?? 'DESC';
+
+        // Build query
+        $builder = $this->pendaftarModel
+            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan')
+            ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left');
+
+        // Filter by jalur if not 'all'
+        if ($jalur !== 'all') {
+            $builder->where('pendaftar.jalur_pendaftaran', $jalur);
+        }
+
+        // Apply search filter
+        if (!empty($search)) {
+            $builder->groupStart()
+                ->like('pendaftar.nama_lengkap', $search)
+                ->orLike('pendaftar.nisn', $search)
+                ->orLike('pendaftar.nik', $search)
+                ->orLike('pendaftar.tempat_lahir', $search)
+                ->orLike('alamat_pendaftar.kecamatan', $search)
+                ->groupEnd();
+        }
+
+        // Validate sort column
+        $allowedSorts = ['nama_lengkap', 'tanggal_daftar', 'jenis_kelamin', 'tempat_lahir', 'kecamatan', 'jalur_pendaftaran'];
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'tanggal_daftar';
+        }
+
+        // Validate sort direction
+        $sortDir = strtoupper($sortDir) === 'ASC' ? 'ASC' : 'DESC';
+
+        // Get all data (no pagination for export)
+        $data = $builder
+            ->orderBy('pendaftar.' . $sortBy, $sortDir)
+            ->findAll();
+
+        // Generate CSV filename
+        $filename = 'pendaftar_' . ($jalur !== 'all' ? $jalur . '_' : '') . date('Y-m-d_His') . '.csv';
+
+        // Set headers for CSV download
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Pragma: no-cache');
+        header('Expires: 0');
+
+        // Create output stream
+        $output = fopen('php://output', 'w');
+
+        // Add BOM for Excel UTF-8 compatibility
+        fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+
+        // CSV Headers
+        fputcsv($output, [
+            'No',
+            'Nomor Pendaftaran',
+            'NISN',
+            'NIK',
+            'Nama Lengkap',
+            'Jenis Kelamin',
+            'Tempat Lahir',
+            'Tanggal Lahir',
+            'Jalur Pendaftaran',
+            'Status Keluarga',
+            'Anak Ke',
+            'Jumlah Saudara',
+            'No HP',
+            'Desa/Kelurahan',
+            'Kecamatan',
+            'Tanggal Daftar'
+        ]);
+
+        // CSV Data
+        $no = 1;
+        foreach ($data as $row) {
+            fputcsv($output, [
+                $no++,
+                $row['nomor_pendaftaran'] ?? '-',
+                $row['nisn'] ?? '-',
+                $row['nik'] ?? '-',
+                $row['nama_lengkap'] ?? '-',
+                $row['jenis_kelamin'] === 'L' ? 'Laki-laki' : 'Perempuan',
+                $row['tempat_lahir'] ?? '-',
+                !empty($row['tanggal_lahir']) ? date('d/m/Y', strtotime($row['tanggal_lahir'])) : '-',
+                ucfirst($row['jalur_pendaftaran'] ?? '-'),
+                $row['status_keluarga'] ?? '-',
+                $row['anak_ke'] ?? '-',
+                $row['jumlah_saudara'] ?? '-',
+                $row['no_hp'] ?? '-',
+                $row['desa'] ?? '-',
+                $row['kecamatan'] ?? '-',
+                date('d/m/Y H:i', strtotime($row['tanggal_daftar']))
+            ]);
+        }
+
+        fclose($output);
+        exit;
+    }
+
+    /**
      * Helper: Get current user data from session
      */
     private function getUserData(): array

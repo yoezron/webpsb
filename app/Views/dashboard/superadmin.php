@@ -263,22 +263,41 @@
         <div class="row mt-4">
             <div class="col-12">
                 <div class="table-card">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                         <h5 class="mb-0">
                             <i class="icofont-clock-time me-2"></i> Semua Pendaftaran
                         </h5>
-                        <form method="get" class="d-flex gap-2">
-                            <input type="text" name="search" class="form-control" placeholder="Cari nama, NISN, NIK..."
-                                   value="<?= esc($search) ?>" style="width: 300px;">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="icofont-search me-1"></i> Cari
-                            </button>
-                            <?php if (!empty($search)): ?>
-                                <a href="<?= current_url() ?>" class="btn btn-secondary">
-                                    <i class="icofont-close me-1"></i> Reset
+                        <div class="d-flex gap-2 align-items-center flex-wrap">
+                            <form method="get" class="d-flex gap-2">
+                                <input type="text" name="search" class="form-control" placeholder="Cari nama, NISN, NIK..."
+                                       value="<?= esc($search) ?>" style="width: 300px;">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="icofont-search me-1"></i> Cari
+                                </button>
+                                <?php if (!empty($search)): ?>
+                                    <a href="<?= current_url() ?>" class="btn btn-secondary">
+                                        <i class="icofont-close me-1"></i> Reset
+                                    </a>
+                                <?php endif; ?>
+                            </form>
+                            <div class="btn-group">
+                                <a href="<?= base_url('dashboard/export-csv?jalur=all' . (!empty($search) ? '&search=' . urlencode($search) : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>"
+                                   class="btn btn-success">
+                                    <i class="icofont-file-excel me-1"></i> Export Semua
                                 </a>
-                            <?php endif; ?>
-                        </form>
+                                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
+                                    <span class="visually-hidden">Toggle Dropdown</span>
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-csv?jalur=tsanawiyyah' . (!empty($search) ? '&search=' . urlencode($search) : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                        <i class="icofont-file-excel me-1"></i> Export Tsanawiyyah
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-csv?jalur=muallimin' . (!empty($search) ? '&search=' . urlencode($search) : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                        <i class="icofont-file-excel me-1"></i> Export Muallimin
+                                    </a></li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover">

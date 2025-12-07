@@ -216,23 +216,29 @@
         <div class="row">
             <div class="col-12">
                 <div class="table-card">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                         <h5 class="mb-0">
                             <i class="icofont-users-alt-2 me-2"></i>
                             Daftar Pendaftar <?= esc($jalur) ?>
                         </h5>
-                        <form method="get" class="d-flex gap-2">
-                            <input type="text" name="search" class="form-control" placeholder="Cari nama, NISN, NIK..."
-                                   value="<?= esc($search) ?>" style="width: 300px;">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="icofont-search me-1"></i> Cari
-                            </button>
-                            <?php if (!empty($search)): ?>
-                                <a href="<?= current_url() ?>" class="btn btn-secondary">
-                                    <i class="icofont-close me-1"></i> Reset
-                                </a>
-                            <?php endif; ?>
-                        </form>
+                        <div class="d-flex gap-2 align-items-center flex-wrap">
+                            <form method="get" class="d-flex gap-2">
+                                <input type="text" name="search" class="form-control" placeholder="Cari nama, NISN, NIK..."
+                                       value="<?= esc($search) ?>" style="width: 300px;">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="icofont-search me-1"></i> Cari
+                                </button>
+                                <?php if (!empty($search)): ?>
+                                    <a href="<?= current_url() ?>" class="btn btn-secondary">
+                                        <i class="icofont-close me-1"></i> Reset
+                                    </a>
+                                <?php endif; ?>
+                            </form>
+                            <a href="<?= base_url('dashboard/export-csv?jalur=' . strtolower($jalur) . (!empty($search) ? '&search=' . urlencode($search) : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>"
+                               class="btn btn-success">
+                                <i class="icofont-file-excel me-1"></i> Export CSV
+                            </a>
+                        </div>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-hover">
