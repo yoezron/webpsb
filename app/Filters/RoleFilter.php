@@ -6,48 +6,74 @@ use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 
+/**
+ * RoleFilter - Role-Based Access Control Filter
+ *
+ * This filter checks if the authenticated user has the required role(s)
+ * to access a specific route. If not authorized, redirect to unauthorized page.
+ *
+ * Usage in Routes.php:
+ * $routes->get('/admin', 'Admin::index', ['filter' => 'role:superadmin']);
+ * $routes->get('/tsn', 'Dashboard::tsanawiyyah', ['filter' => 'role:superadmin,tsanawiyyah']);
+ */
 class RoleFilter implements FilterInterface
 {
     /**
-     * Check if user has required role
+     * Do whatever processing this filter needs to do.
      *
-     * Usage in routes:
-     * $routes->get('dashboard/tsanawiyyah', 'Dashboard::tsanawiyyah', ['filter' => 'role:tsanawiyyah,superadmin']);
+     * @param RequestInterface $request
+     * @param array|null       $arguments - Array of allowed roles
+     *
+     * @return RequestInterface|ResponseInterface|string|void
      */
     public function before(RequestInterface $request, $arguments = null)
     {
-        $session = session();
+        $session = \Config\Services::session();
 
-        // Check if logged in first
+        // First check if user is authenticated
         if (!$session->get('isLoggedIn')) {
-            return redirect()->to('/auth/login')->with('error', 'Silakan login terlebih dahulu.');
+            return redirect()->to('/login')
+                ->with('error', 'Anda harus login terlebih dahulu.');
         }
 
-        // If no role arguments specified, allow access
+        // Get user's role from session
+        $userRole = $session->get('role_panitia');
+
+        // If no role specified in filter arguments, allow access
         if (empty($arguments)) {
-            return $request;
+            return;
         }
 
-        $userRole = $session->get('role');
+        // Convert arguments to array if it's a string
+        $allowedRoles = is_array($arguments) ? $arguments : [$arguments];
 
         // Superadmin has access to everything
         if ($userRole === 'superadmin') {
-            return $request;
+            return;
         }
 
         // Check if user's role is in the allowed roles
-        if (!in_array($userRole, $arguments)) {
-            return redirect()->to('/dashboard')->with('error', 'Anda tidak memiliki akses ke halaman tersebut.');
-        }
+        if (!in_array($userRole, $allowedRoles)) {
+            // Log unauthorized access attempt
+            log_message('warning', 'Unauthorized access attempt by user: ' . $session->get('username') . ' (Role: ' . $userRole . ') to ' . current_url());
 
-        return $request;
+            // Redirect to unauthorized page
+            return redirect()->to('/unauthorized')
+                ->with('error', 'Anda tidak memiliki akses ke halaman ini. Role Anda: ' . ucfirst($userRole));
+        }
     }
 
     /**
-     * After filter - not used
+     * Allows After filters to inspect and modify the response
+     *
+     * @param RequestInterface  $request
+     * @param ResponseInterface $response
+     * @param array|null        $arguments
+     *
+     * @return ResponseInterface|void
      */
     public function after(RequestInterface $request, ResponseInterface $response, $arguments = null)
     {
-        // Do nothing
+        // Do something here if needed after the request is processed
     }
 }

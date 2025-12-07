@@ -41,10 +41,10 @@
         .stat-card {
             background: white;
             border-radius: 15px;
-            padding: 25px;
+            padding: 30px;
             box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
             transition: all 0.3s ease;
-            margin-bottom: 20px;
         }
 
         .stat-card:hover {
@@ -53,42 +53,30 @@
         }
 
         .stat-icon {
-            width: 70px;
-            height: 70px;
-            border-radius: 15px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2rem;
+            font-size: 3rem;
             color: white;
-            margin-bottom: 15px;
-        }
-
-        .stat-icon.green {
+            margin: 0 auto 20px;
             background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
         }
 
-        .stat-icon.yellow {
-            background: linear-gradient(135deg, var(--secondary-yellow), #e0b518);
-        }
-
-        .stat-icon.blue {
-            background: linear-gradient(135deg, #3498db, #2980b9);
-        }
-
         .stat-number {
-            font-size: 2.5rem;
+            font-size: 3.5rem;
             font-weight: 700;
-            color: #333;
+            color: var(--primary-green);
             margin: 0;
         }
 
         .stat-label {
             color: #666;
-            font-size: 0.95rem;
+            font-size: 1.1rem;
             font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            margin-top: 10px;
         }
 
         .table-card {
@@ -136,27 +124,6 @@
             color: #333;
         }
 
-        .user-info {
-            background: white;
-            padding: 15px;
-            border-radius: 10px;
-        }
-
-        .btn-logout {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .btn-logout:hover {
-            background: #c0392b;
-            color: white;
-        }
-
         .welcome-banner {
             background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
             color: white;
@@ -181,20 +148,26 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="<?= base_url('/dashboard') ?>">
+                        <a class="nav-link" href="<?= base_url('/dashboard') ?>">
                             <i class="icofont-home me-1"></i> Dashboard
                         </a>
                     </li>
+                    <?php if ($user['role_panitia'] === 'superadmin' || $user['role_panitia'] === 'tsanawiyyah'): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('/dashboard/tsanawiyyah') ?>">
+                        <a class="nav-link <?= $jalur === 'Tsanawiyyah' ? 'active' : '' ?>"
+                           href="<?= base_url('/dashboard/tsanawiyyah') ?>">
                             <i class="icofont-book-alt me-1"></i> Tsanawiyyah
                         </a>
                     </li>
+                    <?php endif; ?>
+                    <?php if ($user['role_panitia'] === 'superadmin' || $user['role_panitia'] === 'muallimin'): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= base_url('/dashboard/muallimin') ?>">
+                        <a class="nav-link <?= $jalur === 'Mu\'allimin' ? 'active' : '' ?>"
+                           href="<?= base_url('/dashboard/muallimin') ?>">
                             <i class="icofont-graduate-alt me-1"></i> Mu'allimin
                         </a>
                     </li>
+                    <?php endif; ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="icofont-user-alt-4 me-1"></i> <?= esc($user['nama_lengkap']) ?>
@@ -219,59 +192,43 @@
 
         <!-- Welcome Banner -->
         <div class="welcome-banner">
-            <h2><i class="icofont-crown me-2"></i> Selamat Datang, <?= esc($user['nama_lengkap']) ?>!</h2>
-            <p class="mb-0">Role: <strong>Superadmin</strong> - Anda memiliki akses penuh ke seluruh sistem</p>
+            <h2>
+                <i class="<?= $jalur === 'Tsanawiyyah' ? 'icofont-book-alt' : 'icofont-graduate-alt' ?> me-2"></i>
+                Dashboard <?= esc($jalur) ?>
+            </h2>
+            <p class="mb-0">Selamat datang, <strong><?= esc($user['nama_lengkap']) ?></strong> - Role: <?= ucfirst(esc($user['role_panitia'])) ?></p>
         </div>
 
-        <!-- Statistics Cards -->
+        <!-- Statistics Card -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="<?= $jalur === 'Tsanawiyyah' ? 'icofont-book-alt' : 'icofont-graduate-alt' ?>"></i>
+                    </div>
+                    <h3 class="stat-number"><?= esc($total_registrations) ?></h3>
+                    <p class="stat-label">Total Pendaftar <?= esc($jalur) ?></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Registrations Table -->
         <div class="row">
-            <!-- Total All -->
-            <div class="col-lg-4 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon blue">
-                        <i class="icofont-users-alt-2"></i>
-                    </div>
-                    <h3 class="stat-number"><?= esc($stats['total_all']) ?></h3>
-                    <p class="stat-label">Total Pendaftar</p>
-                </div>
-            </div>
-
-            <!-- Total Tsanawiyyah -->
-            <div class="col-lg-4 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon green">
-                        <i class="icofont-book-alt"></i>
-                    </div>
-                    <h3 class="stat-number"><?= esc($stats['total_tsn']) ?></h3>
-                    <p class="stat-label">Tsanawiyyah</p>
-                </div>
-            </div>
-
-            <!-- Total Muallimin -->
-            <div class="col-lg-4 col-md-6">
-                <div class="stat-card">
-                    <div class="stat-icon yellow">
-                        <i class="icofont-graduate-alt"></i>
-                    </div>
-                    <h3 class="stat-number"><?= esc($stats['total_mua']) ?></h3>
-                    <p class="stat-label">Mu'allimin</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Recent Registrations Table -->
-        <div class="row mt-4">
             <div class="col-12">
                 <div class="table-card">
-                    <h5><i class="icofont-clock-time me-2"></i> Pendaftaran Terbaru</h5>
+                    <h5>
+                        <i class="icofont-users-alt-2 me-2"></i>
+                        Daftar Pendaftar <?= esc($jalur) ?>
+                    </h5>
                     <div class="table-responsive">
                         <table class="table table-hover">
                             <thead>
                                 <tr>
                                     <th>No</th>
                                     <th>Nama Lengkap</th>
-                                    <th>Jalur</th>
                                     <th>Jenis Kelamin</th>
+                                    <th>Tempat Lahir</th>
+                                    <th>Tanggal Lahir</th>
                                     <th>Asal Sekolah</th>
                                     <th>Lokasi</th>
                                     <th>Tanggal Daftar</th>
@@ -279,20 +236,20 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php if (!empty($recent_registrations)): ?>
-                                    <?php foreach ($recent_registrations as $index => $reg): ?>
+                                <?php if (!empty($registrations)): ?>
+                                    <?php foreach ($registrations as $index => $reg): ?>
                                         <tr>
                                             <td><?= $index + 1 ?></td>
                                             <td><strong><?= esc($reg['nama_lengkap']) ?></strong></td>
                                             <td>
-                                                <span class="badge-custom <?= $reg['jalur_pendaftaran'] === 'tsanawiyyah' ? 'badge-tsn' : 'badge-mua' ?>">
-                                                    <?= ucfirst(esc($reg['jalur_pendaftaran'])) ?>
-                                                </span>
+                                                <i class="<?= $reg['jenis_kelamin'] === 'L' ? 'icofont-boy' : 'icofont-girl' ?> me-1"></i>
+                                                <?= esc($reg['jenis_kelamin']) === 'L' ? 'Laki-laki' : 'Perempuan' ?>
                                             </td>
-                                            <td><?= esc($reg['jenis_kelamin']) === 'L' ? 'Laki-laki' : 'Perempuan' ?></td>
+                                            <td><?= esc($reg['tempat_lahir'] ?? '-') ?></td>
+                                            <td><?= !empty($reg['tanggal_lahir']) ? date('d/m/Y', strtotime($reg['tanggal_lahir'])) : '-' ?></td>
                                             <td><?= esc($reg['asal_sekolah'] ?? '-') ?></td>
                                             <td><?= esc($reg['kecamatan'] ?? '-') ?></td>
-                                            <td><?= date('d/m/Y H:i', strtotime($reg['created_at'])) ?></td>
+                                            <td><?= date('d/m/Y', strtotime($reg['created_at'])) ?></td>
                                             <td>
                                                 <a href="<?= base_url('pendaftaran/download-kartu/' . $reg['id_pendaftar']) ?>"
                                                    class="btn btn-sm btn-success" title="Download Kartu">
@@ -303,8 +260,8 @@
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="8" class="text-center py-4">
-                                            <i class="icofont-info-circle me-2"></i> Belum ada pendaftaran
+                                        <td colspan="9" class="text-center py-4">
+                                            <i class="icofont-info-circle me-2"></i> Belum ada pendaftar untuk jalur <?= esc($jalur) ?>
                                         </td>
                                     </tr>
                                 <?php endif; ?>

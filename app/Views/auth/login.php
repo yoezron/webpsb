@@ -5,214 +5,223 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-
     <title><?= esc($title) ?></title>
 
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="<?= base_url('assets/images/logo/favicon.ico') ?>">
-    <link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/images/logo/favicon-16x16.png') ?>">
     <link rel="icon" type="image/png" sizes="32x32" href="<?= base_url('assets/images/logo/favicon-32x32.png') ?>">
 
-    <!-- Hafsa Template CSS -->
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/all.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/icofont.min.css') ?>">
-    <link rel="stylesheet" href="<?= base_url('assets/css/animate.css') ?>">
-    <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>">
 
     <style>
         :root {
             --primary-green: #1AB34A;
             --secondary-yellow: #F3C623;
             --dark-green: #158a3a;
-            --light-green: #e8f5e9;
-            --danger-red: #dc3545;
+            --light-yellow: #f5d565;
         }
 
         body {
+            background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, rgba(26, 179, 74, 0.95) 0%, rgba(21, 138, 58, 0.95) 100%),
-                url('<?= base_url('assets/images/banner/01.png') ?>') center/cover;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 20px;
         }
 
         .login-container {
-            width: 100%;
             max-width: 450px;
+            width: 100%;
         }
 
         .login-card {
             background: white;
             border-radius: 20px;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
             overflow: hidden;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .login-header {
             background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
             padding: 40px 30px;
             text-align: center;
+            color: white;
         }
 
         .login-logo {
             width: 100px;
             height: auto;
-            margin-bottom: 15px;
-            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.3));
+            margin-bottom: 20px;
+            filter: drop-shadow(0 5px 10px rgba(0, 0, 0, 0.2));
         }
 
-        .login-title {
-            color: white;
-            font-size: 1.5rem;
+        .login-header h2 {
+            font-size: 1.8rem;
             font-weight: 700;
-            margin: 0;
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            margin-bottom: 5px;
         }
 
-        .login-subtitle {
-            color: var(--secondary-yellow);
-            font-size: 0.9rem;
-            margin-top: 5px;
+        .login-header p {
+            font-size: 0.95rem;
+            opacity: 0.95;
+            margin: 0;
         }
 
         .login-body {
             padding: 40px 30px;
         }
 
-        .form-group {
-            margin-bottom: 25px;
-        }
-
         .form-label {
             font-weight: 600;
             color: #333;
             margin-bottom: 8px;
-            display: block;
+            font-size: 0.9rem;
         }
 
         .form-control {
             border: 2px solid #e0e0e0;
             border-radius: 10px;
             padding: 12px 15px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
         }
 
         .form-control:focus {
             border-color: var(--primary-green);
-            box-shadow: 0 0 0 3px rgba(26, 179, 74, 0.1);
+            box-shadow: 0 0 0 0.2rem rgba(26, 179, 74, 0.15);
         }
 
-        .input-group {
-            position: relative;
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-            z-index: 10;
+        .input-group-text {
+            background: transparent;
+            border: 2px solid #e0e0e0;
+            border-right: none;
+            border-radius: 10px 0 0 10px;
+            color: #666;
         }
 
         .input-group .form-control {
-            padding-left: 45px;
+            border-left: none;
+            border-radius: 0 10px 10px 0;
+        }
+
+        .input-group:focus-within .input-group-text {
+            border-color: var(--primary-green);
+            color: var(--primary-green);
         }
 
         .btn-login {
             background: linear-gradient(135deg, var(--primary-green) 0%, var(--dark-green) 100%);
             border: none;
             color: white;
-            padding: 14px 30px;
-            font-size: 1.1rem;
+            padding: 14px;
+            font-size: 1rem;
             font-weight: 600;
             border-radius: 10px;
-            width: 100%;
             transition: all 0.3s ease;
+            width: 100%;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(26, 179, 74, 0.4);
+            box-shadow: 0 8px 20px rgba(26, 179, 74, 0.3);
             background: linear-gradient(135deg, var(--dark-green) 0%, var(--primary-green) 100%);
         }
 
-        .btn-login:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
+        .btn-login:active {
+            transform: translateY(0);
         }
 
         .alert {
             border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 25px;
             border: none;
-        }
-
-        .alert-danger {
-            background-color: #fef2f2;
-            color: #dc2626;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
         }
 
         .alert-success {
-            background-color: #f0fdf4;
-            color: #16a34a;
+            background-color: #d4edda;
+            color: #155724;
         }
 
-        .back-link {
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .form-check-input:checked {
+            background-color: var(--primary-green);
+            border-color: var(--primary-green);
+        }
+
+        .form-check-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .back-home {
             text-align: center;
             margin-top: 25px;
+            padding-top: 25px;
+            border-top: 1px solid #e0e0e0;
         }
 
-        .back-link a {
-            color: #666;
+        .back-home a {
+            color: var(--primary-green);
             text-decoration: none;
+            font-weight: 600;
             font-size: 0.9rem;
             transition: color 0.3s ease;
         }
 
-        .back-link a:hover {
-            color: var(--primary-green);
+        .back-home a:hover {
+            color: var(--dark-green);
         }
 
-        .password-toggle {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            color: #999;
-            cursor: pointer;
-            z-index: 10;
+        .is-invalid {
+            border-color: #dc3545;
         }
 
-        .password-toggle:hover {
-            color: var(--primary-green);
+        .invalid-feedback {
+            font-size: 0.85rem;
+            margin-top: 5px;
         }
 
+        /* Responsive */
         @media (max-width: 576px) {
-            .login-header {
-                padding: 30px 20px;
-            }
-
             .login-body {
                 padding: 30px 20px;
             }
 
-            .login-logo {
-                width: 80px;
+            .login-header {
+                padding: 30px 20px;
             }
 
-            .login-title {
-                font-size: 1.3rem;
+            .login-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .login-logo {
+                width: 80px;
             }
         }
     </style>
@@ -220,110 +229,124 @@
 
 <body>
 
-    <div class="login-container animate__animated animate__fadeIn">
+    <div class="login-container">
         <div class="login-card">
-            <!-- Header -->
+            <!-- Login Header -->
             <div class="login-header">
-                <img src="<?= base_url('assets/images/logo/01.png') ?>" alt="Logo" class="login-logo">
-                <h1 class="login-title">Login Panitia PSB</h1>
-                <p class="login-subtitle">Pesantren Persatuan Islam 31 Banjaran</p>
+                <img src="<?= base_url('assets/images/logo/01.png') ?>" alt="Logo Persis 31" class="login-logo">
+                <h2>Login Panitia PSB</h2>
+                <p>Pesantren Persatuan Islam 31 Banjaran</p>
             </div>
 
-            <!-- Body -->
+            <!-- Login Body -->
             <div class="login-body">
-                <?php if (!empty($error)): ?>
-                    <div class="alert alert-danger animate__animated animate__shakeX">
-                        <i class="icofont-warning-alt"></i> <?= $error ?>
+
+                <!-- Success Message -->
+                <?php if (session()->getFlashdata('success')): ?>
+                    <div class="alert alert-success">
+                        <i class="icofont-check-circled me-2"></i>
+                        <?= session()->getFlashdata('success') ?>
                     </div>
                 <?php endif; ?>
 
-                <?php if (!empty($success)): ?>
-                    <div class="alert alert-success animate__animated animate__fadeIn">
-                        <i class="icofont-check-circled"></i> <?= esc($success) ?>
+                <!-- Error Message -->
+                <?php if (session()->getFlashdata('error')): ?>
+                    <div class="alert alert-danger">
+                        <i class="icofont-warning me-2"></i>
+                        <?= session()->getFlashdata('error') ?>
                     </div>
                 <?php endif; ?>
 
-                <form action="<?= base_url('auth/login') ?>" method="POST" id="loginForm">
+                <!-- Login Form -->
+                <form action="<?= base_url('login') ?>" method="POST">
                     <?= csrf_field() ?>
 
                     <!-- Username -->
-                    <div class="form-group">
-                        <label for="username" class="form-label">Username</label>
+                    <div class="mb-3">
+                        <label for="username" class="form-label">
+                            <i class="icofont-user me-1"></i> Username
+                        </label>
                         <div class="input-group">
-                            <span class="input-icon"><i class="icofont-user"></i></span>
-                            <input type="text"
-                                   class="form-control"
-                                   id="username"
-                                   name="username"
-                                   placeholder="Masukkan username"
-                                   value="<?= old('username') ?>"
-                                   required
-                                   autocomplete="username">
+                            <span class="input-group-text">
+                                <i class="icofont-user-alt-4"></i>
+                            </span>
+                            <input
+                                type="text"
+                                class="form-control <?= isset($validation) && $validation->hasError('username') ? 'is-invalid' : '' ?>"
+                                id="username"
+                                name="username"
+                                placeholder="Masukkan username"
+                                value="<?= old('username') ?>"
+                                autofocus
+                                required>
+                            <?php if (isset($validation) && $validation->hasError('username')): ?>
+                                <div class="invalid-feedback">
+                                    <?= $validation->getError('username') ?>
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
 
                     <!-- Password -->
-                    <div class="form-group">
-                        <label for="password" class="form-label">Password</label>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">
+                            <i class="icofont-lock me-1"></i> Password
+                        </label>
                         <div class="input-group">
-                            <span class="input-icon"><i class="icofont-lock"></i></span>
-                            <input type="password"
-                                   class="form-control"
-                                   id="password"
-                                   name="password"
-                                   placeholder="Masukkan password"
-                                   required
-                                   autocomplete="current-password">
-                            <button type="button" class="password-toggle" onclick="togglePassword()">
-                                <i class="icofont-eye" id="toggleIcon"></i>
-                            </button>
+                            <span class="input-group-text">
+                                <i class="icofont-key"></i>
+                            </span>
+                            <input
+                                type="password"
+                                class="form-control <?= isset($validation) && $validation->hasError('password') ? 'is-invalid' : '' ?>"
+                                id="password"
+                                name="password"
+                                placeholder="Masukkan password"
+                                required>
+                            <?php if (isset($validation) && $validation->hasError('password')): ?>
+                                <div class="invalid-feedback">
+                                    <?= $validation->getError('password') ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+
+                    <!-- Remember Me -->
+                    <div class="mb-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="remember" name="remember" value="1">
+                            <label class="form-check-label" for="remember">
+                                Ingat saya
+                            </label>
                         </div>
                     </div>
 
                     <!-- Submit Button -->
-                    <button type="submit" class="btn btn-login" id="btnLogin">
-                        <i class="icofont-login"></i> Masuk
+                    <button type="submit" class="btn btn-login">
+                        <i class="icofont-sign-in me-2"></i> Login
                     </button>
+
+                    <!-- Back to Home -->
+                    <div class="back-home">
+                        <a href="<?= base_url('/') ?>">
+                            <i class="icofont-rounded-left me-1"></i> Kembali ke Beranda
+                        </a>
+                    </div>
                 </form>
 
-                <!-- Back Link -->
-                <div class="back-link">
-                    <a href="<?= base_url('/') ?>">
-                        <i class="icofont-arrow-left"></i> Kembali ke Halaman Utama
-                    </a>
-                </div>
             </div>
+        </div>
+
+        <!-- Footer Info -->
+        <div class="text-center mt-4" style="color: white;">
+            <small>
+                &copy; <?= date('Y') ?> Pesantren Persatuan Islam 31 Banjaran
+            </small>
         </div>
     </div>
 
-    <!-- Scripts -->
-    <script src="<?= base_url('assets/js/jquery.js') ?>"></script>
+    <!-- Bootstrap JS -->
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
-
-    <script>
-        // Toggle password visibility
-        function togglePassword() {
-            const passwordInput = document.getElementById('password');
-            const toggleIcon = document.getElementById('toggleIcon');
-
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('icofont-eye');
-                toggleIcon.classList.add('icofont-eye-blocked');
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('icofont-eye-blocked');
-                toggleIcon.classList.add('icofont-eye');
-            }
-        }
-
-        // Form submit loading state
-        document.getElementById('loginForm').addEventListener('submit', function() {
-            const btn = document.getElementById('btnLogin');
-            btn.innerHTML = '<i class="icofont-spinner-alt-1 icofont-spin"></i> Memproses...';
-            btn.disabled = true;
-        });
-    </script>
 
 </body>
 
