@@ -800,12 +800,30 @@ class Dashboard extends BaseController
         $dataSheet = $spreadsheet->createSheet();
         $dataSheet->setTitle('Data Pendaftar');
 
-        // Headers for data sheet
+        // Comprehensive Headers - All fields from 7 tables
         $headers = [
-            'No', 'Nomor Pendaftaran', 'NISN', 'NIK', 'Nama Lengkap',
-            'Jenis Kelamin', 'Tempat Lahir', 'Tanggal Lahir', 'Jalur Pendaftaran',
-            'Status Keluarga', 'Anak Ke', 'Jumlah Saudara', 'No HP',
-            'Desa/Kelurahan', 'Kecamatan', 'Tanggal Daftar'
+            // Pendaftar Data
+            'No', 'Nomor Pendaftaran', 'NISN', 'NIK', 'Nama Lengkap', 'Jenis Kelamin',
+            'Tempat Lahir', 'Tanggal Lahir', 'Jalur Pendaftaran', 'Status Keluarga',
+            'Anak Ke', 'Jumlah Saudara', 'No HP', 'Tanggal Daftar',
+            // Alamat Data
+            'Nomor KK', 'Jenis Tempat Tinggal', 'Alamat Lengkap', 'Desa/Kelurahan',
+            'Kecamatan', 'Kabupaten', 'Provinsi', 'Kode Pos', 'Jarak ke Sekolah (KM)',
+            'Waktu Tempuh', 'Transportasi', 'Email', 'Media Sosial',
+            // Data Ayah
+            'Nama Ayah', 'NIK Ayah', 'Pendidikan Ayah', 'Pekerjaan Ayah',
+            'Penghasilan Ayah', 'No HP Ayah', 'Status Ayah',
+            // Data Ibu
+            'Nama Ibu', 'NIK Ibu', 'Pendidikan Ibu', 'Pekerjaan Ibu',
+            'Penghasilan Ibu', 'No HP Ibu', 'Status Ibu',
+            // Data Wali
+            'Nama Wali', 'NIK Wali', 'Pendidikan Wali', 'Pekerjaan Wali',
+            'Penghasilan Wali', 'No HP Wali',
+            // Bansos
+            'No. KKS', 'No. PKH', 'No. KIP',
+            // Asal Sekolah
+            'NPSN', 'Nama Asal Sekolah', 'Jenjang Sekolah', 'Status Sekolah',
+            'Lokasi Sekolah', 'Asal Jenjang'
         ];
 
         $col = 'A';
@@ -814,8 +832,8 @@ class Dashboard extends BaseController
             $col++;
         }
 
-        // Style header row
-        $dataSheet->getStyle('A1:P1')->applyFromArray([
+        // Style header row (56 columns = A to BD)
+        $dataSheet->getStyle('A1:BD1')->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
@@ -827,30 +845,82 @@ class Dashboard extends BaseController
             ]
         ]);
 
-        // Data rows
+        // Comprehensive Data rows - All fields from 7 tables
         $rowNum = 2;
         $no = 1;
         foreach ($data as $row) {
-            $dataSheet->setCellValue('A' . $rowNum, $no++);
-            $dataSheet->setCellValue('B' . $rowNum, $row['nomor_pendaftaran'] ?? '-');
-            $dataSheet->setCellValue('C' . $rowNum, $row['nisn'] ?? '-');
-            $dataSheet->setCellValue('D' . $rowNum, $row['nik'] ?? '-');
-            $dataSheet->setCellValue('E' . $rowNum, $row['nama_lengkap'] ?? '-');
-            $dataSheet->setCellValue('F' . $rowNum, $row['jenis_kelamin'] === 'L' ? 'Laki-laki' : 'Perempuan');
-            $dataSheet->setCellValue('G' . $rowNum, $row['tempat_lahir'] ?? '-');
-            $dataSheet->setCellValue('H' . $rowNum, !empty($row['tanggal_lahir']) ? date('d/m/Y', strtotime($row['tanggal_lahir'])) : '-');
-            $dataSheet->setCellValue('I' . $rowNum, ucfirst($row['jalur_pendaftaran'] ?? '-'));
-            $dataSheet->setCellValue('J' . $rowNum, $row['status_keluarga'] ?? '-');
-            $dataSheet->setCellValue('K' . $rowNum, $row['anak_ke'] ?? '-');
-            $dataSheet->setCellValue('L' . $rowNum, $row['jumlah_saudara'] ?? '-');
-            $dataSheet->setCellValue('M' . $rowNum, $row['no_hp'] ?? '-');
-            $dataSheet->setCellValue('N' . $rowNum, $row['desa'] ?? '-');
-            $dataSheet->setCellValue('O' . $rowNum, $row['kecamatan'] ?? '-');
-            $dataSheet->setCellValue('P' . $rowNum, date('d/m/Y H:i', strtotime($row['tanggal_daftar'])));
+            $rowData = [
+                // Pendaftar Data
+                $no++,
+                $row['nomor_pendaftaran'] ?? '-',
+                $row['nisn'] ?? '-',
+                $row['nik'] ?? '-',
+                $row['nama_lengkap'] ?? '-',
+                ($row['jenis_kelamin'] ?? '') === 'L' ? 'Laki-laki' : 'Perempuan',
+                $row['tempat_lahir'] ?? '-',
+                !empty($row['tanggal_lahir']) ? date('d/m/Y', strtotime($row['tanggal_lahir'])) : '-',
+                ucfirst($row['jalur_pendaftaran'] ?? '-'),
+                $row['status_keluarga'] ?? '-',
+                $row['anak_ke'] ?? '-',
+                $row['jumlah_saudara'] ?? '-',
+                $row['no_hp'] ?? '-',
+                !empty($row['tanggal_daftar']) ? date('d/m/Y H:i', strtotime($row['tanggal_daftar'])) : '-',
+                // Alamat Data
+                $row['nomor_kk'] ?? '-',
+                $row['jenis_tempat_tinggal'] ?? '-',
+                $row['alamat'] ?? '-',
+                $row['desa'] ?? '-',
+                $row['kecamatan'] ?? '-',
+                $row['kabupaten'] ?? '-',
+                $row['provinsi'] ?? '-',
+                $row['kode_pos'] ?? '-',
+                $row['jarak_ke_sekolah'] ?? '-',
+                $row['waktu_tempuh'] ?? '-',
+                $row['transportasi'] ?? '-',
+                $row['email'] ?? '-',
+                $row['media_sosial'] ?? '-',
+                // Data Ayah
+                $row['nama_ayah'] ?? '-',
+                $row['nik_ayah'] ?? '-',
+                $row['pendidikan_ayah'] ?? '-',
+                $row['pekerjaan_ayah'] ?? '-',
+                $row['penghasilan_ayah'] ?? '-',
+                $row['hp_ayah'] ?? '-',
+                $row['status_ayah'] ?? '-',
+                // Data Ibu
+                $row['nama_ibu'] ?? '-',
+                $row['nik_ibu'] ?? '-',
+                $row['pendidikan_ibu'] ?? '-',
+                $row['pekerjaan_ibu'] ?? '-',
+                $row['penghasilan_ibu'] ?? '-',
+                $row['hp_ibu'] ?? '-',
+                $row['status_ibu'] ?? '-',
+                // Data Wali
+                $row['nama_wali'] ?? '-',
+                $row['nik_wali'] ?? '-',
+                $row['pendidikan_wali'] ?? '-',
+                $row['pekerjaan_wali'] ?? '-',
+                $row['penghasilan_wali'] ?? '-',
+                $row['hp_wali'] ?? '-',
+                // Bansos
+                $row['no_kks'] ?? '-',
+                $row['no_pkh'] ?? '-',
+                $row['no_kip'] ?? '-',
+                // Asal Sekolah
+                $row['npsn'] ?? '-',
+                $row['nama_asal_sekolah'] ?? '-',
+                $row['jenjang_sekolah'] ?? '-',
+                $row['status_sekolah'] ?? '-',
+                $row['lokasi_sekolah'] ?? '-',
+                $row['asal_jenjang'] ?? '-'
+            ];
+
+            // Write row data
+            $dataSheet->fromArray($rowData, null, 'A' . $rowNum);
 
             // Zebra striping
             if ($rowNum % 2 == 0) {
-                $dataSheet->getStyle('A' . $rowNum . ':P' . $rowNum)->applyFromArray([
+                $dataSheet->getStyle('A' . $rowNum . ':BD' . $rowNum)->applyFromArray([
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
                         'startColor' => ['rgb' => 'F8F9FA']
@@ -862,15 +932,21 @@ class Dashboard extends BaseController
         }
 
         // Apply borders to all data
-        $dataSheet->getStyle('A1:P' . ($rowNum - 1))->applyFromArray([
+        $dataSheet->getStyle('A1:BD' . ($rowNum - 1))->applyFromArray([
             'borders' => [
                 'allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'CCCCCC']]
             ]
         ]);
 
-        // Auto-width for all columns
-        foreach (range('A', 'P') as $col) {
+        // Auto-width for all columns (A to BD = 56 columns)
+        foreach (range('A', 'Z') as $col) {
             $dataSheet->getColumnDimension($col)->setAutoSize(true);
+        }
+        foreach (range('A', 'D') as $col) {
+            $dataSheet->getColumnDimension('A' . $col)->setAutoSize(true);
+        }
+        foreach (range('A', 'D') as $col) {
+            $dataSheet->getColumnDimension('B' . $col)->setAutoSize(true);
         }
 
         // Freeze header row
