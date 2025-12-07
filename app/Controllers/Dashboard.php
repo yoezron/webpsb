@@ -3,6 +3,12 @@
 namespace App\Controllers;
 
 use App\Models\PendaftarModel;
+use App\Models\AlamatModel;
+use App\Models\AyahModel;
+use App\Models\IbuModel;
+use App\Models\WaliModel;
+use App\Models\BansosModel;
+use App\Models\SekolahModel;
 
 class Dashboard extends BaseController
 {
@@ -227,6 +233,49 @@ class Dashboard extends BaseController
         ];
 
         return view('dashboard/jalur_dashboard', $data);
+    }
+
+    /**
+     * Detail Pendaftar - Show all data from 7 tables
+     */
+    public function detail($id)
+    {
+        // Load models
+        $alamatModel = new AlamatModel();
+        $ayahModel = new AyahModel();
+        $ibuModel = new IbuModel();
+        $waliModel = new WaliModel();
+        $bansosModel = new BansosModel();
+        $sekolahModel = new SekolahModel();
+
+        // Get data from all tables
+        $pendaftar = $this->pendaftarModel->find($id);
+
+        if (!$pendaftar) {
+            return redirect()->to('/dashboard')->with('error', 'Data pendaftar tidak ditemukan');
+        }
+
+        // Get related data
+        $alamat = $alamatModel->where('id_pendaftar', $id)->first();
+        $ayah = $ayahModel->where('id_pendaftar', $id)->first();
+        $ibu = $ibuModel->where('id_pendaftar', $id)->first();
+        $wali = $waliModel->where('id_pendaftar', $id)->first();
+        $bansos = $bansosModel->where('id_pendaftar', $id)->first();
+        $sekolah = $sekolahModel->where('id_pendaftar', $id)->first();
+
+        $data = [
+            'title' => 'Detail Pendaftar - ' . $pendaftar['nama_lengkap'],
+            'user' => $this->getUserData(),
+            'pendaftar' => $pendaftar,
+            'alamat' => $alamat,
+            'ayah' => $ayah,
+            'ibu' => $ibu,
+            'wali' => $wali,
+            'bansos' => $bansos,
+            'sekolah' => $sekolah
+        ];
+
+        return view('dashboard/detail', $data);
     }
 
     /**

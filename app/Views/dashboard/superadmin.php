@@ -372,6 +372,10 @@
                                             <td><?= esc($reg['kecamatan'] ?? '-') ?></td>
                                             <td><?= date('d/m/Y H:i', strtotime($reg['tanggal_daftar'])) ?></td>
                                             <td>
+                                                <a href="<?= base_url('dashboard/detail/' . $reg['id_pendaftar']) ?>"
+                                                   class="btn btn-sm btn-primary me-1" title="Lihat Detail">
+                                                    <i class="icofont-eye"></i>
+                                                </a>
                                                 <a href="<?= base_url('pendaftaran/download-kartu/' . $reg['id_pendaftar']) ?>"
                                                    class="btn btn-sm btn-success" title="Download Kartu">
                                                     <i class="icofont-download"></i>
