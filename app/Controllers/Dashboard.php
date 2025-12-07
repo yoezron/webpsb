@@ -61,29 +61,44 @@ class Dashboard extends BaseController
         $perPage = 20;
 
         // Get statistics for both programs (with date filter if applicable)
-        $tsnBuilder = $this->pendaftarModel->where('jalur_pendaftaran', 'tsanawiyyah');
-        $muaBuilder = $this->pendaftarModel->where('jalur_pendaftaran', 'muallimin');
-        $allBuilder = $this->pendaftarModel;
+        // Use separate builders to avoid query mixing
+        $db = \Config\Database::connect();
 
+        // Tsanawiyyah count
+        $tsnBuilder = $db->table('pendaftar')->where('jalur_pendaftaran', 'tsanawiyyah');
         if (!empty($startDate)) {
             $tsnBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
-            $muaBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
-            $allBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
         }
         if (!empty($endDate)) {
             $tsnBuilder->where('tanggal_daftar <=', $endDate . ' 23:59:59');
+        }
+        $totalTsn = $tsnBuilder->countAllResults();
+
+        // Muallimin count
+        $muaBuilder = $db->table('pendaftar')->where('jalur_pendaftaran', 'muallimin');
+        if (!empty($startDate)) {
+            $muaBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
+        }
+        if (!empty($endDate)) {
             $muaBuilder->where('tanggal_daftar <=', $endDate . ' 23:59:59');
+        }
+        $totalMua = $muaBuilder->countAllResults();
+
+        // All count
+        $allBuilder = $db->table('pendaftar');
+        if (!empty($startDate)) {
+            $allBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
+        }
+        if (!empty($endDate)) {
             $allBuilder->where('tanggal_daftar <=', $endDate . ' 23:59:59');
         }
-
-        $totalTsn = $tsnBuilder->countAllResults();
-        $totalMua = $muaBuilder->countAllResults();
         $totalAll = $allBuilder->countAllResults();
 
         // Build query for registrations
         $builder = $this->pendaftarModel
-            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan')
-            ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left');
+            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan, asal_sekolah.nama_sekolah')
+            ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
+            ->join('asal_sekolah', 'asal_sekolah.id_pendaftar = pendaftar.id_pendaftar', 'left');
 
         // Apply search filter
         if (!empty($search)) {
@@ -121,6 +136,78 @@ class Dashboard extends BaseController
         // Get pager
         $pager = $this->pendaftarModel->pager;
 
+        // Additional statistics
+        // Gender statistics
+        $maleCount = $db->table('pendaftar')->where('jenis_kelamin', 'L')->countAllResults();
+        $femaleCount = $db->table('pendaftar')->where('jenis_kelamin', 'P')->countAllResults();
+
+        // Registration time statistics
+        $today = date('Y-m-d');
+        $weekStart = date('Y-m-d', strtotime('monday this week'));
+        $monthStart = date('Y-m-01');
+
+        $todayCount = $db->table('pendaftar')
+            ->where('DATE(tanggal_daftar)', $today)
+            ->countAllResults();
+        $weekCount = $db->table('pendaftar')
+            ->where('tanggal_daftar >=', $weekStart . ' 00:00:00')
+            ->countAllResults();
+        $monthCount = $db->table('pendaftar')
+            ->where('tanggal_daftar >=', $monthStart . ' 00:00:00')
+            ->countAllResults();
+
+        // Parent income statistics (from data_ayah table)
+        $incomeRanges = [
+            'below_1m' => 0,
+            '1m_3m' => 0,
+            '3m_5m' => 0,
+            'above_5m' => 0
+        ];
+
+        $incomeData = $db->table('data_ayah')
+            ->select('penghasilan')
+            ->get()
+            ->getResultArray();
+
+        foreach ($incomeData as $row) {
+            $income = (int)$row['penghasilan'];
+            if ($income < 1000000) {
+                $incomeRanges['below_1m']++;
+            } elseif ($income >= 1000000 && $income < 3000000) {
+                $incomeRanges['1m_3m']++;
+            } elseif ($income >= 3000000 && $income < 5000000) {
+                $incomeRanges['3m_5m']++;
+            } else {
+                $incomeRanges['above_5m']++;
+            }
+        }
+
+        // Distance statistics (from alamat_pendaftar table)
+        $distanceRanges = [
+            'below_5km' => 0,
+            '5km_10km' => 0,
+            '10km_20km' => 0,
+            'above_20km' => 0
+        ];
+
+        $distanceData = $db->table('alamat_pendaftar')
+            ->select('jarak_ke_sekolah')
+            ->get()
+            ->getResultArray();
+
+        foreach ($distanceData as $row) {
+            $distance = (float)$row['jarak_ke_sekolah'];
+            if ($distance < 5) {
+                $distanceRanges['below_5km']++;
+            } elseif ($distance >= 5 && $distance < 10) {
+                $distanceRanges['5km_10km']++;
+            } elseif ($distance >= 10 && $distance < 20) {
+                $distanceRanges['10km_20km']++;
+            } else {
+                $distanceRanges['above_20km']++;
+            }
+        }
+
         $data = [
             'title' => 'Dashboard Superadmin',
             'user' => $this->getUserData(),
@@ -128,6 +215,13 @@ class Dashboard extends BaseController
                 'total_all' => $totalAll,
                 'total_tsn' => $totalTsn,
                 'total_mua' => $totalMua,
+                'male' => $maleCount,
+                'female' => $femaleCount,
+                'today' => $todayCount,
+                'this_week' => $weekCount,
+                'this_month' => $monthCount,
+                'income_ranges' => $incomeRanges,
+                'distance_ranges' => $distanceRanges,
             ],
             'recent_registrations' => $recentRegistrations,
             'pager' => $pager,
@@ -155,7 +249,8 @@ class Dashboard extends BaseController
         $perPage = 20;
 
         // Get total for statistics (with date filter)
-        $totalBuilder = $this->pendaftarModel->where('jalur_pendaftaran', 'tsanawiyyah');
+        $db = \Config\Database::connect();
+        $totalBuilder = $db->table('pendaftar')->where('jalur_pendaftaran', 'tsanawiyyah');
         if (!empty($startDate)) {
             $totalBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
         }
@@ -166,8 +261,9 @@ class Dashboard extends BaseController
 
         // Build query
         $builder = $this->pendaftarModel
-            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan')
+            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan, asal_sekolah.nama_sekolah')
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
+            ->join('asal_sekolah', 'asal_sekolah.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->where('pendaftar.jalur_pendaftaran', 'tsanawiyyah');
 
         // Apply search filter
@@ -237,7 +333,8 @@ class Dashboard extends BaseController
         $perPage = 20;
 
         // Get total for statistics (with date filter)
-        $totalBuilder = $this->pendaftarModel->where('jalur_pendaftaran', 'muallimin');
+        $db = \Config\Database::connect();
+        $totalBuilder = $db->table('pendaftar')->where('jalur_pendaftaran', 'muallimin');
         if (!empty($startDate)) {
             $totalBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
         }
@@ -248,8 +345,9 @@ class Dashboard extends BaseController
 
         // Build query
         $builder = $this->pendaftarModel
-            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan')
+            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan, asal_sekolah.nama_sekolah')
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
+            ->join('asal_sekolah', 'asal_sekolah.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->where('pendaftar.jalur_pendaftaran', 'muallimin');
 
         // Apply search filter
@@ -358,11 +456,35 @@ class Dashboard extends BaseController
         $search = $this->request->getGet('search') ?? '';
         $sortBy = $this->request->getGet('sort') ?? 'tanggal_daftar';
         $sortDir = $this->request->getGet('dir') ?? 'DESC';
+        $startDate = $this->request->getGet('start_date') ?? '';
+        $endDate = $this->request->getGet('end_date') ?? '';
 
-        // Build query
+        // Build query with ALL related tables
         $builder = $this->pendaftarModel
-            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan')
-            ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left');
+            ->select('pendaftar.*,
+                      alamat_pendaftar.provinsi, alamat_pendaftar.kabupaten, alamat_pendaftar.kecamatan,
+                      alamat_pendaftar.desa, alamat_pendaftar.dusun, alamat_pendaftar.rt, alamat_pendaftar.rw,
+                      alamat_pendaftar.jalan, alamat_pendaftar.kode_pos, alamat_pendaftar.jarak_ke_sekolah,
+                      alamat_pendaftar.transportasi,
+                      data_ayah.nama_ayah, data_ayah.nik_ayah, data_ayah.pendidikan_ayah,
+                      data_ayah.pekerjaan_ayah, data_ayah.penghasilan as penghasilan_ayah,
+                      data_ayah.no_hp_ayah, data_ayah.status_ayah,
+                      data_ibu.nama_ibu, data_ibu.nik_ibu, data_ibu.pendidikan_ibu,
+                      data_ibu.pekerjaan_ibu, data_ibu.penghasilan as penghasilan_ibu,
+                      data_ibu.no_hp_ibu, data_ibu.status_ibu,
+                      data_wali.nama_wali, data_wali.nik_wali, data_wali.pendidikan_wali,
+                      data_wali.pekerjaan_wali, data_wali.penghasilan as penghasilan_wali,
+                      data_wali.no_hp_wali, data_wali.hubungan_wali,
+                      bansos_pendaftar.jenis_bansos, bansos_pendaftar.nama_bansos,
+                      asal_sekolah.npsn, asal_sekolah.nama_sekolah, asal_sekolah.alamat_sekolah,
+                      asal_sekolah.provinsi_sekolah, asal_sekolah.kabupaten_sekolah,
+                      asal_sekolah.kecamatan_sekolah, asal_sekolah.status_sekolah')
+            ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
+            ->join('data_ayah', 'data_ayah.id_pendaftar = pendaftar.id_pendaftar', 'left')
+            ->join('data_ibu', 'data_ibu.id_pendaftar = pendaftar.id_pendaftar', 'left')
+            ->join('data_wali', 'data_wali.id_pendaftar = pendaftar.id_pendaftar', 'left')
+            ->join('bansos_pendaftar', 'bansos_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
+            ->join('asal_sekolah', 'asal_sekolah.id_pendaftar = pendaftar.id_pendaftar', 'left');
 
         // Filter by jalur if not 'all'
         if ($jalur !== 'all') {
@@ -378,6 +500,14 @@ class Dashboard extends BaseController
                 ->orLike('pendaftar.tempat_lahir', $search)
                 ->orLike('alamat_pendaftar.kecamatan', $search)
                 ->groupEnd();
+        }
+
+        // Apply date range filter
+        if (!empty($startDate)) {
+            $builder->where('pendaftar.tanggal_daftar >=', $startDate . ' 00:00:00');
+        }
+        if (!empty($endDate)) {
+            $builder->where('pendaftar.tanggal_daftar <=', $endDate . ' 23:59:59');
         }
 
         // Validate sort column
@@ -409,36 +539,42 @@ class Dashboard extends BaseController
         // Add BOM for Excel UTF-8 compatibility
         fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
 
-        // CSV Headers
+        // Comprehensive CSV Headers - All fields from 7 tables
         fputcsv($output, [
-            'No',
-            'Nomor Pendaftaran',
-            'NISN',
-            'NIK',
-            'Nama Lengkap',
-            'Jenis Kelamin',
-            'Tempat Lahir',
-            'Tanggal Lahir',
-            'Jalur Pendaftaran',
-            'Status Keluarga',
-            'Anak Ke',
-            'Jumlah Saudara',
-            'No HP',
-            'Desa/Kelurahan',
-            'Kecamatan',
-            'Tanggal Daftar'
+            // Pendaftar Data
+            'No', 'Nomor Pendaftaran', 'NISN', 'NIK', 'Nama Lengkap', 'Jenis Kelamin',
+            'Tempat Lahir', 'Tanggal Lahir', 'Jalur Pendaftaran', 'Status Keluarga',
+            'Anak Ke', 'Jumlah Saudara', 'No HP', 'Tanggal Daftar',
+            // Alamat Data
+            'Provinsi', 'Kabupaten', 'Kecamatan', 'Desa/Kelurahan', 'Dusun', 'RT', 'RW',
+            'Jalan', 'Kode Pos', 'Jarak ke Sekolah (KM)', 'Transportasi',
+            // Data Ayah
+            'Nama Ayah', 'NIK Ayah', 'Pendidikan Ayah', 'Pekerjaan Ayah',
+            'Penghasilan Ayah', 'No HP Ayah', 'Status Ayah',
+            // Data Ibu
+            'Nama Ibu', 'NIK Ibu', 'Pendidikan Ibu', 'Pekerjaan Ibu',
+            'Penghasilan Ibu', 'No HP Ibu', 'Status Ibu',
+            // Data Wali
+            'Nama Wali', 'NIK Wali', 'Pendidikan Wali', 'Pekerjaan Wali',
+            'Penghasilan Wali', 'No HP Wali', 'Hubungan Wali',
+            // Bansos
+            'Jenis Bansos', 'Nama Bansos',
+            // Asal Sekolah
+            'NPSN', 'Nama Sekolah', 'Alamat Sekolah', 'Provinsi Sekolah',
+            'Kabupaten Sekolah', 'Kecamatan Sekolah', 'Status Sekolah'
         ]);
 
-        // CSV Data
+        // Comprehensive CSV Data
         $no = 1;
         foreach ($data as $row) {
             fputcsv($output, [
+                // Pendaftar Data
                 $no++,
                 $row['nomor_pendaftaran'] ?? '-',
                 $row['nisn'] ?? '-',
                 $row['nik'] ?? '-',
                 $row['nama_lengkap'] ?? '-',
-                $row['jenis_kelamin'] === 'L' ? 'Laki-laki' : 'Perempuan',
+                ($row['jenis_kelamin'] ?? '') === 'L' ? 'Laki-laki' : 'Perempuan',
                 $row['tempat_lahir'] ?? '-',
                 !empty($row['tanggal_lahir']) ? date('d/m/Y', strtotime($row['tanggal_lahir'])) : '-',
                 ucfirst($row['jalur_pendaftaran'] ?? '-'),
@@ -446,9 +582,54 @@ class Dashboard extends BaseController
                 $row['anak_ke'] ?? '-',
                 $row['jumlah_saudara'] ?? '-',
                 $row['no_hp'] ?? '-',
-                $row['desa'] ?? '-',
+                !empty($row['tanggal_daftar']) ? date('d/m/Y H:i', strtotime($row['tanggal_daftar'])) : '-',
+                // Alamat Data
+                $row['provinsi'] ?? '-',
+                $row['kabupaten'] ?? '-',
                 $row['kecamatan'] ?? '-',
-                date('d/m/Y H:i', strtotime($row['tanggal_daftar']))
+                $row['desa'] ?? '-',
+                $row['dusun'] ?? '-',
+                $row['rt'] ?? '-',
+                $row['rw'] ?? '-',
+                $row['jalan'] ?? '-',
+                $row['kode_pos'] ?? '-',
+                $row['jarak_ke_sekolah'] ?? '-',
+                $row['transportasi'] ?? '-',
+                // Data Ayah
+                $row['nama_ayah'] ?? '-',
+                $row['nik_ayah'] ?? '-',
+                $row['pendidikan_ayah'] ?? '-',
+                $row['pekerjaan_ayah'] ?? '-',
+                !empty($row['penghasilan_ayah']) ? 'Rp ' . number_format($row['penghasilan_ayah'], 0, ',', '.') : '-',
+                $row['no_hp_ayah'] ?? '-',
+                $row['status_ayah'] ?? '-',
+                // Data Ibu
+                $row['nama_ibu'] ?? '-',
+                $row['nik_ibu'] ?? '-',
+                $row['pendidikan_ibu'] ?? '-',
+                $row['pekerjaan_ibu'] ?? '-',
+                !empty($row['penghasilan_ibu']) ? 'Rp ' . number_format($row['penghasilan_ibu'], 0, ',', '.') : '-',
+                $row['no_hp_ibu'] ?? '-',
+                $row['status_ibu'] ?? '-',
+                // Data Wali
+                $row['nama_wali'] ?? '-',
+                $row['nik_wali'] ?? '-',
+                $row['pendidikan_wali'] ?? '-',
+                $row['pekerjaan_wali'] ?? '-',
+                !empty($row['penghasilan_wali']) ? 'Rp ' . number_format($row['penghasilan_wali'], 0, ',', '.') : '-',
+                $row['no_hp_wali'] ?? '-',
+                $row['hubungan_wali'] ?? '-',
+                // Bansos
+                $row['jenis_bansos'] ?? '-',
+                $row['nama_bansos'] ?? '-',
+                // Asal Sekolah
+                $row['npsn'] ?? '-',
+                $row['nama_sekolah'] ?? '-',
+                $row['alamat_sekolah'] ?? '-',
+                $row['provinsi_sekolah'] ?? '-',
+                $row['kabupaten_sekolah'] ?? '-',
+                $row['kecamatan_sekolah'] ?? '-',
+                $row['status_sekolah'] ?? '-'
             ]);
         }
 
@@ -469,10 +650,32 @@ class Dashboard extends BaseController
         $startDate = $this->request->getGet('start_date') ?? '';
         $endDate = $this->request->getGet('end_date') ?? '';
 
-        // Build query
+        // Build query with ALL related tables (same as CSV export)
         $builder = $this->pendaftarModel
-            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan')
-            ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left');
+            ->select('pendaftar.*,
+                      alamat_pendaftar.provinsi, alamat_pendaftar.kabupaten, alamat_pendaftar.kecamatan,
+                      alamat_pendaftar.desa, alamat_pendaftar.dusun, alamat_pendaftar.rt, alamat_pendaftar.rw,
+                      alamat_pendaftar.jalan, alamat_pendaftar.kode_pos, alamat_pendaftar.jarak_ke_sekolah,
+                      alamat_pendaftar.transportasi,
+                      data_ayah.nama_ayah, data_ayah.nik_ayah, data_ayah.pendidikan_ayah,
+                      data_ayah.pekerjaan_ayah, data_ayah.penghasilan as penghasilan_ayah,
+                      data_ayah.no_hp_ayah, data_ayah.status_ayah,
+                      data_ibu.nama_ibu, data_ibu.nik_ibu, data_ibu.pendidikan_ibu,
+                      data_ibu.pekerjaan_ibu, data_ibu.penghasilan as penghasilan_ibu,
+                      data_ibu.no_hp_ibu, data_ibu.status_ibu,
+                      data_wali.nama_wali, data_wali.nik_wali, data_wali.pendidikan_wali,
+                      data_wali.pekerjaan_wali, data_wali.penghasilan as penghasilan_wali,
+                      data_wali.no_hp_wali, data_wali.hubungan_wali,
+                      bansos_pendaftar.jenis_bansos, bansos_pendaftar.nama_bansos,
+                      asal_sekolah.npsn, asal_sekolah.nama_sekolah, asal_sekolah.alamat_sekolah,
+                      asal_sekolah.provinsi_sekolah, asal_sekolah.kabupaten_sekolah,
+                      asal_sekolah.kecamatan_sekolah, asal_sekolah.status_sekolah')
+            ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
+            ->join('data_ayah', 'data_ayah.id_pendaftar = pendaftar.id_pendaftar', 'left')
+            ->join('data_ibu', 'data_ibu.id_pendaftar = pendaftar.id_pendaftar', 'left')
+            ->join('data_wali', 'data_wali.id_pendaftar = pendaftar.id_pendaftar', 'left')
+            ->join('bansos_pendaftar', 'bansos_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
+            ->join('asal_sekolah', 'asal_sekolah.id_pendaftar = pendaftar.id_pendaftar', 'left');
 
         // Filter by jalur if not 'all'
         if ($jalur !== 'all') {
