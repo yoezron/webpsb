@@ -327,7 +327,7 @@
                                             </td>
                                             <td><?= esc($reg['tempat_lahir'] ?? '-') ?></td>
                                             <td><?= !empty($reg['tanggal_lahir']) ? date('d/m/Y', strtotime($reg['tanggal_lahir'])) : '-' ?></td>
-                                            <td><?= esc($reg['nama_sekolah'] ?? '-') ?></td>
+                                            <td><?= esc($reg['nama_asal_sekolah'] ?? '-') ?></td>
                                             <td><?= esc($reg['kecamatan'] ?? '-') ?></td>
                                             <td><?= date('d/m/Y', strtotime($reg['tanggal_daftar'])) ?></td>
                                             <td>

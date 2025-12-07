@@ -387,7 +387,7 @@
                                                 </span>
                                             </td>
                                             <td><?= esc($reg['jenis_kelamin']) === 'L' ? 'Laki-laki' : 'Perempuan' ?></td>
-                                            <td><?= esc($reg['nama_sekolah'] ?? '-') ?></td>
+                                            <td><?= esc($reg['nama_asal_sekolah'] ?? '-') ?></td>
                                             <td><?= esc($reg['kecamatan'] ?? '-') ?></td>
                                             <td><?= date('d/m/Y H:i', strtotime($reg['tanggal_daftar'])) ?></td>
                                             <td>
