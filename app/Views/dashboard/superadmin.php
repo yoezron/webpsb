@@ -268,32 +268,47 @@
                             <i class="icofont-clock-time me-2"></i> Semua Pendaftaran
                         </h5>
                         <div class="d-flex gap-2 align-items-center flex-wrap">
-                            <form method="get" class="d-flex gap-2">
+                            <form method="get" class="d-flex gap-2 flex-wrap">
                                 <input type="text" name="search" class="form-control" placeholder="Cari nama, NISN, NIK..."
-                                       value="<?= esc($search) ?>" style="width: 300px;">
+                                       value="<?= esc($search) ?>" style="width: 250px;">
+                                <input type="date" name="start_date" class="form-control" placeholder="Dari Tanggal"
+                                       value="<?= esc($startDate) ?>" title="Dari Tanggal" style="width: 150px;">
+                                <input type="date" name="end_date" class="form-control" placeholder="Sampai Tanggal"
+                                       value="<?= esc($endDate) ?>" title="Sampai Tanggal" style="width: 150px;">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="icofont-search me-1"></i> Cari
+                                    <i class="icofont-search me-1"></i> Filter
                                 </button>
-                                <?php if (!empty($search)): ?>
+                                <?php if (!empty($search) || !empty($startDate) || !empty($endDate)): ?>
                                     <a href="<?= current_url() ?>" class="btn btn-secondary">
                                         <i class="icofont-close me-1"></i> Reset
                                     </a>
                                 <?php endif; ?>
                             </form>
                             <div class="btn-group">
-                                <a href="<?= base_url('dashboard/export-csv?jalur=all' . (!empty($search) ? '&search=' . urlencode($search) : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>"
-                                   class="btn btn-success">
-                                    <i class="icofont-file-excel me-1"></i> Export Semua
-                                </a>
-                                <button type="button" class="btn btn-success dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown">
-                                    <span class="visually-hidden">Toggle Dropdown</span>
+                                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="icofont-file-excel me-1"></i> Export
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-csv?jalur=tsanawiyyah' . (!empty($search) ? '&search=' . urlencode($search) : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
-                                        <i class="icofont-file-excel me-1"></i> Export Tsanawiyyah
+                                    <li><h6 class="dropdown-header">CSV Format</h6></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-csv?jalur=all' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                        <i class="icofont-file-text me-1"></i> Export Semua (CSV)
                                     </a></li>
-                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-csv?jalur=muallimin' . (!empty($search) ? '&search=' . urlencode($search) : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
-                                        <i class="icofont-file-excel me-1"></i> Export Muallimin
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-csv?jalur=tsanawiyyah' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                        <i class="icofont-file-text me-1"></i> Tsanawiyyah (CSV)
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-csv?jalur=muallimin' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                        <i class="icofont-file-text me-1"></i> Mu'allimin (CSV)
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h6 class="dropdown-header">Excel Format</h6></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-excel?jalur=all' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                        <i class="icofont-file-excel me-1"></i> Export Semua (Excel)
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-excel?jalur=tsanawiyyah' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                        <i class="icofont-file-excel me-1"></i> Tsanawiyyah (Excel)
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-excel?jalur=muallimin' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                        <i class="icofont-file-excel me-1"></i> Mu'allimin (Excel)
                                     </a></li>
                                 </ul>
                             </div>
@@ -305,7 +320,7 @@
                                 <tr>
                                     <th>No</th>
                                     <th>
-                                        <a href="?sort=nama_lengkap&dir=<?= $sortBy === 'nama_lengkap' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"
+                                        <a href="?sort=nama_lengkap&dir=<?= $sortBy === 'nama_lengkap' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?>"
                                            class="text-white text-decoration-none">
                                             Nama Lengkap
                                             <?php if ($sortBy === 'nama_lengkap'): ?>
@@ -314,7 +329,7 @@
                                         </a>
                                     </th>
                                     <th>
-                                        <a href="?sort=jalur_pendaftaran&dir=<?= $sortBy === 'jalur_pendaftaran' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"
+                                        <a href="?sort=jalur_pendaftaran&dir=<?= $sortBy === 'jalur_pendaftaran' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?>"
                                            class="text-white text-decoration-none">
                                             Jalur
                                             <?php if ($sortBy === 'jalur_pendaftaran'): ?>
@@ -323,7 +338,7 @@
                                         </a>
                                     </th>
                                     <th>
-                                        <a href="?sort=jenis_kelamin&dir=<?= $sortBy === 'jenis_kelamin' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"
+                                        <a href="?sort=jenis_kelamin&dir=<?= $sortBy === 'jenis_kelamin' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?>"
                                            class="text-white text-decoration-none">
                                             Jenis Kelamin
                                             <?php if ($sortBy === 'jenis_kelamin'): ?>
@@ -333,7 +348,7 @@
                                     </th>
                                     <th>Asal Sekolah</th>
                                     <th>
-                                        <a href="?sort=kecamatan&dir=<?= $sortBy === 'kecamatan' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"
+                                        <a href="?sort=kecamatan&dir=<?= $sortBy === 'kecamatan' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?>"
                                            class="text-white text-decoration-none">
                                             Lokasi
                                             <?php if ($sortBy === 'kecamatan'): ?>
@@ -342,7 +357,7 @@
                                         </a>
                                     </th>
                                     <th>
-                                        <a href="?sort=tanggal_daftar&dir=<?= $sortBy === 'tanggal_daftar' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"
+                                        <a href="?sort=tanggal_daftar&dir=<?= $sortBy === 'tanggal_daftar' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?>"
                                            class="text-white text-decoration-none">
                                             Tanggal Daftar
                                             <?php if ($sortBy === 'tanggal_daftar'): ?>

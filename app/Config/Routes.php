@@ -71,5 +71,6 @@ $routes->group('dashboard', ['filter' => 'auth'], function ($routes) {
 
     // Export routes
     $routes->get('export-csv', 'Dashboard::exportCsv');
+    $routes->get('export-excel', 'Dashboard::exportExcel');
     $routes->get('export/(:any)', 'Dashboard::export/$1');
 });

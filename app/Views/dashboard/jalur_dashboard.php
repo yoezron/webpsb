@@ -222,22 +222,35 @@
                             Daftar Pendaftar <?= esc($jalur) ?>
                         </h5>
                         <div class="d-flex gap-2 align-items-center flex-wrap">
-                            <form method="get" class="d-flex gap-2">
+                            <form method="get" class="d-flex gap-2 flex-wrap">
                                 <input type="text" name="search" class="form-control" placeholder="Cari nama, NISN, NIK..."
-                                       value="<?= esc($search) ?>" style="width: 300px;">
+                                       value="<?= esc($search) ?>" style="width: 250px;">
+                                <input type="date" name="start_date" class="form-control" placeholder="Dari Tanggal"
+                                       value="<?= esc($startDate) ?>" title="Dari Tanggal" style="width: 150px;">
+                                <input type="date" name="end_date" class="form-control" placeholder="Sampai Tanggal"
+                                       value="<?= esc($endDate) ?>" title="Sampai Tanggal" style="width: 150px;">
                                 <button type="submit" class="btn btn-primary">
-                                    <i class="icofont-search me-1"></i> Cari
+                                    <i class="icofont-search me-1"></i> Filter
                                 </button>
-                                <?php if (!empty($search)): ?>
+                                <?php if (!empty($search) || !empty($startDate) || !empty($endDate)): ?>
                                     <a href="<?= current_url() ?>" class="btn btn-secondary">
                                         <i class="icofont-close me-1"></i> Reset
                                     </a>
                                 <?php endif; ?>
                             </form>
-                            <a href="<?= base_url('dashboard/export-csv?jalur=' . strtolower($jalur) . (!empty($search) ? '&search=' . urlencode($search) : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>"
-                               class="btn btn-success">
-                                <i class="icofont-file-excel me-1"></i> Export CSV
-                            </a>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-success dropdown-toggle" data-bs-toggle="dropdown">
+                                    <i class="icofont-file-excel me-1"></i> Export
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-csv?jalur=' . strtolower($jalur) . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                        <i class="icofont-file-text me-1"></i> CSV Format
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-excel?jalur=' . strtolower($jalur) . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                        <i class="icofont-file-excel me-1"></i> Excel Format
+                                    </a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                     <div class="table-responsive">
@@ -246,7 +259,7 @@
                                 <tr>
                                     <th>No</th>
                                     <th>
-                                        <a href="?sort=nama_lengkap&dir=<?= $sortBy === 'nama_lengkap' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"
+                                        <a href="?sort=nama_lengkap&dir=<?= $sortBy === 'nama_lengkap' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?>"
                                            class="text-white text-decoration-none">
                                             Nama Lengkap
                                             <?php if ($sortBy === 'nama_lengkap'): ?>
@@ -255,7 +268,7 @@
                                         </a>
                                     </th>
                                     <th>
-                                        <a href="?sort=jenis_kelamin&dir=<?= $sortBy === 'jenis_kelamin' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"
+                                        <a href="?sort=jenis_kelamin&dir=<?= $sortBy === 'jenis_kelamin' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?>"
                                            class="text-white text-decoration-none">
                                             Jenis Kelamin
                                             <?php if ($sortBy === 'jenis_kelamin'): ?>
@@ -264,7 +277,7 @@
                                         </a>
                                     </th>
                                     <th>
-                                        <a href="?sort=tempat_lahir&dir=<?= $sortBy === 'tempat_lahir' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"
+                                        <a href="?sort=tempat_lahir&dir=<?= $sortBy === 'tempat_lahir' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?>"
                                            class="text-white text-decoration-none">
                                             Tempat Lahir
                                             <?php if ($sortBy === 'tempat_lahir'): ?>
@@ -275,7 +288,7 @@
                                     <th>Tanggal Lahir</th>
                                     <th>Asal Sekolah</th>
                                     <th>
-                                        <a href="?sort=kecamatan&dir=<?= $sortBy === 'kecamatan' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"
+                                        <a href="?sort=kecamatan&dir=<?= $sortBy === 'kecamatan' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?>"
                                            class="text-white text-decoration-none">
                                             Lokasi
                                             <?php if ($sortBy === 'kecamatan'): ?>
@@ -284,7 +297,7 @@
                                         </a>
                                     </th>
                                     <th>
-                                        <a href="?sort=tanggal_daftar&dir=<?= $sortBy === 'tanggal_daftar' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?>"
+                                        <a href="?sort=tanggal_daftar&dir=<?= $sortBy === 'tanggal_daftar' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?>"
                                            class="text-white text-decoration-none">
                                             Tanggal Daftar
                                             <?php if ($sortBy === 'tanggal_daftar'): ?>

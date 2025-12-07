@@ -9,6 +9,11 @@ use App\Models\IbuModel;
 use App\Models\WaliModel;
 use App\Models\BansosModel;
 use App\Models\SekolahModel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class Dashboard extends BaseController
 {
@@ -51,12 +56,29 @@ class Dashboard extends BaseController
         $search = $this->request->getGet('search') ?? '';
         $sortBy = $this->request->getGet('sort') ?? 'tanggal_daftar';
         $sortDir = $this->request->getGet('dir') ?? 'DESC';
+        $startDate = $this->request->getGet('start_date') ?? '';
+        $endDate = $this->request->getGet('end_date') ?? '';
         $perPage = 20;
 
-        // Get statistics for both programs
-        $totalTsn = $this->pendaftarModel->where('jalur_pendaftaran', 'tsanawiyyah')->countAllResults();
-        $totalMua = $this->pendaftarModel->where('jalur_pendaftaran', 'muallimin')->countAllResults();
-        $totalAll = $this->pendaftarModel->countAll();
+        // Get statistics for both programs (with date filter if applicable)
+        $tsnBuilder = $this->pendaftarModel->where('jalur_pendaftaran', 'tsanawiyyah');
+        $muaBuilder = $this->pendaftarModel->where('jalur_pendaftaran', 'muallimin');
+        $allBuilder = $this->pendaftarModel;
+
+        if (!empty($startDate)) {
+            $tsnBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
+            $muaBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
+            $allBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
+        }
+        if (!empty($endDate)) {
+            $tsnBuilder->where('tanggal_daftar <=', $endDate . ' 23:59:59');
+            $muaBuilder->where('tanggal_daftar <=', $endDate . ' 23:59:59');
+            $allBuilder->where('tanggal_daftar <=', $endDate . ' 23:59:59');
+        }
+
+        $totalTsn = $tsnBuilder->countAllResults();
+        $totalMua = $muaBuilder->countAllResults();
+        $totalAll = $allBuilder->countAllResults();
 
         // Build query for registrations
         $builder = $this->pendaftarModel
@@ -72,6 +94,14 @@ class Dashboard extends BaseController
                 ->orLike('pendaftar.tempat_lahir', $search)
                 ->orLike('alamat_pendaftar.kecamatan', $search)
                 ->groupEnd();
+        }
+
+        // Apply date range filter
+        if (!empty($startDate)) {
+            $builder->where('pendaftar.tanggal_daftar >=', $startDate . ' 00:00:00');
+        }
+        if (!empty($endDate)) {
+            $builder->where('pendaftar.tanggal_daftar <=', $endDate . ' 23:59:59');
         }
 
         // Validate sort column
@@ -103,7 +133,9 @@ class Dashboard extends BaseController
             'pager' => $pager,
             'search' => $search,
             'sortBy' => $sortBy,
-            'sortDir' => $sortDir
+            'sortDir' => $sortDir,
+            'startDate' => $startDate,
+            'endDate' => $endDate
         ];
 
         return view('dashboard/superadmin', $data);
@@ -118,7 +150,19 @@ class Dashboard extends BaseController
         $search = $this->request->getGet('search') ?? '';
         $sortBy = $this->request->getGet('sort') ?? 'tanggal_daftar';
         $sortDir = $this->request->getGet('dir') ?? 'DESC';
+        $startDate = $this->request->getGet('start_date') ?? '';
+        $endDate = $this->request->getGet('end_date') ?? '';
         $perPage = 20;
+
+        // Get total for statistics (with date filter)
+        $totalBuilder = $this->pendaftarModel->where('jalur_pendaftaran', 'tsanawiyyah');
+        if (!empty($startDate)) {
+            $totalBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
+        }
+        if (!empty($endDate)) {
+            $totalBuilder->where('tanggal_daftar <=', $endDate . ' 23:59:59');
+        }
+        $total = $totalBuilder->countAllResults();
 
         // Build query
         $builder = $this->pendaftarModel
@@ -137,6 +181,14 @@ class Dashboard extends BaseController
                 ->groupEnd();
         }
 
+        // Apply date range filter
+        if (!empty($startDate)) {
+            $builder->where('pendaftar.tanggal_daftar >=', $startDate . ' 00:00:00');
+        }
+        if (!empty($endDate)) {
+            $builder->where('pendaftar.tanggal_daftar <=', $endDate . ' 23:59:59');
+        }
+
         // Validate sort column
         $allowedSorts = ['nama_lengkap', 'tanggal_daftar', 'jenis_kelamin', 'tempat_lahir', 'kecamatan'];
         if (!in_array($sortBy, $allowedSorts)) {
@@ -145,9 +197,6 @@ class Dashboard extends BaseController
 
         // Validate sort direction
         $sortDir = strtoupper($sortDir) === 'ASC' ? 'ASC' : 'DESC';
-
-        // Get total for statistics (before pagination)
-        $total = $this->pendaftarModel->where('jalur_pendaftaran', 'tsanawiyyah')->countAllResults();
 
         // Apply sorting and get paginated results
         $registrations = $builder
@@ -166,7 +215,9 @@ class Dashboard extends BaseController
             'pager' => $pager,
             'search' => $search,
             'sortBy' => $sortBy,
-            'sortDir' => $sortDir
+            'sortDir' => $sortDir,
+            'startDate' => $startDate,
+            'endDate' => $endDate
         ];
 
         return view('dashboard/jalur_dashboard', $data);
@@ -181,7 +232,19 @@ class Dashboard extends BaseController
         $search = $this->request->getGet('search') ?? '';
         $sortBy = $this->request->getGet('sort') ?? 'tanggal_daftar';
         $sortDir = $this->request->getGet('dir') ?? 'DESC';
+        $startDate = $this->request->getGet('start_date') ?? '';
+        $endDate = $this->request->getGet('end_date') ?? '';
         $perPage = 20;
+
+        // Get total for statistics (with date filter)
+        $totalBuilder = $this->pendaftarModel->where('jalur_pendaftaran', 'muallimin');
+        if (!empty($startDate)) {
+            $totalBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
+        }
+        if (!empty($endDate)) {
+            $totalBuilder->where('tanggal_daftar <=', $endDate . ' 23:59:59');
+        }
+        $total = $totalBuilder->countAllResults();
 
         // Build query
         $builder = $this->pendaftarModel
@@ -200,6 +263,14 @@ class Dashboard extends BaseController
                 ->groupEnd();
         }
 
+        // Apply date range filter
+        if (!empty($startDate)) {
+            $builder->where('pendaftar.tanggal_daftar >=', $startDate . ' 00:00:00');
+        }
+        if (!empty($endDate)) {
+            $builder->where('pendaftar.tanggal_daftar <=', $endDate . ' 23:59:59');
+        }
+
         // Validate sort column
         $allowedSorts = ['nama_lengkap', 'tanggal_daftar', 'jenis_kelamin', 'tempat_lahir', 'kecamatan'];
         if (!in_array($sortBy, $allowedSorts)) {
@@ -208,9 +279,6 @@ class Dashboard extends BaseController
 
         // Validate sort direction
         $sortDir = strtoupper($sortDir) === 'ASC' ? 'ASC' : 'DESC';
-
-        // Get total for statistics (before pagination)
-        $total = $this->pendaftarModel->where('jalur_pendaftaran', 'muallimin')->countAllResults();
 
         // Apply sorting and get paginated results
         $registrations = $builder
@@ -229,7 +297,9 @@ class Dashboard extends BaseController
             'pager' => $pager,
             'search' => $search,
             'sortBy' => $sortBy,
-            'sortDir' => $sortDir
+            'sortDir' => $sortDir,
+            'startDate' => $startDate,
+            'endDate' => $endDate
         ];
 
         return view('dashboard/jalur_dashboard', $data);
@@ -383,6 +453,240 @@ class Dashboard extends BaseController
         }
 
         fclose($output);
+        exit;
+    }
+
+    /**
+     * Export data to Excel with advanced formatting
+     */
+    public function exportExcel()
+    {
+        // Get parameters
+        $jalur = $this->request->getGet('jalur') ?? 'all';
+        $search = $this->request->getGet('search') ?? '';
+        $sortBy = $this->request->getGet('sort') ?? 'tanggal_daftar';
+        $sortDir = $this->request->getGet('dir') ?? 'DESC';
+        $startDate = $this->request->getGet('start_date') ?? '';
+        $endDate = $this->request->getGet('end_date') ?? '';
+
+        // Build query
+        $builder = $this->pendaftarModel
+            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan')
+            ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left');
+
+        // Filter by jalur if not 'all'
+        if ($jalur !== 'all') {
+            $builder->where('pendaftar.jalur_pendaftaran', $jalur);
+        }
+
+        // Apply search filter
+        if (!empty($search)) {
+            $builder->groupStart()
+                ->like('pendaftar.nama_lengkap', $search)
+                ->orLike('pendaftar.nisn', $search)
+                ->orLike('pendaftar.nik', $search)
+                ->orLike('pendaftar.tempat_lahir', $search)
+                ->orLike('alamat_pendaftar.kecamatan', $search)
+                ->groupEnd();
+        }
+
+        // Apply date range filter
+        if (!empty($startDate)) {
+            $builder->where('pendaftar.tanggal_daftar >=', $startDate . ' 00:00:00');
+        }
+        if (!empty($endDate)) {
+            $builder->where('pendaftar.tanggal_daftar <=', $endDate . ' 23:59:59');
+        }
+
+        // Validate sort column
+        $allowedSorts = ['nama_lengkap', 'tanggal_daftar', 'jenis_kelamin', 'tempat_lahir', 'kecamatan', 'jalur_pendaftaran'];
+        if (!in_array($sortBy, $allowedSorts)) {
+            $sortBy = 'tanggal_daftar';
+        }
+
+        // Validate sort direction
+        $sortDir = strtoupper($sortDir) === 'ASC' ? 'ASC' : 'DESC';
+
+        // Get all data (no pagination for export)
+        $data = $builder
+            ->orderBy('pendaftar.' . $sortBy, $sortDir)
+            ->findAll();
+
+        // Create new Spreadsheet
+        $spreadsheet = new Spreadsheet();
+
+        // Set document properties
+        $spreadsheet->getProperties()
+            ->setCreator('PSB Persis 31')
+            ->setTitle('Data Pendaftar')
+            ->setSubject('Laporan Pendaftaran Santri')
+            ->setDescription('Laporan data pendaftaran santri PSB Persis 31');
+
+        // Create Summary Sheet
+        $summarySheet = $spreadsheet->getActiveSheet();
+        $summarySheet->setTitle('Ringkasan');
+
+        // Summary header
+        $summarySheet->setCellValue('A1', 'LAPORAN DATA PENDAFTAR');
+        $summarySheet->setCellValue('A2', 'PSB PERSIS 31 CIAMIS');
+        $summarySheet->mergeCells('A1:D1');
+        $summarySheet->mergeCells('A2:D2');
+
+        // Style summary header
+        $summarySheet->getStyle('A1:D2')->applyFromArray([
+            'font' => ['bold' => true, 'size' => 14],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
+        ]);
+
+        // Summary statistics
+        $row = 4;
+        $summarySheet->setCellValue('A' . $row, 'Jalur:');
+        $summarySheet->setCellValue('B' . $row, $jalur === 'all' ? 'Semua Jalur' : ucfirst($jalur));
+        $row++;
+
+        $summarySheet->setCellValue('A' . $row, 'Total Pendaftar:');
+        $summarySheet->setCellValue('B' . $row, count($data));
+        $row++;
+
+        if (!empty($startDate) || !empty($endDate)) {
+            $summarySheet->setCellValue('A' . $row, 'Periode:');
+            $period = '';
+            if (!empty($startDate)) $period .= date('d/m/Y', strtotime($startDate));
+            if (!empty($startDate) && !empty($endDate)) $period .= ' - ';
+            if (!empty($endDate)) $period .= date('d/m/Y', strtotime($endDate));
+            $summarySheet->setCellValue('B' . $row, $period);
+            $row++;
+        }
+
+        $summarySheet->setCellValue('A' . $row, 'Tanggal Export:');
+        $summarySheet->setCellValue('B' . $row, date('d/m/Y H:i:s'));
+
+        // Style summary content
+        $summarySheet->getStyle('A4:A' . $row)->applyFromArray([
+            'font' => ['bold' => true]
+        ]);
+
+        // Statistics by jalur
+        $row += 2;
+        $summarySheet->setCellValue('A' . $row, 'Statistik Per Jalur');
+        $summarySheet->getStyle('A' . $row)->applyFromArray([
+            'font' => ['bold' => true, 'size' => 12]
+        ]);
+        $row++;
+
+        $tsnCount = 0;
+        $muaCount = 0;
+        foreach ($data as $d) {
+            if ($d['jalur_pendaftaran'] === 'tsanawiyyah') $tsnCount++;
+            if ($d['jalur_pendaftaran'] === 'muallimin') $muaCount++;
+        }
+
+        $summarySheet->setCellValue('A' . $row, 'Tsanawiyyah:');
+        $summarySheet->setCellValue('B' . $row, $tsnCount);
+        $row++;
+        $summarySheet->setCellValue('A' . $row, 'Mu\'allimin:');
+        $summarySheet->setCellValue('B' . $row, $muaCount);
+
+        // Auto-width for summary
+        $summarySheet->getColumnDimension('A')->setWidth(20);
+        $summarySheet->getColumnDimension('B')->setWidth(30);
+
+        // Create Data Sheet
+        $dataSheet = $spreadsheet->createSheet();
+        $dataSheet->setTitle('Data Pendaftar');
+
+        // Headers for data sheet
+        $headers = [
+            'No', 'Nomor Pendaftaran', 'NISN', 'NIK', 'Nama Lengkap',
+            'Jenis Kelamin', 'Tempat Lahir', 'Tanggal Lahir', 'Jalur Pendaftaran',
+            'Status Keluarga', 'Anak Ke', 'Jumlah Saudara', 'No HP',
+            'Desa/Kelurahan', 'Kecamatan', 'Tanggal Daftar'
+        ];
+
+        $col = 'A';
+        foreach ($headers as $header) {
+            $dataSheet->setCellValue($col . '1', $header);
+            $col++;
+        }
+
+        // Style header row
+        $dataSheet->getStyle('A1:P1')->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => [
+                'fillType' => Fill::FILL_SOLID,
+                'startColor' => ['rgb' => '1AB34A']
+            ],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
+            'borders' => [
+                'allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => '000000']]
+            ]
+        ]);
+
+        // Data rows
+        $rowNum = 2;
+        $no = 1;
+        foreach ($data as $row) {
+            $dataSheet->setCellValue('A' . $rowNum, $no++);
+            $dataSheet->setCellValue('B' . $rowNum, $row['nomor_pendaftaran'] ?? '-');
+            $dataSheet->setCellValue('C' . $rowNum, $row['nisn'] ?? '-');
+            $dataSheet->setCellValue('D' . $rowNum, $row['nik'] ?? '-');
+            $dataSheet->setCellValue('E' . $rowNum, $row['nama_lengkap'] ?? '-');
+            $dataSheet->setCellValue('F' . $rowNum, $row['jenis_kelamin'] === 'L' ? 'Laki-laki' : 'Perempuan');
+            $dataSheet->setCellValue('G' . $rowNum, $row['tempat_lahir'] ?? '-');
+            $dataSheet->setCellValue('H' . $rowNum, !empty($row['tanggal_lahir']) ? date('d/m/Y', strtotime($row['tanggal_lahir'])) : '-');
+            $dataSheet->setCellValue('I' . $rowNum, ucfirst($row['jalur_pendaftaran'] ?? '-'));
+            $dataSheet->setCellValue('J' . $rowNum, $row['status_keluarga'] ?? '-');
+            $dataSheet->setCellValue('K' . $rowNum, $row['anak_ke'] ?? '-');
+            $dataSheet->setCellValue('L' . $rowNum, $row['jumlah_saudara'] ?? '-');
+            $dataSheet->setCellValue('M' . $rowNum, $row['no_hp'] ?? '-');
+            $dataSheet->setCellValue('N' . $rowNum, $row['desa'] ?? '-');
+            $dataSheet->setCellValue('O' . $rowNum, $row['kecamatan'] ?? '-');
+            $dataSheet->setCellValue('P' . $rowNum, date('d/m/Y H:i', strtotime($row['tanggal_daftar'])));
+
+            // Zebra striping
+            if ($rowNum % 2 == 0) {
+                $dataSheet->getStyle('A' . $rowNum . ':P' . $rowNum)->applyFromArray([
+                    'fill' => [
+                        'fillType' => Fill::FILL_SOLID,
+                        'startColor' => ['rgb' => 'F8F9FA']
+                    ]
+                ]);
+            }
+
+            $rowNum++;
+        }
+
+        // Apply borders to all data
+        $dataSheet->getStyle('A1:P' . ($rowNum - 1))->applyFromArray([
+            'borders' => [
+                'allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'CCCCCC']]
+            ]
+        ]);
+
+        // Auto-width for all columns
+        foreach (range('A', 'P') as $col) {
+            $dataSheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        // Freeze header row
+        $dataSheet->freezePane('A2');
+
+        // Generate filename
+        $filename = 'pendaftar_' . ($jalur !== 'all' ? $jalur . '_' : '') . date('Y-m-d_His') . '.xlsx';
+
+        // Set active sheet back to summary
+        $spreadsheet->setActiveSheetIndex(0);
+
+        // Create writer and output
+        $writer = new Xlsx($spreadsheet);
+
+        // Set headers for download
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('Cache-Control: max-age=0');
+        header('Pragma: no-cache');
+
+        $writer->save('php://output');
         exit;
     }
 
