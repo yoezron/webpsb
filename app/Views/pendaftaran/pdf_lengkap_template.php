@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <title>Data Lengkap Pendaftaran - <?= esc($pendaftar['nomor_pendaftaran']) ?></title>
@@ -93,12 +94,13 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <!-- Header -->
         <div class="header">
             <h1>DATA PENDAFTARAN LENGKAP</h1>
-            <h2>PSB PERSIS 31 CIAMIS</h2>
+            <h2>PSB PESANTREN PERSIS 31 BANJARAN</h2>
         </div>
 
         <!-- Data Pendaftar -->
@@ -165,261 +167,261 @@
 
         <!-- Data Alamat -->
         <?php if ($alamat): ?>
-        <div class="section">
-            <div class="section-title">DATA ALAMAT</div>
-            <table class="data-table">
-                <tr>
-                    <td>Nomor KK</td>
-                    <td>:</td>
-                    <td><?= esc($alamat['nomor_kk'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Jenis Tempat Tinggal</td>
-                    <td>:</td>
-                    <td><?= esc($alamat['jenis_tempat_tinggal'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Alamat Lengkap</td>
-                    <td>:</td>
-                    <td><?= esc($alamat['alamat'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Desa / Kelurahan</td>
-                    <td>:</td>
-                    <td><?= esc($alamat['desa'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Kecamatan</td>
-                    <td>:</td>
-                    <td><?= esc($alamat['kecamatan'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Kabupaten</td>
-                    <td>:</td>
-                    <td><?= esc($alamat['kabupaten'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Provinsi</td>
-                    <td>:</td>
-                    <td><?= esc($alamat['provinsi'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Kode Pos</td>
-                    <td>:</td>
-                    <td><?= esc($alamat['kode_pos'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Jarak ke Sekolah</td>
-                    <td>:</td>
-                    <td><?= esc($alamat['jarak_ke_sekolah'] ?? '-') ?> KM</td>
-                </tr>
-                <tr>
-                    <td>Waktu Tempuh</td>
-                    <td>:</td>
-                    <td><?= esc($alamat['waktu_tempuh'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Transportasi</td>
-                    <td>:</td>
-                    <td><?= esc($alamat['transportasi'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Email</td>
-                    <td>:</td>
-                    <td><?= esc($alamat['email'] ?? '-') ?></td>
-                </tr>
-            </table>
-        </div>
+            <div class="section">
+                <div class="section-title">DATA ALAMAT</div>
+                <table class="data-table">
+                    <tr>
+                        <td>Nomor KK</td>
+                        <td>:</td>
+                        <td><?= esc($alamat['nomor_kk'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Jenis Tempat Tinggal</td>
+                        <td>:</td>
+                        <td><?= esc($alamat['jenis_tempat_tinggal'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Alamat Lengkap</td>
+                        <td>:</td>
+                        <td><?= esc($alamat['alamat'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Desa / Kelurahan</td>
+                        <td>:</td>
+                        <td><?= esc($alamat['desa'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Kecamatan</td>
+                        <td>:</td>
+                        <td><?= esc($alamat['kecamatan'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Kabupaten</td>
+                        <td>:</td>
+                        <td><?= esc($alamat['kabupaten'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Provinsi</td>
+                        <td>:</td>
+                        <td><?= esc($alamat['provinsi'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Kode Pos</td>
+                        <td>:</td>
+                        <td><?= esc($alamat['kode_pos'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Jarak ke Sekolah</td>
+                        <td>:</td>
+                        <td><?= esc($alamat['jarak_ke_sekolah'] ?? '-') ?> KM</td>
+                    </tr>
+                    <tr>
+                        <td>Waktu Tempuh</td>
+                        <td>:</td>
+                        <td><?= esc($alamat['waktu_tempuh'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Transportasi</td>
+                        <td>:</td>
+                        <td><?= esc($alamat['transportasi'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td>:</td>
+                        <td><?= esc($alamat['email'] ?? '-') ?></td>
+                    </tr>
+                </table>
+            </div>
         <?php endif; ?>
 
         <!-- Data Ayah -->
         <?php if ($ayah): ?>
-        <div class="section">
-            <div class="section-title">DATA AYAH</div>
-            <table class="data-table">
-                <tr>
-                    <td>Nama Ayah</td>
-                    <td>:</td>
-                    <td><?= esc($ayah['nama_ayah'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>NIK</td>
-                    <td>:</td>
-                    <td><?= esc($ayah['nik_ayah'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Pendidikan</td>
-                    <td>:</td>
-                    <td><?= esc($ayah['pendidikan_ayah'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Pekerjaan</td>
-                    <td>:</td>
-                    <td><?= esc($ayah['pekerjaan_ayah'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Penghasilan</td>
-                    <td>:</td>
-                    <td><?= esc($ayah['penghasilan_ayah'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>No. HP</td>
-                    <td>:</td>
-                    <td><?= esc($ayah['hp_ayah'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Status</td>
-                    <td>:</td>
-                    <td><?= esc($ayah['status_ayah'] ?? '-') ?></td>
-                </tr>
-            </table>
-        </div>
+            <div class="section">
+                <div class="section-title">DATA AYAH</div>
+                <table class="data-table">
+                    <tr>
+                        <td>Nama Ayah</td>
+                        <td>:</td>
+                        <td><?= esc($ayah['nama_ayah'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>NIK</td>
+                        <td>:</td>
+                        <td><?= esc($ayah['nik_ayah'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Pendidikan</td>
+                        <td>:</td>
+                        <td><?= esc($ayah['pendidikan_ayah'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Pekerjaan</td>
+                        <td>:</td>
+                        <td><?= esc($ayah['pekerjaan_ayah'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Penghasilan</td>
+                        <td>:</td>
+                        <td><?= esc($ayah['penghasilan_ayah'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>No. HP</td>
+                        <td>:</td>
+                        <td><?= esc($ayah['hp_ayah'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>:</td>
+                        <td><?= esc($ayah['status_ayah'] ?? '-') ?></td>
+                    </tr>
+                </table>
+            </div>
         <?php endif; ?>
 
         <!-- Data Ibu -->
         <?php if ($ibu): ?>
-        <div class="section">
-            <div class="section-title">DATA IBU</div>
-            <table class="data-table">
-                <tr>
-                    <td>Nama Ibu</td>
-                    <td>:</td>
-                    <td><?= esc($ibu['nama_ibu'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>NIK</td>
-                    <td>:</td>
-                    <td><?= esc($ibu['nik_ibu'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Pendidikan</td>
-                    <td>:</td>
-                    <td><?= esc($ibu['pendidikan_ibu'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Pekerjaan</td>
-                    <td>:</td>
-                    <td><?= esc($ibu['pekerjaan_ibu'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Penghasilan</td>
-                    <td>:</td>
-                    <td><?= esc($ibu['penghasilan_ibu'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>No. HP</td>
-                    <td>:</td>
-                    <td><?= esc($ibu['hp_ibu'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Status</td>
-                    <td>:</td>
-                    <td><?= esc($ibu['status_ibu'] ?? '-') ?></td>
-                </tr>
-            </table>
-        </div>
+            <div class="section">
+                <div class="section-title">DATA IBU</div>
+                <table class="data-table">
+                    <tr>
+                        <td>Nama Ibu</td>
+                        <td>:</td>
+                        <td><?= esc($ibu['nama_ibu'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>NIK</td>
+                        <td>:</td>
+                        <td><?= esc($ibu['nik_ibu'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Pendidikan</td>
+                        <td>:</td>
+                        <td><?= esc($ibu['pendidikan_ibu'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Pekerjaan</td>
+                        <td>:</td>
+                        <td><?= esc($ibu['pekerjaan_ibu'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Penghasilan</td>
+                        <td>:</td>
+                        <td><?= esc($ibu['penghasilan_ibu'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>No. HP</td>
+                        <td>:</td>
+                        <td><?= esc($ibu['hp_ibu'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>:</td>
+                        <td><?= esc($ibu['status_ibu'] ?? '-') ?></td>
+                    </tr>
+                </table>
+            </div>
         <?php endif; ?>
 
         <!-- Data Wali -->
         <?php if ($wali): ?>
-        <div class="section">
-            <div class="section-title">DATA WALI</div>
-            <table class="data-table">
-                <tr>
-                    <td>Nama Wali</td>
-                    <td>:</td>
-                    <td><?= esc($wali['nama_wali'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>NIK</td>
-                    <td>:</td>
-                    <td><?= esc($wali['nik_wali'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Pendidikan</td>
-                    <td>:</td>
-                    <td><?= esc($wali['pendidikan_wali'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Pekerjaan</td>
-                    <td>:</td>
-                    <td><?= esc($wali['pekerjaan_wali'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Penghasilan</td>
-                    <td>:</td>
-                    <td><?= esc($wali['penghasilan_wali'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>No. HP</td>
-                    <td>:</td>
-                    <td><?= esc($wali['hp_wali'] ?? '-') ?></td>
-                </tr>
-            </table>
-        </div>
+            <div class="section">
+                <div class="section-title">DATA WALI</div>
+                <table class="data-table">
+                    <tr>
+                        <td>Nama Wali</td>
+                        <td>:</td>
+                        <td><?= esc($wali['nama_wali'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>NIK</td>
+                        <td>:</td>
+                        <td><?= esc($wali['nik_wali'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Pendidikan</td>
+                        <td>:</td>
+                        <td><?= esc($wali['pendidikan_wali'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Pekerjaan</td>
+                        <td>:</td>
+                        <td><?= esc($wali['pekerjaan_wali'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Penghasilan</td>
+                        <td>:</td>
+                        <td><?= esc($wali['penghasilan_wali'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>No. HP</td>
+                        <td>:</td>
+                        <td><?= esc($wali['hp_wali'] ?? '-') ?></td>
+                    </tr>
+                </table>
+            </div>
         <?php endif; ?>
 
         <!-- Data Bansos -->
         <?php if ($bansos): ?>
-        <div class="section">
-            <div class="section-title">DATA BANTUAN SOSIAL</div>
-            <table class="data-table">
-                <tr>
-                    <td>No. KKS (Kartu Keluarga Sejahtera)</td>
-                    <td>:</td>
-                    <td><?= esc($bansos['no_kks'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>No. PKH (Program Keluarga Harapan)</td>
-                    <td>:</td>
-                    <td><?= esc($bansos['no_pkh'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>No. KIP (Kartu Indonesia Pintar)</td>
-                    <td>:</td>
-                    <td><?= esc($bansos['no_kip'] ?? '-') ?></td>
-                </tr>
-            </table>
-        </div>
+            <div class="section">
+                <div class="section-title">DATA BANTUAN SOSIAL</div>
+                <table class="data-table">
+                    <tr>
+                        <td>No. KKS (Kartu Keluarga Sejahtera)</td>
+                        <td>:</td>
+                        <td><?= esc($bansos['no_kks'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>No. PKH (Program Keluarga Harapan)</td>
+                        <td>:</td>
+                        <td><?= esc($bansos['no_pkh'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>No. KIP (Kartu Indonesia Pintar)</td>
+                        <td>:</td>
+                        <td><?= esc($bansos['no_kip'] ?? '-') ?></td>
+                    </tr>
+                </table>
+            </div>
         <?php endif; ?>
 
         <!-- Data Asal Sekolah -->
         <?php if ($sekolah): ?>
-        <div class="section">
-            <div class="section-title">DATA ASAL SEKOLAH</div>
-            <table class="data-table">
-                <tr>
-                    <td>NPSN</td>
-                    <td>:</td>
-                    <td><?= esc($sekolah['npsn'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Nama Sekolah</td>
-                    <td>:</td>
-                    <td><?= esc($sekolah['nama_asal_sekolah'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Jenjang</td>
-                    <td>:</td>
-                    <td><?= esc($sekolah['jenjang_sekolah'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Status</td>
-                    <td>:</td>
-                    <td><?= esc($sekolah['status_sekolah'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Lokasi</td>
-                    <td>:</td>
-                    <td><?= esc($sekolah['lokasi_sekolah'] ?? '-') ?></td>
-                </tr>
-                <tr>
-                    <td>Asal Jenjang</td>
-                    <td>:</td>
-                    <td><?= esc($sekolah['asal_jenjang'] ?? '-') ?></td>
-                </tr>
-            </table>
-        </div>
+            <div class="section">
+                <div class="section-title">DATA ASAL SEKOLAH</div>
+                <table class="data-table">
+                    <tr>
+                        <td>NPSN</td>
+                        <td>:</td>
+                        <td><?= esc($sekolah['npsn'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Nama Sekolah</td>
+                        <td>:</td>
+                        <td><?= esc($sekolah['nama_asal_sekolah'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Jenjang</td>
+                        <td>:</td>
+                        <td><?= esc($sekolah['jenjang_sekolah'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Status</td>
+                        <td>:</td>
+                        <td><?= esc($sekolah['status_sekolah'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Lokasi</td>
+                        <td>:</td>
+                        <td><?= esc($sekolah['lokasi_sekolah'] ?? '-') ?></td>
+                    </tr>
+                    <tr>
+                        <td>Asal Jenjang</td>
+                        <td>:</td>
+                        <td><?= esc($sekolah['asal_jenjang'] ?? '-') ?></td>
+                    </tr>
+                </table>
+            </div>
         <?php endif; ?>
 
         <!-- Footer -->
@@ -429,4 +431,5 @@
         </div>
     </div>
 </body>
+
 </html>
