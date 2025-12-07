@@ -96,7 +96,7 @@ class Dashboard extends BaseController
 
         // Build query for registrations
         $builder = $this->pendaftarModel
-            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan, asal_sekolah.nama_sekolah')
+            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan, asal_sekolah.nama_asal_sekolah')
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('asal_sekolah', 'asal_sekolah.id_pendaftar = pendaftar.id_pendaftar', 'left');
 
@@ -261,7 +261,7 @@ class Dashboard extends BaseController
 
         // Build query
         $builder = $this->pendaftarModel
-            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan, asal_sekolah.nama_sekolah')
+            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan, asal_sekolah.nama_asal_sekolah')
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('asal_sekolah', 'asal_sekolah.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->where('pendaftar.jalur_pendaftaran', 'tsanawiyyah');
@@ -345,7 +345,7 @@ class Dashboard extends BaseController
 
         // Build query
         $builder = $this->pendaftarModel
-            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan, asal_sekolah.nama_sekolah')
+            ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan, asal_sekolah.nama_asal_sekolah')
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('asal_sekolah', 'asal_sekolah.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->where('pendaftar.jalur_pendaftaran', 'muallimin');
@@ -476,9 +476,8 @@ class Dashboard extends BaseController
                       data_wali.pekerjaan_wali, data_wali.penghasilan as penghasilan_wali,
                       data_wali.no_hp_wali, data_wali.hubungan_wali,
                       bansos_pendaftar.jenis_bansos, bansos_pendaftar.nama_bansos,
-                      asal_sekolah.npsn, asal_sekolah.nama_sekolah, asal_sekolah.alamat_sekolah,
-                      asal_sekolah.provinsi_sekolah, asal_sekolah.kabupaten_sekolah,
-                      asal_sekolah.kecamatan_sekolah, asal_sekolah.status_sekolah')
+                      asal_sekolah.npsn, asal_sekolah.nama_asal_sekolah, asal_sekolah.jenjang_sekolah,
+                      asal_sekolah.status_sekolah, asal_sekolah.lokasi_sekolah, asal_sekolah.asal_jenjang')
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('data_ayah', 'data_ayah.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('data_ibu', 'data_ibu.id_pendaftar = pendaftar.id_pendaftar', 'left')
@@ -560,8 +559,8 @@ class Dashboard extends BaseController
             // Bansos
             'Jenis Bansos', 'Nama Bansos',
             // Asal Sekolah
-            'NPSN', 'Nama Sekolah', 'Alamat Sekolah', 'Provinsi Sekolah',
-            'Kabupaten Sekolah', 'Kecamatan Sekolah', 'Status Sekolah'
+            'NPSN', 'Nama Asal Sekolah', 'Jenjang Sekolah', 'Status Sekolah',
+            'Lokasi Sekolah', 'Asal Jenjang'
         ]);
 
         // Comprehensive CSV Data
@@ -624,12 +623,11 @@ class Dashboard extends BaseController
                 $row['nama_bansos'] ?? '-',
                 // Asal Sekolah
                 $row['npsn'] ?? '-',
-                $row['nama_sekolah'] ?? '-',
-                $row['alamat_sekolah'] ?? '-',
-                $row['provinsi_sekolah'] ?? '-',
-                $row['kabupaten_sekolah'] ?? '-',
-                $row['kecamatan_sekolah'] ?? '-',
-                $row['status_sekolah'] ?? '-'
+                $row['nama_asal_sekolah'] ?? '-',
+                $row['jenjang_sekolah'] ?? '-',
+                $row['status_sekolah'] ?? '-',
+                $row['lokasi_sekolah'] ?? '-',
+                $row['asal_jenjang'] ?? '-'
             ]);
         }
 
@@ -667,9 +665,8 @@ class Dashboard extends BaseController
                       data_wali.pekerjaan_wali, data_wali.penghasilan as penghasilan_wali,
                       data_wali.no_hp_wali, data_wali.hubungan_wali,
                       bansos_pendaftar.jenis_bansos, bansos_pendaftar.nama_bansos,
-                      asal_sekolah.npsn, asal_sekolah.nama_sekolah, asal_sekolah.alamat_sekolah,
-                      asal_sekolah.provinsi_sekolah, asal_sekolah.kabupaten_sekolah,
-                      asal_sekolah.kecamatan_sekolah, asal_sekolah.status_sekolah')
+                      asal_sekolah.npsn, asal_sekolah.nama_asal_sekolah, asal_sekolah.jenjang_sekolah,
+                      asal_sekolah.status_sekolah, asal_sekolah.lokasi_sekolah, asal_sekolah.asal_jenjang')
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('data_ayah', 'data_ayah.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('data_ibu', 'data_ibu.id_pendaftar = pendaftar.id_pendaftar', 'left')
