@@ -475,8 +475,8 @@ class Dashboard extends BaseController
                       data_ibu.hp_ibu, data_ibu.status_ibu,
                       data_wali.nama_wali, data_wali.nik_wali, data_wali.pendidikan_wali,
                       data_wali.pekerjaan_wali, data_wali.penghasilan_wali,
-                      data_wali.hp_wali, data_wali.hubungan_wali,
-                      bansos_pendaftar.jenis_bansos, bansos_pendaftar.nama_bansos,
+                      data_wali.hp_wali,
+                      bansos_pendaftar.no_kks, bansos_pendaftar.no_pkh, bansos_pendaftar.no_kip,
                       asal_sekolah.npsn, asal_sekolah.nama_asal_sekolah, asal_sekolah.jenjang_sekolah,
                       asal_sekolah.status_sekolah, asal_sekolah.lokasi_sekolah, asal_sekolah.asal_jenjang')
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
@@ -557,9 +557,9 @@ class Dashboard extends BaseController
             'Penghasilan Ibu', 'No HP Ibu', 'Status Ibu',
             // Data Wali
             'Nama Wali', 'NIK Wali', 'Pendidikan Wali', 'Pekerjaan Wali',
-            'Penghasilan Wali', 'No HP Wali', 'Hubungan Wali',
+            'Penghasilan Wali', 'No HP Wali',
             // Bansos
-            'Jenis Bansos', 'Nama Bansos',
+            'No. KKS', 'No. PKH', 'No. KIP',
             // Asal Sekolah
             'NPSN', 'Nama Asal Sekolah', 'Jenjang Sekolah', 'Status Sekolah',
             'Lokasi Sekolah', 'Asal Jenjang'
@@ -621,10 +621,10 @@ class Dashboard extends BaseController
                 $row['pekerjaan_wali'] ?? '-',
                 !empty($row['penghasilan_wali']) ? 'Rp ' . number_format($row['penghasilan_wali'], 0, ',', '.') : '-',
                 $row['hp_wali'] ?? '-',
-                $row['hubungan_wali'] ?? '-',
                 // Bansos
-                $row['jenis_bansos'] ?? '-',
-                $row['nama_bansos'] ?? '-',
+                $row['no_kks'] ?? '-',
+                $row['no_pkh'] ?? '-',
+                $row['no_kip'] ?? '-',
                 // Asal Sekolah
                 $row['npsn'] ?? '-',
                 $row['nama_asal_sekolah'] ?? '-',
@@ -668,8 +668,8 @@ class Dashboard extends BaseController
                       data_ibu.hp_ibu, data_ibu.status_ibu,
                       data_wali.nama_wali, data_wali.nik_wali, data_wali.pendidikan_wali,
                       data_wali.pekerjaan_wali, data_wali.penghasilan_wali,
-                      data_wali.hp_wali, data_wali.hubungan_wali,
-                      bansos_pendaftar.jenis_bansos, bansos_pendaftar.nama_bansos,
+                      data_wali.hp_wali,
+                      bansos_pendaftar.no_kks, bansos_pendaftar.no_pkh, bansos_pendaftar.no_kip,
                       asal_sekolah.npsn, asal_sekolah.nama_asal_sekolah, asal_sekolah.jenjang_sekolah,
                       asal_sekolah.status_sekolah, asal_sekolah.lokasi_sekolah, asal_sekolah.asal_jenjang')
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
