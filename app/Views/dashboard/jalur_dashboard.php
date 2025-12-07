@@ -258,6 +258,8 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
+                                    <th>Nomor Peserta</th>
+                                    <th>NISN</th>
                                     <th>
                                         <a href="?sort=nama_lengkap&dir=<?= $sortBy === 'nama_lengkap' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?>"
                                            class="text-white text-decoration-none">
@@ -316,6 +318,8 @@
                                     ?>
                                         <tr>
                                             <td><?= $startIndex + $index + 1 ?></td>
+                                            <td><strong><?= esc($reg['nomor_pendaftaran'] ?? '-') ?></strong></td>
+                                            <td><?= esc($reg['nisn'] ?? '-') ?></td>
                                             <td><strong><?= esc($reg['nama_lengkap']) ?></strong></td>
                                             <td>
                                                 <i class="<?= $reg['jenis_kelamin'] === 'L' ? 'icofont-boy' : 'icofont-girl' ?> me-1"></i>
@@ -323,7 +327,7 @@
                                             </td>
                                             <td><?= esc($reg['tempat_lahir'] ?? '-') ?></td>
                                             <td><?= !empty($reg['tanggal_lahir']) ? date('d/m/Y', strtotime($reg['tanggal_lahir'])) : '-' ?></td>
-                                            <td><?= esc($reg['asal_sekolah'] ?? '-') ?></td>
+                                            <td><?= esc($reg['nama_sekolah'] ?? '-') ?></td>
                                             <td><?= esc($reg['kecamatan'] ?? '-') ?></td>
                                             <td><?= date('d/m/Y', strtotime($reg['tanggal_daftar'])) ?></td>
                                             <td>
@@ -331,7 +335,7 @@
                                                    class="btn btn-sm btn-primary me-1" title="Lihat Detail">
                                                     <i class="icofont-eye"></i>
                                                 </a>
-                                                <a href="<?= base_url('pendaftaran/download-kartu/' . $reg['id_pendaftar']) ?>"
+                                                <a href="<?= base_url('pendaftaran/download-kartu/' . $reg['nomor_pendaftaran']) ?>"
                                                    class="btn btn-sm btn-success" title="Download Kartu">
                                                     <i class="icofont-download"></i>
                                                 </a>
@@ -340,7 +344,7 @@
                                     <?php endforeach; ?>
                                 <?php else: ?>
                                     <tr>
-                                        <td colspan="9" class="text-center py-4">
+                                        <td colspan="11" class="text-center py-4">
                                             <i class="icofont-info-circle me-2"></i> Belum ada pendaftar untuk jalur <?= esc($jalur) ?>
                                         </td>
                                     </tr>
