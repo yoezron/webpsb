@@ -31,6 +31,30 @@ $routes->group('admin', ['filter' => 'auth,role:superadmin'], function ($routes)
     $routes->get('users/edit/(:num)', 'Admin::editUser/$1');
     $routes->post('users/update/(:num)', 'Admin::updateUser/$1');
     $routes->get('users/delete/(:num)', 'Admin::deleteUser/$1');
+
+    // Pengumuman Management Routes
+    $routes->get('pengumuman', 'Pengumuman::index');
+    $routes->get('pengumuman/create', 'Pengumuman::create');
+    $routes->post('pengumuman/store', 'Pengumuman::store');
+    $routes->get('pengumuman/edit/(:num)', 'Pengumuman::edit/$1');
+    $routes->post('pengumuman/update/(:num)', 'Pengumuman::update/$1');
+    $routes->get('pengumuman/delete/(:num)', 'Pengumuman::delete/$1');
+    $routes->get('pengumuman/view/(:num)', 'Pengumuman::view/$1');
+    $routes->post('pengumuman/reply/(:num)', 'Pengumuman::adminReply/$1');
+    $routes->get('pengumuman/delete-reply/(:num)', 'Pengumuman::deleteReply/$1');
+    $routes->get('pengumuman/toggle-approval/(:num)', 'Pengumuman::toggleApproval/$1');
+});
+
+// Public Pengumuman Routes
+$routes->get('pengumuman', 'PengumumanPublic::index');
+$routes->get('pengumuman/(:num)', 'PengumumanPublic::show/$1');
+
+// API Pengumuman Routes (Public)
+$routes->group('api/pengumuman', function ($routes) {
+    $routes->post('reply/(:num)', 'PengumumanPublic::submitReply/$1');
+    $routes->post('like/(:num)', 'PengumumanPublic::toggleLikeAnnouncement/$1');
+    $routes->post('like-reply/(:num)', 'PengumumanPublic::toggleLikeReply/$1');
+    $routes->get('landing', 'PengumumanPublic::getForLanding');
 });
 
 // Pendaftaran Routes (Old - 2 Step Form)
