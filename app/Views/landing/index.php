@@ -298,6 +298,110 @@
             }
         }
 
+        /* Announcements Section */
+        .announcements-section {
+            background: #f8f9fa;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .section-subtitle {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .announcement-card-landing {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+        }
+
+        .announcement-card-landing:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .announcement-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .announcement-img-placeholder {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .announcement-card-body {
+            padding: 20px;
+        }
+
+        .announcement-card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .announcement-card-title a {
+            color: #333;
+            text-decoration: none;
+        }
+
+        .announcement-card-title a:hover {
+            color: var(--primary-green);
+        }
+
+        .announcement-card-meta {
+            color: #888;
+            font-size: 0.85rem;
+            margin-bottom: 10px;
+        }
+
+        .announcement-card-text {
+            color: #555;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .announcement-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .announcement-stats {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .btn-read-more-landing {
+            color: var(--primary-green);
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .btn-read-more-landing:hover {
+            color: var(--dark-green);
+        }
+
         /* Footer */
         .footer {
             background: #222;
@@ -367,6 +471,67 @@
             </div>
         </div>
     </section>
+
+    <!-- Announcements Section -->
+    <?php if (!empty($announcements)) : ?>
+    <section class="announcements-section py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center mb-4">
+                    <h2 class="section-title"><i class="icofont-megaphone me-2"></i>Pengumuman Terbaru</h2>
+                    <p class="section-subtitle">Informasi penting untuk calon santri dan orang tua</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <?php foreach ($announcements as $announcement) : ?>
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="announcement-card-landing">
+                        <?php if ($announcement['gambar']) : ?>
+                            <img src="<?= base_url('uploads/pengumuman/' . $announcement['gambar']) ?>" class="announcement-img" alt="<?= esc($announcement['judul']) ?>">
+                        <?php else : ?>
+                            <div class="announcement-img-placeholder">
+                                <i class="icofont-megaphone"></i>
+                            </div>
+                        <?php endif; ?>
+                        <div class="announcement-card-body">
+                            <h4 class="announcement-card-title">
+                                <a href="<?= base_url('/pengumuman/' . $announcement['id_pengumuman']) ?>">
+                                    <?= esc($announcement['judul']) ?>
+                                </a>
+                            </h4>
+                            <p class="announcement-card-meta">
+                                <i class="icofont-calendar me-1"></i>
+                                <?= date('d M Y', strtotime($announcement['created_at'])) ?>
+                            </p>
+                            <p class="announcement-card-text">
+                                <?= esc(substr(strip_tags($announcement['konten']), 0, 100)) ?>...
+                            </p>
+                            <div class="announcement-card-footer">
+                                <span class="announcement-stats">
+                                    <i class="icofont-heart text-danger"></i> <?= $announcement['likes_count'] ?>
+                                    <i class="icofont-comment ms-2"></i> <?= $announcement['replies_count'] ?>
+                                </span>
+                                <a href="<?= base_url('/pengumuman/' . $announcement['id_pengumuman']) ?>" class="btn-read-more-landing">
+                                    Selengkapnya <i class="icofont-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-12 text-center mt-3">
+                    <a href="<?= base_url('/pengumuman') ?>" class="btn btn-outline-success btn-lg">
+                        <i class="icofont-listine-dots me-2"></i>Lihat Semua Pengumuman
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
 
     <!-- Features Section -->
     <section class="features-section">
