@@ -68,7 +68,7 @@ class PengumumanBalasanModel extends Model
     public function getRepliesForAnnouncement($idPengumuman, $approvedOnly = true)
     {
         $builder = $this->where('id_pengumuman', $idPengumuman)
-            ->whereNull('parent_id');
+            ->where('parent_id IS NULL');
 
         if ($approvedOnly) {
             $builder->where('is_approved', true);
