@@ -127,7 +127,8 @@ class PengumumanPublic extends BaseController
             return $this->response->setJSON([
                 'success' => false,
                 'message' => 'Validasi gagal',
-                'errors' => $this->validator->getErrors()
+                'errors' => $this->validator->getErrors(),
+                'csrf_token' => csrf_hash()
             ]);
         }
 
@@ -143,7 +144,8 @@ class PengumumanPublic extends BaseController
 
         return $this->response->setJSON([
             'success' => true,
-            'message' => 'Pertanyaan/balasan Anda berhasil dikirim'
+            'message' => 'Pertanyaan/balasan Anda berhasil dikirim',
+            'csrf_token' => csrf_hash()
         ]);
     }
 
@@ -169,7 +171,8 @@ class PengumumanPublic extends BaseController
         return $this->response->setJSON([
             'success' => true,
             'action' => $result['action'],
-            'count' => $result['count']
+            'count' => $result['count'],
+            'csrf_token' => csrf_hash()
         ]);
     }
 
@@ -202,7 +205,8 @@ class PengumumanPublic extends BaseController
         return $this->response->setJSON([
             'success' => true,
             'action' => $result['action'],
-            'count' => $result['count']
+            'count' => $result['count'],
+            'csrf_token' => csrf_hash()
         ]);
     }
 

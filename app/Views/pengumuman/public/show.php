@@ -392,6 +392,15 @@
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
     <script>
         const announcementId = <?= $announcement['id_pengumuman'] ?>;
+        const csrfName = '<?= csrf_token() ?>';
+        let csrfHash = '<?= csrf_hash() ?>';
+
+        // Update CSRF token from response
+        function updateCsrfToken(newToken) {
+            if (newToken) {
+                csrfHash = newToken;
+            }
+        }
 
         // Show toast notification
         function showToast(message, type = 'success') {
@@ -416,15 +425,20 @@
 
         // Toggle main announcement like
         function toggleMainLike() {
+            const formData = new URLSearchParams();
+            formData.append(csrfName, csrfHash);
+
             fetch('<?= base_url('/api/pengumuman/like/') ?>' + announcementId, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded',
                         'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    },
+                    body: formData
                 })
                 .then(response => response.json())
                 .then(data => {
+                    updateCsrfToken(data.csrf_token);
                     if (data.success) {
                         document.getElementById('mainLikeCount').textContent = data.count;
                         const btn = document.getElementById('mainLikeBtn');
@@ -440,15 +454,20 @@
 
         // Toggle reply like
         function toggleReplyLike(replyId, btn) {
+            const formData = new URLSearchParams();
+            formData.append(csrfName, csrfHash);
+
             fetch('<?= base_url('/api/pengumuman/like-reply/') ?>' + replyId, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded',
                         'X-Requested-With': 'XMLHttpRequest'
-                    }
+                    },
+                    body: formData
                 })
                 .then(response => response.json())
                 .then(data => {
+                    updateCsrfToken(data.csrf_token);
                     if (data.success) {
                         const countEl = btn.querySelector('span');
                         countEl.textContent = data.count;
@@ -466,11 +485,11 @@
         document.getElementById('replyForm').addEventListener('submit', function(e) {
             e.preventDefault();
 
-            const formData = {
-                nama_pengirim: document.getElementById('nama_pengirim').value,
-                email_pengirim: document.getElementById('email_pengirim').value,
-                isi_balasan: document.getElementById('isi_balasan').value
-            };
+            const formData = new URLSearchParams();
+            formData.append(csrfName, csrfHash);
+            formData.append('nama_pengirim', document.getElementById('nama_pengirim').value);
+            formData.append('email_pengirim', document.getElementById('email_pengirim').value);
+            formData.append('isi_balasan', document.getElementById('isi_balasan').value);
 
             fetch('<?= base_url('/api/pengumuman/reply/') ?>' + announcementId, {
                     method: 'POST',
@@ -478,10 +497,11 @@
                         'Content-Type': 'application/x-www-form-urlencoded',
                         'X-Requested-With': 'XMLHttpRequest'
                     },
-                    body: new URLSearchParams(formData)
+                    body: formData
                 })
                 .then(response => response.json())
                 .then(data => {
+                    updateCsrfToken(data.csrf_token);
                     if (data.success) {
                         showToast(data.message, 'success');
                         // Clear form
