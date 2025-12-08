@@ -195,6 +195,11 @@
                             <i class="icofont-graduate-alt me-1"></i> Mu'allimin
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= base_url('/admin/pengumuman') ?>">
+                            <i class="icofont-megaphone me-1"></i> Pengumuman
+                        </a>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="icofont-user-alt-4 me-1"></i> <?= esc($user['nama_lengkap']) ?>
