@@ -23,7 +23,7 @@ $routes->group('dashboard', ['filter' => 'auth'], function ($routes) {
 });
 
 // Admin Management Routes (Superadmin Only)
-$routes->group('admin', ['filter' => 'auth,role:superadmin'], function ($routes) {
+$routes->group('admin', ['filter' => ['auth', 'role:superadmin']], function ($routes) {
     $routes->get('/', 'Admin::index');
     $routes->get('users', 'Admin::users');
     $routes->get('users/add', 'Admin::addUser');
