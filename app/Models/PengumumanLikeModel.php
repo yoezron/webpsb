@@ -47,7 +47,7 @@ class PengumumanLikeModel extends Model
     {
         return $this->where('id_pengumuman', $idPengumuman)
             ->where('session_id', $sessionId)
-            ->whereNull('id_balasan')
+            ->where('id_balasan IS NULL')
             ->countAllResults() > 0;
     }
 
@@ -68,7 +68,7 @@ class PengumumanLikeModel extends Model
     {
         $existingLike = $this->where('id_pengumuman', $idPengumuman)
             ->where('session_id', $sessionId)
-            ->whereNull('id_balasan')
+            ->where('id_balasan IS NULL')
             ->first();
 
         if ($existingLike) {
@@ -122,7 +122,7 @@ class PengumumanLikeModel extends Model
     public function countAnnouncementLikes($idPengumuman)
     {
         return $this->where('id_pengumuman', $idPengumuman)
-            ->whereNull('id_balasan')
+            ->where('id_balasan IS NULL')
             ->countAllResults();
     }
 
@@ -165,7 +165,7 @@ class PengumumanLikeModel extends Model
     public function getUserLikedAnnouncements($sessionId)
     {
         return $this->where('session_id', $sessionId)
-            ->whereNull('id_balasan')
+            ->where('id_balasan IS NULL')
             ->findColumn('id_pengumuman') ?? [];
     }
 
