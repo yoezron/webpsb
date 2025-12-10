@@ -86,9 +86,9 @@
 
         <!-- HP Ibu -->
         <div class="col-md-6 mb-3">
-            <label for="hp_ibu" class="form-label">Nomor HP/WhatsApp Ibu</label>
+            <label for="hp_ibu" class="form-label">Nomor HP/WhatsApp Ibu <span class="text-danger">*</span></label>
             <input type="text" class="form-control numeric-only" id="hp_ibu" name="hp_ibu"
-                value="<?= old('hp_ibu') ?>" placeholder="Contoh: 08123456789" maxlength="20">
+                value="<?= old('hp_ibu') ?>" placeholder="Contoh: 08123456789" maxlength="20" required>
         </div>
 
         <!-- Alamat Ibu -->

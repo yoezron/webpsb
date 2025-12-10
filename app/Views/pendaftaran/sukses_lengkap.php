@@ -430,8 +430,12 @@
                 <div class="text-center mt-4" style="color: #666; font-size: 0.9rem;">
                     <p>Jika ada pertanyaan, silakan hubungi panitia PSB di:</p>
                     <p>
-                        <i class="icofont-phone"></i> 0813-2020-6395 |
+                        <i class="icofont-whatsapp"></i> +6281320206395 |
                         <i class="icofont-email"></i> pesantrenpersis31@gmail.com
+                    </p>
+                    <p style="font-size: 0.85rem;">
+                        <i class="icofont-location-pin"></i> Jl. Pajagalan No. 115, Banjaran |
+                        <i class="icofont-web"></i> psb.mapersis31banjaran.sch.id
                     </p>
                 </div>
             </div>

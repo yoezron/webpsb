@@ -7,9 +7,9 @@
     <div class="row">
         <!-- Nama Asal Sekolah -->
         <div class="col-md-12 mb-3">
-            <label for="nama_asal_sekolah" class="form-label">Nama Sekolah Asal</label>
+            <label for="nama_asal_sekolah" class="form-label">Nama Sekolah Asal <span class="text-danger">*</span></label>
             <input type="text" class="form-control" id="nama_asal_sekolah" name="nama_asal_sekolah"
-                value="<?= old('nama_asal_sekolah') ?>" placeholder="Masukkan nama lengkap sekolah asal">
+                value="<?= old('nama_asal_sekolah') ?>" placeholder="Masukkan nama lengkap sekolah asal" required>
         </div>
 
         <!-- Jenjang Sekolah -->
