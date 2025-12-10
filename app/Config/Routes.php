@@ -70,6 +70,14 @@ $routes->get('pendaftaran/download-pdf/(:any)', 'PendaftaranLengkap::downloadPdf
 $routes->get('pendaftaran/download-kartu/(:any)', 'PendaftaranLengkap::downloadKartu/$1');
 $routes->get('pendaftaran/success/(:any)', 'PendaftaranLengkap::sukses/$1');
 
+// Update Data Pendaftar Routes (Self-Service Update)
+$routes->get('update-data', 'UpdateDataPendaftar::index');
+$routes->post('update-data/verifikasi', 'UpdateDataPendaftar::verifikasi');
+$routes->get('update-data/edit', 'UpdateDataPendaftar::edit');
+$routes->post('update-data/update', 'UpdateDataPendaftar::update');
+$routes->get('update-data/sukses/(:any)', 'UpdateDataPendaftar::sukses/$1');
+$routes->get('update-data/batal', 'UpdateDataPendaftar::batal');
+
 // ============================================================
 // Authentication Routes
 // ============================================================

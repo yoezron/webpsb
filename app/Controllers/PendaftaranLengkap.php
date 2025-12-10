@@ -777,7 +777,7 @@ class PendaftaranLengkap extends BaseController
             // =====================================================
             'nama_lengkap' => 'required|min_length[3]|max_length[150]',
             'jenis_kelamin' => 'required|in_list[L,P]',
-            'nisn' => 'permit_empty|numeric|exact_length[10]',
+            'nisn' => 'required|numeric|exact_length[10]',
             'nik' => 'permit_empty|numeric|exact_length[16]',
             'tempat_lahir' => 'permit_empty|max_length[100]',
             'tanggal_lahir' => 'permit_empty|valid_date[Y-m-d]',
@@ -889,6 +889,7 @@ class PendaftaranLengkap extends BaseController
                 'in_list' => 'Jenis kelamin tidak valid.',
             ],
             'nisn' => [
+                'required' => 'NISN wajib diisi.',
                 'numeric' => 'NISN harus berupa angka.',
                 'exact_length' => 'NISN harus 10 digit.',
             ],
