@@ -38,7 +38,7 @@ $routes->group('admin', ['filter' => ['auth', 'role:superadmin']], function ($ro
     $routes->post('pengumuman/store', 'Pengumuman::store');
     $routes->get('pengumuman/edit/(:num)', 'Pengumuman::edit/$1');
     $routes->post('pengumuman/update/(:num)', 'Pengumuman::update/$1');
-    $routes->get('pengumuman/delete/(:num)', 'Pengumuman::delete/$1');
+    $routes->post('pengumuman/delete/(:num)', 'Pengumuman::delete/$1');
     $routes->get('pengumuman/view/(:num)', 'Pengumuman::view/$1');
     $routes->post('pengumuman/reply/(:num)', 'Pengumuman::adminReply/$1');
     $routes->get('pengumuman/delete-reply/(:num)', 'Pengumuman::deleteReply/$1');

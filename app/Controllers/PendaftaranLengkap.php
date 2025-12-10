@@ -43,7 +43,7 @@ class PendaftaranLengkap extends BaseController
             'title' => 'Pendaftaran Tsanawiyyah - Pesantren Persatuan Islam 31 Banjaran',
             'jalur' => 'TSANAWIYYAH',
             'jalur_label' => 'Tsanawiyyah',
-            'year' => date('Y'),
+            'year' => 2026,
         ];
 
         return view('pendaftaran/form_lengkap', $data);
@@ -58,7 +58,7 @@ class PendaftaranLengkap extends BaseController
             'title' => 'Pendaftaran Mu\'allimin - Pesantren Persatuan Islam 31 Banjaran',
             'jalur' => 'MUALLIMIN',
             'jalur_label' => 'Mu\'allimin',
-            'year' => date('Y'),
+            'year' => 2026,
         ];
 
         return view('pendaftaran/form_lengkap', $data);
@@ -485,7 +485,7 @@ class PendaftaranLengkap extends BaseController
             'wali' => $wali,
             'bansos' => $bansos,
             'sekolah' => $sekolah,
-            'year' => date('Y'),
+            'year' => 2026,
         ];
 
         return view('pendaftaran/sukses_lengkap', $data);
@@ -820,7 +820,7 @@ class PendaftaranLengkap extends BaseController
             'pendidikan_ayah' => 'permit_empty|in_list[Tidak Sekolah,SD/MI,SMP/MTs,SMA/MA/SMK,D1,D2,D3,D4/S1,S2,S3]',
             'pekerjaan_ayah' => 'permit_empty|max_length[100]',
             'penghasilan_ayah' => 'permit_empty|in_list[< 1 juta,1-2 juta,2-3 juta,3-5 juta,5-10 juta,> 10 juta,Tidak Berpenghasilan]',
-            'hp_ayah' => 'permit_empty|max_length[20]',
+            'hp_ayah' => 'required|max_length[20]',
             'alamat_ayah' => 'permit_empty|max_length[500]',
 
             // =====================================================
@@ -834,7 +834,7 @@ class PendaftaranLengkap extends BaseController
             'pendidikan_ibu' => 'permit_empty|in_list[Tidak Sekolah,SD/MI,SMP/MTs,SMA/MA/SMK,D1,D2,D3,D4/S1,S2,S3]',
             'pekerjaan_ibu' => 'permit_empty|max_length[100]',
             'penghasilan_ibu' => 'permit_empty|in_list[< 1 juta,1-2 juta,2-3 juta,3-5 juta,5-10 juta,> 10 juta,Tidak Berpenghasilan]',
-            'hp_ibu' => 'permit_empty|max_length[20]',
+            'hp_ibu' => 'required|max_length[20]',
             'alamat_ibu' => 'permit_empty|max_length[500]',
 
             // =====================================================
@@ -858,7 +858,7 @@ class PendaftaranLengkap extends BaseController
             // =====================================================
             // Section 7: Data Asal Sekolah (asal_sekolah table)
             // =====================================================
-            'nama_asal_sekolah' => 'permit_empty|max_length[200]',
+            'nama_asal_sekolah' => 'required|max_length[200]',
             'jenjang_sekolah' => 'permit_empty|in_list[SD,MI,SMP,MTs,Paket A,Paket B,Lainnya]',
             'status_sekolah' => 'permit_empty|in_list[Negeri,Swasta]',
             'npsn' => 'permit_empty|numeric|exact_length[8]',
@@ -928,6 +928,10 @@ class PendaftaranLengkap extends BaseController
             'tanggal_lahir_ayah' => [
                 'valid_date' => 'Format tanggal lahir ayah tidak valid.',
             ],
+            'hp_ayah' => [
+                'required' => 'No. HP Ayah wajib diisi.',
+                'max_length' => 'No. HP Ayah maksimal 20 karakter.',
+            ],
 
             // Data Ibu
             'nik_ibu' => [
@@ -936,6 +940,10 @@ class PendaftaranLengkap extends BaseController
             ],
             'tanggal_lahir_ibu' => [
                 'valid_date' => 'Format tanggal lahir ibu tidak valid.',
+            ],
+            'hp_ibu' => [
+                'required' => 'No. HP Ibu wajib diisi.',
+                'max_length' => 'No. HP Ibu maksimal 20 karakter.',
             ],
 
             // Data Wali
@@ -949,6 +957,10 @@ class PendaftaranLengkap extends BaseController
             ],
 
             // Data Sekolah
+            'nama_asal_sekolah' => [
+                'required' => 'Nama asal sekolah wajib diisi.',
+                'max_length' => 'Nama asal sekolah maksimal 200 karakter.',
+            ],
             'npsn' => [
                 'numeric' => 'NPSN harus berupa angka.',
                 'exact_length' => 'NPSN harus 8 digit.',

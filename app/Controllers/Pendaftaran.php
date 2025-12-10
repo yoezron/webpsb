@@ -41,7 +41,7 @@ class Pendaftaran extends BaseController
             'title' => 'Pendaftaran Tsanawiyyah - Pesantren Persatuan Islam 31 Banjaran',
             'jalur' => 'TSANAWIYYAH',
             'jalur_label' => 'Tsanawiyyah',
-            'year' => date('Y'),
+            'year' => 2026,
             'session_data' => $sessionData,
             'validation' => $this->validator,
         ];
@@ -72,7 +72,7 @@ class Pendaftaran extends BaseController
             'title' => 'Pendaftaran Mu\'allimin - Pesantren Persatuan Islam 31 Banjaran',
             'jalur' => 'MUALLIMIN',
             'jalur_label' => 'Mu\'allimin',
-            'year' => date('Y'),
+            'year' => 2026,
             'session_data' => $sessionData,
             'validation' => $this->validator,
         ];
@@ -228,7 +228,7 @@ class Pendaftaran extends BaseController
         $data = [
             'title' => 'Pendaftaran Berhasil - Pesantren Persatuan Islam 31 Banjaran',
             'pendaftar' => $pendaftar,
-            'year' => date('Y'),
+            'year' => 2026,
         ];
 
         return view('pendaftaran/sukses', $data);

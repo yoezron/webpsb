@@ -86,9 +86,9 @@
 
         <!-- HP Ayah -->
         <div class="col-md-6 mb-3">
-            <label for="hp_ayah" class="form-label">Nomor HP/WhatsApp Ayah</label>
+            <label for="hp_ayah" class="form-label">Nomor HP/WhatsApp Ayah <span class="text-danger">*</span></label>
             <input type="text" class="form-control numeric-only" id="hp_ayah" name="hp_ayah"
-                value="<?= old('hp_ayah') ?>" placeholder="Contoh: 08123456789" maxlength="20">
+                value="<?= old('hp_ayah') ?>" placeholder="Contoh: 08123456789" maxlength="20" required>
         </div>
 
         <!-- Alamat Ayah -->

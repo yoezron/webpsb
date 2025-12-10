@@ -310,13 +310,13 @@
             <?php endif; ?>
             <h1>PESANTREN PERSATUAN ISLAM 31</h1>
             <h2>BANJARAN</h2>
-            <p>Jl. Pajagalan No. 115, Banjaran, Kabupaten Bandung, Jawa Barat 40377</p>
-            <p>Telp: (022) 5940303 | Email: pesantrenpersis31@gmail.com | Website: mapersis31banjaran.sch.id</p>
+            <p>Jl. Pajagalan No. 115, Banjaran</p>
+            <p>WA: +6281320206395 | Email: pesantrenpersis31@gmail.com | Website: psb.mapersis31banjaran.sch.id</p>
         </div>
 
         <!-- Card Title -->
         <div class="card-title">KARTU BUKTI PENDAFTARAN<br>
-            <span style="font-size: 11pt; font-weight: normal;">Tahun Ajaran <?= date('Y') ?>/<?= date('Y') + 1 ?></span>
+            <span style="font-size: 11pt; font-weight: normal;">Tahun Ajaran 2026/2027</span>
         </div>
 
         <!-- Nomor Pendaftaran & QR Code -->
