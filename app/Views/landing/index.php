@@ -641,7 +641,10 @@
                     </h3>
                     <div class="cta-buttons justify-content-center">
                         <a href="<?= base_url('daftar/tsanawiyyah') ?>" class="btn btn-primary-custom">
-                            <i class="icofont-book-alt"></i> Daftar Sekarang
+                            <i class="icofont-book-alt"></i> Daftar Tsanawiyyah
+                        </a>
+                        <a href="<?= base_url('daftar/muallimin') ?>" class="btn btn-secondary-custom">
+                            <i class="icofont-graduate-alt"></i> Daftar Mu'allimin
                         </a>
                     </div>
                 </div>
