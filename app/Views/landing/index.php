@@ -466,6 +466,16 @@
                                 <i class="icofont-graduate-alt"></i> Daftar Tingkat Mu'allimin
                             </a>
                         </div>
+
+                        <!-- Update Data Link -->
+                        <div class="mt-4 animate__animated animate__fadeInUp">
+                            <a href="<?= base_url('update-data') ?>" class="btn btn-outline-light btn-lg" style="border-radius: 50px; padding: 12px 30px; font-weight: 600;">
+                                <i class="icofont-edit"></i> Perbarui Data Pendaftaran
+                            </a>
+                            <p class="mt-2" style="font-size: 0.9rem; opacity: 0.8;">
+                                Sudah mendaftar? Perbarui data Anda di sini
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
