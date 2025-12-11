@@ -183,4 +183,28 @@
             hideLoading();
         }
     }
+
+    /**
+     * Auto-hide loading on page show (handles back/forward button navigation)
+     * This fixes the issue where loading spinner stays visible after clicking back
+     */
+    window.addEventListener('pageshow', function(event) {
+        // Hide loading overlay when page is shown (including from bfcache)
+        hideLoading();
+
+        // Reset any button loading states
+        document.querySelectorAll('.btn-loading').forEach(function(btn) {
+            btn.classList.remove('btn-loading');
+            btn.disabled = false;
+            const originalText = btn.getAttribute('data-original-text');
+            if (originalText) {
+                btn.innerHTML = originalText;
+            }
+        });
+    });
+
+    // Also hide on DOMContentLoaded as fallback
+    document.addEventListener('DOMContentLoaded', function() {
+        hideLoading();
+    });
 </script>
