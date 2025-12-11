@@ -84,6 +84,7 @@ class PendaftarModel extends Model
 
     /**
      * Generate nomor pendaftaran otomatis
+     * Format: T2026-001 (Tsanawiyyah) atau M2026-001 (Mu'allimin)
      */
     protected function generateNomorPendaftaran(array $data)
     {
@@ -92,12 +93,12 @@ class PendaftarModel extends Model
         }
 
         $jalur = $data['data']['jalur_pendaftaran'] ?? '';
-        $tahun = date('Y');
+        // Tahun ajaran PSB 2026/2027
+        $tahunPSB = 2026;
         $prefix = ($jalur === 'TSANAWIYYAH') ? 'T' : 'M';
 
-        // Get last number
-        $lastPendaftar = $this->where('jalur_pendaftaran', $jalur)
-            ->where('YEAR(tanggal_daftar)', $tahun)
+        // Get last number for this jalur and tahun PSB
+        $lastPendaftar = $this->like('nomor_pendaftaran', $prefix . $tahunPSB, 'after')
             ->orderBy('id_pendaftar', 'DESC')
             ->first();
 
@@ -107,7 +108,7 @@ class PendaftarModel extends Model
             $counter = 1;
         }
 
-        $data['data']['nomor_pendaftaran'] = sprintf('%s%s-%03d', $prefix, $tahun, $counter);
+        $data['data']['nomor_pendaftaran'] = sprintf('%s%s-%03d', $prefix, $tahunPSB, $counter);
 
         return $data;
     }
