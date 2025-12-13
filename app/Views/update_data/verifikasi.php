@@ -279,7 +279,7 @@
                 <div class="mb-4">
                     <label for="nomor_pendaftaran" class="form-label required">Nomor Pendaftaran</label>
                     <input type="text" class="form-control" id="nomor_pendaftaran" name="nomor_pendaftaran"
-                        value="<?= old('nomor_pendaftaran') ?>" placeholder="Contoh: T2026-001 atau M2026-001" required>
+                        value="<?= old('nomor_pendaftaran') ?>" placeholder="Contoh: T-26270001 atau M-26270001" required>
                     <div class="form-text">Nomor pendaftaran yang Anda terima saat mendaftar.</div>
                 </div>
 
