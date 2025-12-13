@@ -101,6 +101,9 @@ $routes->group('dashboard', ['filter' => 'auth'], function ($routes) {
     // Detail pendaftar
     $routes->get('detail/(:num)', 'Dashboard::detail/$1');
 
+    // Delete pendaftar (Superadmin only - hard delete)
+    $routes->post('delete/(:num)', 'Dashboard::delete/$1', ['filter' => 'role:superadmin']);
+
     // Export routes
     $routes->get('export-csv', 'Dashboard::exportCsv');
     $routes->get('export-excel', 'Dashboard::exportExcel');

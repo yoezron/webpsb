@@ -401,9 +401,16 @@
                                                     <i class="icofont-eye"></i>
                                                 </a>
                                                 <a href="<?= base_url('pendaftaran/download-kartu/' . $reg['nomor_pendaftaran']) ?>"
-                                                   class="btn btn-sm btn-success" title="Download Kartu">
+                                                   class="btn btn-sm btn-success me-1" title="Download Kartu">
                                                     <i class="icofont-download"></i>
                                                 </a>
+                                                <button type="button" class="btn btn-sm btn-danger btn-delete"
+                                                        data-id="<?= $reg['id_pendaftar'] ?>"
+                                                        data-nama="<?= esc($reg['nama_lengkap']) ?>"
+                                                        data-nomor="<?= esc($reg['nomor_pendaftaran']) ?>"
+                                                        title="Hapus Permanen">
+                                                    <i class="icofont-trash"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -437,6 +444,45 @@
 
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title" id="deleteModalLabel">
+                        <i class="icofont-warning me-2"></i> Konfirmasi Hapus Permanen
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <i class="icofont-trash text-danger" style="font-size: 4rem;"></i>
+                    </div>
+                    <p class="text-center mb-2">Apakah Anda yakin ingin menghapus data pendaftar berikut?</p>
+                    <div class="alert alert-warning">
+                        <strong>Nama:</strong> <span id="delete-nama"></span><br>
+                        <strong>Nomor Peserta:</strong> <span id="delete-nomor"></span>
+                    </div>
+                    <div class="alert alert-danger mb-0">
+                        <i class="icofont-warning me-1"></i>
+                        <strong>Peringatan:</strong> Data yang dihapus tidak dapat dikembalikan!
+                        Semua data terkait (alamat, data orang tua, data wali, bansos, dan asal sekolah) akan ikut terhapus.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="icofont-close me-1"></i> Batal
+                    </button>
+                    <form id="deleteForm" method="POST" style="display: inline;">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="icofont-trash me-1"></i> Ya, Hapus Permanen
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Include Components -->
     <?php include APPPATH . 'Views/components/toast.php'; ?>
     <?php include APPPATH . 'Views/components/loading.php'; ?>
@@ -466,6 +512,34 @@
                         showLoading('Memuat detail...');
                     }
                 });
+            });
+
+            // Delete button handler
+            const deleteButtons = document.querySelectorAll('.btn-delete');
+            const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+            const deleteForm = document.getElementById('deleteForm');
+
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const nama = this.getAttribute('data-nama');
+                    const nomor = this.getAttribute('data-nomor');
+
+                    // Update modal content
+                    document.getElementById('delete-nama').textContent = nama;
+                    document.getElementById('delete-nomor').textContent = nomor;
+
+                    // Update form action
+                    deleteForm.setAttribute('action', '<?= base_url('dashboard/delete/') ?>' + id);
+
+                    // Show modal
+                    deleteModal.show();
+                });
+            });
+
+            // Add loading state when deleting
+            deleteForm.addEventListener('submit', function(e) {
+                showLoading('Menghapus data...');
             });
 
             // Accessibility: Add aria-labels

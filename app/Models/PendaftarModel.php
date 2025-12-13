@@ -149,7 +149,7 @@ class PendaftarModel extends Model
     public function getStatistik()
     {
         $db = \Config\Database::connect();
-        
+
         return [
             'total' => $this->countAll(),
             'tsanawiyyah' => $this->where('jalur_pendaftaran', 'TSANAWIYYAH')->countAllResults(),
@@ -157,5 +157,39 @@ class PendaftarModel extends Model
             'laki_laki' => $this->where('jenis_kelamin', 'L')->countAllResults(),
             'perempuan' => $this->where('jenis_kelamin', 'P')->countAllResults(),
         ];
+    }
+
+    /**
+     * Hard delete pendaftar and all related data
+     * This will permanently delete data from all 7 tables
+     *
+     * @param int $id ID pendaftar
+     * @return bool
+     */
+    public function hardDeletePendaftar($id)
+    {
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        try {
+            // Delete from related tables first (foreign key order)
+            $db->table('alamat_pendaftar')->where('id_pendaftar', $id)->delete();
+            $db->table('data_ayah')->where('id_pendaftar', $id)->delete();
+            $db->table('data_ibu')->where('id_pendaftar', $id)->delete();
+            $db->table('data_wali')->where('id_pendaftar', $id)->delete();
+            $db->table('bansos_pendaftar')->where('id_pendaftar', $id)->delete();
+            $db->table('asal_sekolah')->where('id_pendaftar', $id)->delete();
+
+            // Finally delete from main pendaftar table (hard delete, bypass soft delete)
+            $db->table('pendaftar')->where('id_pendaftar', $id)->delete();
+
+            $db->transComplete();
+
+            return $db->transStatus();
+        } catch (\Exception $e) {
+            $db->transRollback();
+            log_message('error', 'Hard delete failed for pendaftar ID ' . $id . ': ' . $e->getMessage());
+            return false;
+        }
     }
 }
