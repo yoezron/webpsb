@@ -972,6 +972,48 @@ class Dashboard extends BaseController
     }
 
     /**
+     * Delete Pendaftar - Hard delete from database (Superadmin only)
+     *
+     * @param int $id ID pendaftar
+     * @return \CodeIgniter\HTTP\RedirectResponse
+     */
+    public function delete($id)
+    {
+        // Check if user is superadmin
+        $role = $this->session->get('role_panitia');
+        if ($role !== 'superadmin') {
+            return redirect()->to('/dashboard')
+                ->with('error', 'Anda tidak memiliki akses untuk menghapus data');
+        }
+
+        // Get pendaftar data first for logging
+        $pendaftar = $this->pendaftarModel->find($id);
+
+        if (!$pendaftar) {
+            return redirect()->to('/dashboard')
+                ->with('error', 'Data pendaftar tidak ditemukan');
+        }
+
+        // Store pendaftar info for flash message
+        $namaPendaftar = $pendaftar['nama_lengkap'];
+        $nomorPendaftaran = $pendaftar['nomor_pendaftaran'];
+
+        // Perform hard delete
+        $result = $this->pendaftarModel->hardDeletePendaftar($id);
+
+        if ($result) {
+            // Log the deletion
+            log_message('info', "Pendaftar deleted by superadmin: {$namaPendaftar} ({$nomorPendaftaran}) - ID: {$id} - By: " . $this->session->get('username'));
+
+            return redirect()->to('/dashboard')
+                ->with('success', "Data pendaftar {$namaPendaftar} ({$nomorPendaftaran}) berhasil dihapus permanen");
+        } else {
+            return redirect()->to('/dashboard')
+                ->with('error', 'Gagal menghapus data pendaftar. Silakan coba lagi.');
+        }
+    }
+
+    /**
      * Helper: Get current user data from session
      */
     private function getUserData(): array
