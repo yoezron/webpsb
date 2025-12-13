@@ -252,6 +252,7 @@
                     <span class="reg-number"><?= esc($pendaftar['nomor_pendaftaran']) ?></span>
                 </div>
                 <div style="font-size: 8pt; margin-top: 5px; color: #666;">
+                    Jalur: <strong><?= esc($pendaftar['jalur_pendaftaran'] ?? '-') ?></strong><br>
                     Tgl: <?= date('d/m/Y', strtotime($pendaftar['tanggal_daftar'])) ?>
                 </div>
             </td>
@@ -303,10 +304,29 @@
                 <td class="td-value">Hobi: <?= esc($pendaftar['hobi'] ?? '-') ?> / Cita-cita: <?= esc($pendaftar['cita_cita'] ?? '-') ?></td>
             </tr>
             <tr>
+                <td class="td-label">Minat & Bakat</td>
+                <td class="td-sep">:</td>
+                <td class="td-value"><?= esc($pendaftar['minat_bakat'] ?: '-') ?></td>
+            </tr>
+            <tr>
+                <td class="td-label">Yang Membiayai Sekolah</td>
+                <td class="td-sep">:</td>
+                <td class="td-value"><?= esc($pendaftar['yang_membiayai_sekolah'] ?? '-') ?></td>
+            </tr>
+            <tr>
+                <td class="td-label">Riwayat Pendidikan Awal</td>
+                <td class="td-sep">:</td>
+                <td class="td-value">
+                    Pernah PAUD: <?= !empty($pendaftar['pernah_paud']) ? 'Ya' : 'Tidak' ?> /
+                    Pernah TK: <?= !empty($pendaftar['pernah_tk']) ? 'Ya' : 'Tidak' ?>
+                </td>
+            </tr>
+            <tr>
                 <td class="td-label">Data Kesehatan</td>
                 <td class="td-sep">:</td>
                 <td class="td-value">
                     Disabilitas: <?= esc($pendaftar['kebutuhan_disabilitas'] ?: 'Tidak ada') ?> <br>
+                    Kebutuhan Khusus: <?= esc($pendaftar['kebutuhan_khusus'] ?: 'Tidak ada') ?> <br>
                     Riwayat Imunisasi: <?= esc($pendaftar['imunisasi'] ?: '-') ?>
                 </td>
             </tr>
@@ -331,15 +351,26 @@
                     <td class="td-value"><?= esc($alamat['nomor_kk'] ?? '-') ?></td>
                 </tr>
                 <tr>
+                    <td class="td-label">Nama Kepala Keluarga</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($alamat['nama_kepala_keluarga'] ?? '-') ?></td>
+                </tr>
+                <tr>
                     <td class="td-label">Jenis Tempat Tinggal</td>
                     <td class="td-sep">:</td>
                     <td class="td-value"><?= esc($alamat['jenis_tempat_tinggal'] ?? '-') ?></td>
                 </tr>
                 <tr>
+                    <td class="td-label">Tinggal Bersama</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($alamat['tinggal_bersama'] ?? '-') ?></td>
+                </tr>
+                <tr>
                     <td class="td-label">Alamat Lengkap</td>
                     <td class="td-sep">:</td>
                     <td class="td-value">
-                        <?= esc($alamat['alamat'] ?? '-') ?><br>
+                        <?= esc($alamat['alamat'] ?? '-') ?>
+                        <?= !empty($alamat['rt_rw']) ? ' RT/RW: ' . esc($alamat['rt_rw']) : '' ?><br>
                         Desa <?= esc($alamat['desa'] ?? '-') ?>, Kec. <?= esc($alamat['kecamatan'] ?? '-') ?><br>
                         <?= esc($alamat['kabupaten'] ?? '-') ?>, Prov. <?= esc($alamat['provinsi'] ?? '-') ?>
                         <?= !empty($alamat['kode_pos']) ? ' - ' . esc($alamat['kode_pos']) : '' ?>
@@ -479,16 +510,26 @@
             <div class="sub-header">3. DATA WALI</div>
             <table class="table-data">
                 <tr>
-                    <td class="td-label">Nama Wali</td>
+                    <td class="td-label">Nama Lengkap & NIK</td>
                     <td class="td-sep">:</td>
-                    <td class="td-value text-bold"><?= esc($wali['nama_wali']) ?> (NIK: <?= esc($wali['nik_wali'] ?? '-') ?>)</td>
+                    <td class="td-value text-bold"><?= esc($wali['nama_wali']) ?> <span style="font-weight:normal">(NIK: <?= esc($wali['nik_wali'] ?? '-') ?>)</span></td>
                 </tr>
                 <tr>
-                    <td class="td-label">Info Wali</td>
+                    <td class="td-label">Hubungan dengan Santri</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($wali['hubungan_wali'] ?? '-') ?></td>
+                </tr>
+                <tr>
+                    <td class="td-label">Tempat, Tanggal Lahir</td>
                     <td class="td-sep">:</td>
                     <td class="td-value">
-                        Lahir Th: <?= esc($wali['tahun_lahir_wali'] ?? '-') ?> / Pend: <?= esc($wali['pendidikan_wali'] ?? '-') ?>
+                        <?= esc($wali['tempat_lahir_wali'] ?? '-') ?>, <?= !empty($wali['tanggal_lahir_wali']) ? date('d-m-Y', strtotime($wali['tanggal_lahir_wali'])) : '-' ?>
                     </td>
+                </tr>
+                <tr>
+                    <td class="td-label">Pendidikan Terakhir</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($wali['pendidikan_wali'] ?? '-') ?></td>
                 </tr>
                 <tr>
                     <td class="td-label">Pekerjaan & Penghasilan</td>
@@ -498,9 +539,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="td-label">No. HP & Hubungan</td>
+                    <td class="td-label">No. Handphone</td>
                     <td class="td-sep">:</td>
-                    <td class="td-value"><?= esc($wali['hp_wali'] ?? '-') ?> (Hubungan: <?= esc($wali['hubungan_wali'] ?? '-') ?>)</td>
+                    <td class="td-value"><?= esc($wali['hp_wali'] ?? '-') ?></td>
                 </tr>
             </table>
         <?php endif; ?>
@@ -525,9 +566,37 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="td-label">Lokasi</td>
+                    <td class="td-label">Lokasi Sekolah</td>
                     <td class="td-sep">:</td>
                     <td class="td-value"><?= esc($sekolah['lokasi_sekolah'] ?? '-') ?></td>
+                </tr>
+                <tr>
+                    <td class="td-label">Alamat Sekolah</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($sekolah['alamat_sekolah'] ?? '-') ?></td>
+                </tr>
+                <tr>
+                    <td class="td-label">Tahun Lulus</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($sekolah['tahun_lulus'] ?? '-') ?></td>
+                </tr>
+                <tr>
+                    <td class="td-label">Nilai Akademik</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value">
+                        Rata-rata Rapor: <?= esc($sekolah['rata_rata_rapor'] ?? '-') ?> /
+                        Nilai TKA: <?= esc($sekolah['nilai_tka'] ?? '-') ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-label">Sekolah MD (Madrasah Diniyah)</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($sekolah['sekolah_md'] ?: '-') ?></td>
+                </tr>
+                <tr>
+                    <td class="td-label">Asal Jenjang</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($sekolah['asal_jenjang'] ?? '-') ?></td>
                 </tr>
             </table>
         </div>
