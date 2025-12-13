@@ -61,57 +61,67 @@ class Pengumuman extends BaseController
      */
     public function store()
     {
-        // Validate input
-        $rules = [
-            'judul' => 'required|min_length[5]|max_length[255]',
-            'konten' => 'required|min_length[10]',
-        ];
+        try {
+            // Check if user is logged in and has admin privileges
+            if (!$this->session->get('isLoggedIn') || !$this->session->get('id_admin')) {
+                return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu');
+            }
 
-        if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
-        }
-
-        // Handle image upload
-        $gambar = null;
-        $file = $this->request->getFile('gambar');
-        if ($file && $file->isValid() && !$file->hasMoved()) {
-            // Validate image
-            $validationRule = [
-                'gambar' => [
-                    'rules' => 'uploaded[gambar]|max_size[gambar,2048]|is_image[gambar]|mime_in[gambar,image/jpg,image/jpeg,image/png,image/gif,image/webp]',
-                    'errors' => [
-                        'max_size' => 'Ukuran gambar maksimal 2MB',
-                        'is_image' => 'File harus berupa gambar',
-                        'mime_in' => 'Format gambar harus JPG, PNG, GIF, atau WebP'
-                    ]
-                ]
+            // Validate input
+            $rules = [
+                'judul' => 'required|min_length[5]|max_length[255]',
+                'konten' => 'required|min_length[10]',
             ];
 
-            if (!$this->validate($validationRule)) {
+            if (!$this->validate($rules)) {
                 return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
             }
 
-            // Create upload directory if not exists
-            $uploadPath = FCPATH . 'uploads/pengumuman';
-            if (!is_dir($uploadPath)) {
-                mkdir($uploadPath, 0755, true);
+            // Handle image upload
+            $gambar = null;
+            $file = $this->request->getFile('gambar');
+            if ($file && $file->isValid() && !$file->hasMoved()) {
+                // Validate image
+                $validationRule = [
+                    'gambar' => [
+                        'rules' => 'uploaded[gambar]|max_size[gambar,2048]|is_image[gambar]|mime_in[gambar,image/jpg,image/jpeg,image/png,image/gif,image/webp]',
+                        'errors' => [
+                            'max_size' => 'Ukuran gambar maksimal 2MB',
+                            'is_image' => 'File harus berupa gambar',
+                            'mime_in' => 'Format gambar harus JPG, PNG, GIF, atau WebP'
+                        ]
+                    ]
+                ];
+
+                if (!$this->validate($validationRule)) {
+                    return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+                }
+
+                // Create upload directory if not exists
+                $uploadPath = FCPATH . 'uploads/pengumuman';
+                if (!is_dir($uploadPath)) {
+                    mkdir($uploadPath, 0755, true);
+                }
+
+                // Generate unique filename
+                $gambar = $file->getRandomName();
+                $file->move($uploadPath, $gambar);
             }
 
-            // Generate unique filename
-            $gambar = $file->getRandomName();
-            $file->move($uploadPath, $gambar);
+            // Insert announcement
+            $this->pengumumanModel->insert([
+                'id_admin' => $this->session->get('id_admin'),
+                'judul' => $this->request->getPost('judul'),
+                'konten' => $this->request->getPost('konten'),
+                'gambar' => $gambar,
+                'is_active' => $this->request->getPost('is_active') ? true : false
+            ]);
+
+            return redirect()->to('/admin/pengumuman')->with('success', 'Pengumuman berhasil dibuat');
+        } catch (\Exception $e) {
+            log_message('error', 'Error creating announcement: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat menyimpan pengumuman. Silakan coba lagi.');
         }
-
-        // Insert announcement
-        $this->pengumumanModel->insert([
-            'id_admin' => $this->session->get('id_admin'),
-            'judul' => $this->request->getPost('judul'),
-            'konten' => $this->request->getPost('konten'),
-            'gambar' => $gambar,
-            'is_active' => $this->request->getPost('is_active') ? true : false
-        ]);
-
-        return redirect()->to('/admin/pengumuman')->with('success', 'Pengumuman berhasil dibuat');
     }
 
     /**
@@ -139,79 +149,89 @@ class Pengumuman extends BaseController
      */
     public function update($id)
     {
-        $announcement = $this->pengumumanModel->find($id);
+        try {
+            // Check if user is logged in and has admin privileges
+            if (!$this->session->get('isLoggedIn') || !$this->session->get('id_admin')) {
+                return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu');
+            }
 
-        if (!$announcement) {
-            return redirect()->to('/admin/pengumuman')->with('error', 'Pengumuman tidak ditemukan');
-        }
+            $announcement = $this->pengumumanModel->find($id);
 
-        // Validate input
-        $rules = [
-            'judul' => 'required|min_length[5]|max_length[255]',
-            'konten' => 'required|min_length[10]',
-        ];
+            if (!$announcement) {
+                return redirect()->to('/admin/pengumuman')->with('error', 'Pengumuman tidak ditemukan');
+            }
 
-        if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
-        }
-
-        // Handle image upload
-        $gambar = $announcement['gambar'];
-        $file = $this->request->getFile('gambar');
-        if ($file && $file->isValid() && !$file->hasMoved()) {
-            // Validate image
-            $validationRule = [
-                'gambar' => [
-                    'rules' => 'uploaded[gambar]|max_size[gambar,2048]|is_image[gambar]|mime_in[gambar,image/jpg,image/jpeg,image/png,image/gif,image/webp]',
-                    'errors' => [
-                        'max_size' => 'Ukuran gambar maksimal 2MB',
-                        'is_image' => 'File harus berupa gambar',
-                        'mime_in' => 'Format gambar harus JPG, PNG, GIF, atau WebP'
-                    ]
-                ]
+            // Validate input
+            $rules = [
+                'judul' => 'required|min_length[5]|max_length[255]',
+                'konten' => 'required|min_length[10]',
             ];
 
-            if (!$this->validate($validationRule)) {
+            if (!$this->validate($rules)) {
                 return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
             }
 
-            // Delete old image
-            if ($announcement['gambar']) {
+            // Handle image upload
+            $gambar = $announcement['gambar'];
+            $file = $this->request->getFile('gambar');
+            if ($file && $file->isValid() && !$file->hasMoved()) {
+                // Validate image
+                $validationRule = [
+                    'gambar' => [
+                        'rules' => 'uploaded[gambar]|max_size[gambar,2048]|is_image[gambar]|mime_in[gambar,image/jpg,image/jpeg,image/png,image/gif,image/webp]',
+                        'errors' => [
+                            'max_size' => 'Ukuran gambar maksimal 2MB',
+                            'is_image' => 'File harus berupa gambar',
+                            'mime_in' => 'Format gambar harus JPG, PNG, GIF, atau WebP'
+                        ]
+                    ]
+                ];
+
+                if (!$this->validate($validationRule)) {
+                    return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+                }
+
+                // Delete old image
+                if ($announcement['gambar']) {
+                    $oldImagePath = FCPATH . 'uploads/pengumuman/' . $announcement['gambar'];
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+
+                // Create upload directory if not exists
+                $uploadPath = FCPATH . 'uploads/pengumuman';
+                if (!is_dir($uploadPath)) {
+                    mkdir($uploadPath, 0755, true);
+                }
+
+                // Generate unique filename
+                $gambar = $file->getRandomName();
+                $file->move($uploadPath, $gambar);
+            }
+
+            // Handle image removal
+            if ($this->request->getPost('remove_image') && $announcement['gambar']) {
                 $oldImagePath = FCPATH . 'uploads/pengumuman/' . $announcement['gambar'];
                 if (file_exists($oldImagePath)) {
                     unlink($oldImagePath);
                 }
+                $gambar = null;
             }
 
-            // Create upload directory if not exists
-            $uploadPath = FCPATH . 'uploads/pengumuman';
-            if (!is_dir($uploadPath)) {
-                mkdir($uploadPath, 0755, true);
-            }
+            // Update announcement
+            $this->pengumumanModel->update($id, [
+                'judul' => $this->request->getPost('judul'),
+                'konten' => $this->request->getPost('konten'),
+                'gambar' => $gambar,
+                'is_active' => $this->request->getPost('is_active') ? true : false
+            ]);
 
-            // Generate unique filename
-            $gambar = $file->getRandomName();
-            $file->move($uploadPath, $gambar);
+            return redirect()->to('/admin/pengumuman')->with('success', 'Pengumuman berhasil diperbarui');
+        } catch (\Exception $e) {
+            log_message('error', 'Error updating announcement: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan saat memperbarui pengumuman. Silakan coba lagi.');
         }
-
-        // Handle image removal
-        if ($this->request->getPost('remove_image') && $announcement['gambar']) {
-            $oldImagePath = FCPATH . 'uploads/pengumuman/' . $announcement['gambar'];
-            if (file_exists($oldImagePath)) {
-                unlink($oldImagePath);
-            }
-            $gambar = null;
-        }
-
-        // Update announcement
-        $this->pengumumanModel->update($id, [
-            'judul' => $this->request->getPost('judul'),
-            'konten' => $this->request->getPost('konten'),
-            'gambar' => $gambar,
-            'is_active' => $this->request->getPost('is_active') ? true : false
-        ]);
-
-        return redirect()->to('/admin/pengumuman')->with('success', 'Pengumuman berhasil diperbarui');
     }
 
     /**
@@ -219,23 +239,33 @@ class Pengumuman extends BaseController
      */
     public function delete($id)
     {
-        $announcement = $this->pengumumanModel->find($id);
-
-        if (!$announcement) {
-            return redirect()->to('/admin/pengumuman')->with('error', 'Pengumuman tidak ditemukan');
-        }
-
-        // Delete image file
-        if ($announcement['gambar']) {
-            $imagePath = FCPATH . 'uploads/pengumuman/' . $announcement['gambar'];
-            if (file_exists($imagePath)) {
-                unlink($imagePath);
+        try {
+            // Check if user is logged in and has admin privileges
+            if (!$this->session->get('isLoggedIn') || !$this->session->get('id_admin')) {
+                return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu');
             }
+
+            $announcement = $this->pengumumanModel->find($id);
+
+            if (!$announcement) {
+                return redirect()->to('/admin/pengumuman')->with('error', 'Pengumuman tidak ditemukan');
+            }
+
+            // Delete image file
+            if ($announcement['gambar']) {
+                $imagePath = FCPATH . 'uploads/pengumuman/' . $announcement['gambar'];
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
+
+            $this->pengumumanModel->delete($id);
+
+            return redirect()->to('/admin/pengumuman')->with('success', 'Pengumuman berhasil dihapus');
+        } catch (\Exception $e) {
+            log_message('error', 'Error deleting announcement: ' . $e->getMessage());
+            return redirect()->to('/admin/pengumuman')->with('error', 'Terjadi kesalahan saat menghapus pengumuman. Silakan coba lagi.');
         }
-
-        $this->pengumumanModel->delete($id);
-
-        return redirect()->to('/admin/pengumuman')->with('success', 'Pengumuman berhasil dihapus');
     }
 
     /**
@@ -279,34 +309,44 @@ class Pengumuman extends BaseController
      */
     public function adminReply($idBalasan)
     {
-        $parentReply = $this->balasanModel->find($idBalasan);
+        try {
+            // Check if user is logged in and has admin privileges
+            if (!$this->session->get('isLoggedIn') || !$this->session->get('id_admin')) {
+                return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu');
+            }
 
-        if (!$parentReply) {
-            return redirect()->back()->with('error', 'Balasan tidak ditemukan');
+            $parentReply = $this->balasanModel->find($idBalasan);
+
+            if (!$parentReply) {
+                return redirect()->back()->with('error', 'Balasan tidak ditemukan');
+            }
+
+            // Validate input
+            $rules = [
+                'isi_balasan' => 'required|min_length[3]',
+            ];
+
+            if (!$this->validate($rules)) {
+                return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+            }
+
+            // Insert admin reply
+            $this->balasanModel->insert([
+                'id_pengumuman' => $parentReply['id_pengumuman'],
+                'parent_id' => $idBalasan,
+                'nama_pengirim' => $this->session->get('nama_lengkap'),
+                'email_pengirim' => $this->session->get('email'),
+                'isi_balasan' => $this->request->getPost('isi_balasan'),
+                'is_admin_reply' => true,
+                'id_admin' => $this->session->get('id_admin'),
+                'is_approved' => true
+            ]);
+
+            return redirect()->back()->with('success', 'Balasan berhasil dikirim');
+        } catch (\Exception $e) {
+            log_message('error', 'Error submitting admin reply: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengirim balasan. Silakan coba lagi.');
         }
-
-        // Validate input
-        $rules = [
-            'isi_balasan' => 'required|min_length[3]',
-        ];
-
-        if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
-        }
-
-        // Insert admin reply
-        $this->balasanModel->insert([
-            'id_pengumuman' => $parentReply['id_pengumuman'],
-            'parent_id' => $idBalasan,
-            'nama_pengirim' => $this->session->get('nama_lengkap'),
-            'email_pengirim' => $this->session->get('email'),
-            'isi_balasan' => $this->request->getPost('isi_balasan'),
-            'is_admin_reply' => true,
-            'id_admin' => $this->session->get('id_admin'),
-            'is_approved' => true
-        ]);
-
-        return redirect()->back()->with('success', 'Balasan berhasil dikirim');
     }
 
     /**
@@ -314,17 +354,27 @@ class Pengumuman extends BaseController
      */
     public function deleteReply($idBalasan)
     {
-        $reply = $this->balasanModel->find($idBalasan);
+        try {
+            // Check if user is logged in and has admin privileges
+            if (!$this->session->get('isLoggedIn') || !$this->session->get('id_admin')) {
+                return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu');
+            }
 
-        if (!$reply) {
-            return redirect()->back()->with('error', 'Balasan tidak ditemukan');
+            $reply = $this->balasanModel->find($idBalasan);
+
+            if (!$reply) {
+                return redirect()->back()->with('error', 'Balasan tidak ditemukan');
+            }
+
+            // Also delete child replies (admin replies to this comment)
+            $this->balasanModel->where('parent_id', $idBalasan)->delete();
+            $this->balasanModel->delete($idBalasan);
+
+            return redirect()->back()->with('success', 'Balasan berhasil dihapus');
+        } catch (\Exception $e) {
+            log_message('error', 'Error deleting reply: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat menghapus balasan. Silakan coba lagi.');
         }
-
-        // Also delete child replies (admin replies to this comment)
-        $this->balasanModel->where('parent_id', $idBalasan)->delete();
-        $this->balasanModel->delete($idBalasan);
-
-        return redirect()->back()->with('success', 'Balasan berhasil dihapus');
     }
 
     /**
@@ -332,18 +382,28 @@ class Pengumuman extends BaseController
      */
     public function toggleApproval($idBalasan)
     {
-        $reply = $this->balasanModel->find($idBalasan);
+        try {
+            // Check if user is logged in and has admin privileges
+            if (!$this->session->get('isLoggedIn') || !$this->session->get('id_admin')) {
+                return redirect()->to('/login')->with('error', 'Silakan login terlebih dahulu');
+            }
 
-        if (!$reply) {
-            return redirect()->back()->with('error', 'Balasan tidak ditemukan');
+            $reply = $this->balasanModel->find($idBalasan);
+
+            if (!$reply) {
+                return redirect()->back()->with('error', 'Balasan tidak ditemukan');
+            }
+
+            $this->balasanModel->update($idBalasan, [
+                'is_approved' => !$reply['is_approved']
+            ]);
+
+            $status = $reply['is_approved'] ? 'disembunyikan' : 'disetujui';
+            return redirect()->back()->with('success', 'Balasan berhasil ' . $status);
+        } catch (\Exception $e) {
+            log_message('error', 'Error toggling reply approval: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan saat mengubah status balasan. Silakan coba lagi.');
         }
-
-        $this->balasanModel->update($idBalasan, [
-            'is_approved' => !$reply['is_approved']
-        ]);
-
-        $status = $reply['is_approved'] ? 'disembunyikan' : 'disetujui';
-        return redirect()->back()->with('success', 'Balasan berhasil ' . $status);
     }
 
     /**
