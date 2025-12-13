@@ -394,6 +394,7 @@ class PendaftaranLengkap extends BaseController
         return [
             'id_pendaftar' => $idPendaftar,
             'nama_wali' => trim($this->request->getPost('nama_wali')),
+            'hubungan_wali' => $this->request->getPost('hubungan_wali'),  // NEW: Hubungan wali dengan santri
             'nik_wali' => trim($this->request->getPost('nik_wali') ?? ''),
             'tempat_lahir_wali' => trim($this->request->getPost('tempat_lahir_wali') ?? ''),  // Sprint 2 NEW
             'tanggal_lahir_wali' => $this->request->getPost('tanggal_lahir_wali') ?: null,  // Sprint 2 NEW
@@ -851,6 +852,7 @@ class PendaftaranLengkap extends BaseController
             // Section 5: Data Wali (data_wali table - Optional)
             // =====================================================
             'nama_wali' => 'permit_empty|max_length[150]',
+            'hubungan_wali' => 'permit_empty|in_list[Kakek,Nenek,Paman,Bibi,Kakak,Ayah/Ibu Tiri,Lainnya]',
             'nik_wali' => 'permit_empty|numeric|exact_length[16]',
             'tahun_lahir_wali' => 'permit_empty|numeric|exact_length[4]',
             'pendidikan_wali' => 'permit_empty|in_list[Tidak Sekolah,SD/MI,SMP/MTs,SMA/MA/SMK,D1,D2,D3,D4/S1,S2,S3]',

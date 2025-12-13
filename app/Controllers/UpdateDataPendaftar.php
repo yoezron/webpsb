@@ -515,6 +515,7 @@ class UpdateDataPendaftar extends BaseController
     {
         return [
             'nama_wali' => trim($this->request->getPost('nama_wali')),
+            'hubungan_wali' => $this->request->getPost('hubungan_wali'),  // NEW: Hubungan wali dengan santri
             'nik_wali' => trim($this->request->getPost('nik_wali') ?? ''),
             'tempat_lahir_wali' => trim($this->request->getPost('tempat_lahir_wali') ?? ''),  // Sprint 2 NEW
             'tanggal_lahir_wali' => $this->request->getPost('tanggal_lahir_wali') ?: null,  // Sprint 2 NEW (replaces tahun_lahir_wali)
@@ -638,6 +639,7 @@ class UpdateDataPendaftar extends BaseController
 
             // Data Wali (Optional)
             'nama_wali' => 'permit_empty|max_length[150]',
+            'hubungan_wali' => 'permit_empty|in_list[Kakek,Nenek,Paman,Bibi,Kakak,Ayah/Ibu Tiri,Lainnya]',
             'nik_wali' => 'permit_empty|numeric|exact_length[16]',
             'tempat_lahir_wali' => 'permit_empty|max_length[100]',
             'tanggal_lahir_wali' => 'permit_empty|valid_date[Y-m-d]',
