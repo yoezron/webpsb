@@ -238,13 +238,13 @@
     <table class="header-table">
         <tr>
             <td class="logo-cell">
-                <img src="<?= FCPATH . 'assets/images/logo/01.png' ?>" width="60" alt="Logo">
+                <img src="<?= FCPATH . 'assets/images/logo/01.png' ?>" width="75" alt="Logo">
             </td>
             <td class="info-cell">
                 <div class="school-name">PESANTREN PERSIS 31 BANJARAN</div>
                 <div class="school-address">Jl. Pajagalan No. 115, Banjaran, Bandung, Jawa Barat</div>
                 <div class="form-title">FORMULIR PENDAFTARAN SANTRI BARU</div>
-                <div style="font-size: 9pt;">Tahun Ajaran <?= date('Y') ?>/<?= date('Y') + 1 ?></div>
+                <div style="font-size: 9pt;">Tahun Ajaran 2026/2027</div>
             </td>
             <td class="badge-cell">
                 <div class="reg-box">
