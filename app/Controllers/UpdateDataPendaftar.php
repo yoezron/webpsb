@@ -423,15 +423,18 @@ class UpdateDataPendaftar extends BaseController
             'status_keluarga' => $this->request->getPost('status_keluarga'),
             'anak_ke' => $this->request->getPost('anak_ke') ?: null,
             'jumlah_saudara' => $this->request->getPost('jumlah_saudara') ?: null,
+            'yang_membiayai_sekolah' => $this->request->getPost('yang_membiayai_sekolah'),  // Sprint 2 NEW
             'hobi' => trim($this->request->getPost('hobi') ?? ''),
             'cita_cita' => trim($this->request->getPost('cita_cita') ?? ''),
             'pernah_paud' => $this->request->getPost('pernah_paud') ? 1 : 0,
             'pernah_tk' => $this->request->getPost('pernah_tk') ? 1 : 0,
             'kebutuhan_disabilitas' => trim($this->request->getPost('kebutuhan_disabilitas') ?? ''),
+            'kebutuhan_khusus' => trim($this->request->getPost('kebutuhan_khusus') ?? ''),  // Sprint 2 NEW
             'imunisasi' => $this->request->getPost('imunisasi'),
             'no_hp' => trim($this->request->getPost('no_hp') ?? ''),
             'ukuran_baju' => $this->request->getPost('ukuran_baju'),
             'prestasi' => trim($this->request->getPost('prestasi') ?? ''),
+            'minat_bakat' => trim($this->request->getPost('minat_bakat') ?? ''),  // Sprint 2 NEW
         ];
     }
 
@@ -442,13 +445,16 @@ class UpdateDataPendaftar extends BaseController
     {
         return [
             'nomor_kk' => trim($this->request->getPost('nomor_kk') ?? ''),
+            'nama_kepala_keluarga' => trim($this->request->getPost('nama_kepala_keluarga') ?? ''),  // Sprint 2 NEW
             'jenis_tempat_tinggal' => $this->request->getPost('jenis_tempat_tinggal'),
             'alamat' => trim($this->request->getPost('alamat') ?? ''),
+            'rt_rw' => trim($this->request->getPost('rt_rw') ?? ''),  // Sprint 2 NEW
             'desa' => trim($this->request->getPost('desa') ?? ''),
             'kecamatan' => trim($this->request->getPost('kecamatan') ?? ''),
             'kabupaten' => trim($this->request->getPost('kabupaten') ?? ''),
             'provinsi' => trim($this->request->getPost('provinsi') ?? ''),
             'kode_pos' => trim($this->request->getPost('kode_pos') ?? ''),
+            'tinggal_bersama' => $this->request->getPost('tinggal_bersama'),  // Sprint 2 NEW
             'jarak_ke_sekolah' => $this->request->getPost('jarak_ke_sekolah'),
             'waktu_tempuh' => $this->request->getPost('waktu_tempuh'),
             'transportasi' => $this->request->getPost('transportasi'),
@@ -503,7 +509,8 @@ class UpdateDataPendaftar extends BaseController
         return [
             'nama_wali' => trim($this->request->getPost('nama_wali')),
             'nik_wali' => trim($this->request->getPost('nik_wali') ?? ''),
-            'tahun_lahir_wali' => $this->request->getPost('tahun_lahir_wali') ?: null,
+            'tempat_lahir_wali' => trim($this->request->getPost('tempat_lahir_wali') ?? ''),  // Sprint 2 NEW
+            'tanggal_lahir_wali' => $this->request->getPost('tanggal_lahir_wali') ?: null,  // Sprint 2 NEW (replaces tahun_lahir_wali)
             'pendidikan_wali' => $this->request->getPost('pendidikan_wali'),
             'pekerjaan_wali' => $this->request->getPost('pekerjaan_wali'),
             'penghasilan_wali' => $this->request->getPost('penghasilan_wali'),
@@ -534,6 +541,11 @@ class UpdateDataPendaftar extends BaseController
             'status_sekolah' => $this->request->getPost('status_sekolah'),
             'npsn' => trim($this->request->getPost('npsn') ?? ''),
             'lokasi_sekolah' => trim($this->request->getPost('lokasi_sekolah') ?? ''),
+            'alamat_sekolah' => trim($this->request->getPost('alamat_sekolah') ?? ''),  // Sprint 2 NEW
+            'tahun_lulus' => $this->request->getPost('tahun_lulus') ?: null,  // Sprint 2 NEW
+            'rata_rata_rapor' => $this->request->getPost('rata_rata_rapor') ?: null,  // Sprint 2 NEW
+            'nilai_tka' => $this->request->getPost('nilai_tka') ?: null,  // Sprint 2 NEW
+            'sekolah_md' => trim($this->request->getPost('sekolah_md') ?? ''),  // Sprint 2 NEW
             'asal_jenjang' => $this->request->getPost('asal_jenjang'),
         ];
     }
