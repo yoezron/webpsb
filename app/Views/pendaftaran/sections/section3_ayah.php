@@ -64,23 +64,45 @@
 
         <!-- Pekerjaan Ayah -->
         <div class="col-md-6 mb-3">
-            <label for="pekerjaan_ayah" class="form-label">Pekerjaan Ayah</label>
-            <input type="text" class="form-control" id="pekerjaan_ayah" name="pekerjaan_ayah"
-                value="<?= old('pekerjaan_ayah') ?>" placeholder="Contoh: Wiraswasta, PNS, Petani">
+            <label for="pekerjaan_ayah" class="form-label required">Pekerjaan Utama Ayah</label>
+            <select class="form-select" id="pekerjaan_ayah" name="pekerjaan_ayah" required>
+                <option value="">Pilih Pekerjaan</option>
+                <option value="Tidak Bekerja" <?= old('pekerjaan_ayah') === 'Tidak Bekerja' ? 'selected' : '' ?>>Tidak Bekerja</option>
+                <option value="Pensiun" <?= old('pekerjaan_ayah') === 'Pensiun' ? 'selected' : '' ?>>Pensiun</option>
+                <option value="PNS" <?= old('pekerjaan_ayah') === 'PNS' ? 'selected' : '' ?>>PNS</option>
+                <option value="TNI/Polri" <?= old('pekerjaan_ayah') === 'TNI/Polri' ? 'selected' : '' ?>>TNI/Polri</option>
+                <option value="Guru/Dosen" <?= old('pekerjaan_ayah') === 'Guru/Dosen' ? 'selected' : '' ?>>Guru/Dosen</option>
+                <option value="Pegawai Swasta" <?= old('pekerjaan_ayah') === 'Pegawai Swasta' ? 'selected' : '' ?>>Pegawai Swasta</option>
+                <option value="Wiraswasta" <?= old('pekerjaan_ayah') === 'Wiraswasta' ? 'selected' : '' ?>>Wiraswasta</option>
+                <option value="Pengacara/Jaksa/Hakim/Notaris" <?= old('pekerjaan_ayah') === 'Pengacara/Jaksa/Hakim/Notaris' ? 'selected' : '' ?>>Pengacara/Jaksa/Hakim/Notaris</option>
+                <option value="Seniman/Pelukis/Artis/Sejenis" <?= old('pekerjaan_ayah') === 'Seniman/Pelukis/Artis/Sejenis' ? 'selected' : '' ?>>Seniman/Pelukis/Artis/Sejenis</option>
+                <option value="Dokter/Bidan/Perawat" <?= old('pekerjaan_ayah') === 'Dokter/Bidan/Perawat' ? 'selected' : '' ?>>Dokter/Bidan/Perawat</option>
+                <option value="Pilot/Pramugara" <?= old('pekerjaan_ayah') === 'Pilot/Pramugara' ? 'selected' : '' ?>>Pilot/Pramugara</option>
+                <option value="Pedagang" <?= old('pekerjaan_ayah') === 'Pedagang' ? 'selected' : '' ?>>Pedagang</option>
+                <option value="Petani/Peternak" <?= old('pekerjaan_ayah') === 'Petani/Peternak' ? 'selected' : '' ?>>Petani/Peternak</option>
+                <option value="Nelayan" <?= old('pekerjaan_ayah') === 'Nelayan' ? 'selected' : '' ?>>Nelayan</option>
+                <option value="Buruh (Tani/Pabrik/Bangunan)" <?= old('pekerjaan_ayah') === 'Buruh (Tani/Pabrik/Bangunan)' ? 'selected' : '' ?>>Buruh (Tani/Pabrik/Bangunan)</option>
+                <option value="Sopir/Masinis/Kondektur" <?= old('pekerjaan_ayah') === 'Sopir/Masinis/Kondektur' ? 'selected' : '' ?>>Sopir/Masinis/Kondektur</option>
+                <option value="Politikus" <?= old('pekerjaan_ayah') === 'Politikus' ? 'selected' : '' ?>>Politikus</option>
+                <option value="Lainnya" <?= old('pekerjaan_ayah') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
+            </select>
         </div>
 
         <!-- Penghasilan Ayah -->
         <div class="col-md-6 mb-3">
-            <label for="penghasilan_ayah" class="form-label">Penghasilan Per Bulan</label>
-            <select class="form-select" id="penghasilan_ayah" name="penghasilan_ayah">
+            <label for="penghasilan_ayah" class="form-label required">Penghasilan Per Bulan</label>
+            <select class="form-select" id="penghasilan_ayah" name="penghasilan_ayah" required>
                 <option value="">Pilih Range Penghasilan</option>
-                <option value="< 1 juta" <?= old('penghasilan_ayah') === '< 1 juta' ? 'selected' : '' ?>>< Rp 1.000.000</option>
-                <option value="1-2 juta" <?= old('penghasilan_ayah') === '1-2 juta' ? 'selected' : '' ?>>Rp 1.000.000 - Rp 2.000.000</option>
-                <option value="2-3 juta" <?= old('penghasilan_ayah') === '2-3 juta' ? 'selected' : '' ?>>Rp 2.000.000 - Rp 3.000.000</option>
-                <option value="3-5 juta" <?= old('penghasilan_ayah') === '3-5 juta' ? 'selected' : '' ?>>Rp 3.000.000 - Rp 5.000.000</option>
-                <option value="5-10 juta" <?= old('penghasilan_ayah') === '5-10 juta' ? 'selected' : '' ?>>Rp 5.000.000 - Rp 10.000.000</option>
-                <option value="> 10 juta" <?= old('penghasilan_ayah') === '> 10 juta' ? 'selected' : '' ?>>> Rp 10.000.000</option>
-                <option value="Tidak Berpenghasilan" <?= old('penghasilan_ayah') === 'Tidak Berpenghasilan' ? 'selected' : '' ?>>Tidak Berpenghasilan</option>
+                <option value="Dibawah 800.000" <?= old('penghasilan_ayah') === 'Dibawah 800.000' ? 'selected' : '' ?>>Dibawah Rp 800.000</option>
+                <option value="800.001-1.200.000" <?= old('penghasilan_ayah') === '800.001-1.200.000' ? 'selected' : '' ?>>Rp 800.001 - Rp 1.200.000</option>
+                <option value="1.200.001-1.800.000" <?= old('penghasilan_ayah') === '1.200.001-1.800.000' ? 'selected' : '' ?>>Rp 1.200.001 - Rp 1.800.000</option>
+                <option value="1.800.001-2.500.000" <?= old('penghasilan_ayah') === '1.800.001-2.500.000' ? 'selected' : '' ?>>Rp 1.800.001 - Rp 2.500.000</option>
+                <option value="2.500.001-3.500.000" <?= old('penghasilan_ayah') === '2.500.001-3.500.000' ? 'selected' : '' ?>>Rp 2.500.001 - Rp 3.500.000</option>
+                <option value="3.500.001-4.800.000" <?= old('penghasilan_ayah') === '3.500.001-4.800.000' ? 'selected' : '' ?>>Rp 3.500.001 - Rp 4.800.000</option>
+                <option value="4.800.001-6.500.000" <?= old('penghasilan_ayah') === '4.800.001-6.500.000' ? 'selected' : '' ?>>Rp 4.800.001 - Rp 6.500.000</option>
+                <option value="6.500.001-10.000.000" <?= old('penghasilan_ayah') === '6.500.001-10.000.000' ? 'selected' : '' ?>>Rp 6.500.001 - Rp 10.000.000</option>
+                <option value="10.000.001-20.000.000" <?= old('penghasilan_ayah') === '10.000.001-20.000.000' ? 'selected' : '' ?>>Rp 10.000.001 - Rp 20.000.000</option>
+                <option value="Diatas 20.000.000" <?= old('penghasilan_ayah') === 'Diatas 20.000.000' ? 'selected' : '' ?>>Diatas Rp 20.000.000</option>
             </select>
         </div>
 

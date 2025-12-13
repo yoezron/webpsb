@@ -50,9 +50,28 @@
 
         <!-- Pekerjaan Wali -->
         <div class="col-md-6 mb-3">
-            <label for="pekerjaan_wali" class="form-label">Pekerjaan Wali</label>
-            <input type="text" class="form-control" id="pekerjaan_wali" name="pekerjaan_wali"
-                value="<?= old('pekerjaan_wali') ?>" placeholder="Contoh: Wiraswasta, PNS">
+            <label for="pekerjaan_wali" class="form-label">Pekerjaan Utama Wali</label>
+            <select class="form-select" id="pekerjaan_wali" name="pekerjaan_wali">
+                <option value="">Pilih Pekerjaan</option>
+                <option value="Tidak Bekerja" <?= old('pekerjaan_wali') === 'Tidak Bekerja' ? 'selected' : '' ?>>Tidak Bekerja</option>
+                <option value="Pensiun" <?= old('pekerjaan_wali') === 'Pensiun' ? 'selected' : '' ?>>Pensiun</option>
+                <option value="PNS" <?= old('pekerjaan_wali') === 'PNS' ? 'selected' : '' ?>>PNS</option>
+                <option value="TNI/Polri" <?= old('pekerjaan_wali') === 'TNI/Polri' ? 'selected' : '' ?>>TNI/Polri</option>
+                <option value="Guru/Dosen" <?= old('pekerjaan_wali') === 'Guru/Dosen' ? 'selected' : '' ?>>Guru/Dosen</option>
+                <option value="Pegawai Swasta" <?= old('pekerjaan_wali') === 'Pegawai Swasta' ? 'selected' : '' ?>>Pegawai Swasta</option>
+                <option value="Wiraswasta" <?= old('pekerjaan_wali') === 'Wiraswasta' ? 'selected' : '' ?>>Wiraswasta</option>
+                <option value="Pengacara/Jaksa/Hakim/Notaris" <?= old('pekerjaan_wali') === 'Pengacara/Jaksa/Hakim/Notaris' ? 'selected' : '' ?>>Pengacara/Jaksa/Hakim/Notaris</option>
+                <option value="Seniman/Pelukis/Artis/Sejenis" <?= old('pekerjaan_wali') === 'Seniman/Pelukis/Artis/Sejenis' ? 'selected' : '' ?>>Seniman/Pelukis/Artis/Sejenis</option>
+                <option value="Dokter/Bidan/Perawat" <?= old('pekerjaan_wali') === 'Dokter/Bidan/Perawat' ? 'selected' : '' ?>>Dokter/Bidan/Perawat</option>
+                <option value="Pilot/Pramugara" <?= old('pekerjaan_wali') === 'Pilot/Pramugara' ? 'selected' : '' ?>>Pilot/Pramugara</option>
+                <option value="Pedagang" <?= old('pekerjaan_wali') === 'Pedagang' ? 'selected' : '' ?>>Pedagang</option>
+                <option value="Petani/Peternak" <?= old('pekerjaan_wali') === 'Petani/Peternak' ? 'selected' : '' ?>>Petani/Peternak</option>
+                <option value="Nelayan" <?= old('pekerjaan_wali') === 'Nelayan' ? 'selected' : '' ?>>Nelayan</option>
+                <option value="Buruh (Tani/Pabrik/Bangunan)" <?= old('pekerjaan_wali') === 'Buruh (Tani/Pabrik/Bangunan)' ? 'selected' : '' ?>>Buruh (Tani/Pabrik/Bangunan)</option>
+                <option value="Sopir/Masinis/Kondektur" <?= old('pekerjaan_wali') === 'Sopir/Masinis/Kondektur' ? 'selected' : '' ?>>Sopir/Masinis/Kondektur</option>
+                <option value="Politikus" <?= old('pekerjaan_wali') === 'Politikus' ? 'selected' : '' ?>>Politikus</option>
+                <option value="Lainnya" <?= old('pekerjaan_wali') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
+            </select>
         </div>
 
         <!-- Penghasilan Wali -->
@@ -60,13 +79,16 @@
             <label for="penghasilan_wali" class="form-label">Penghasilan Per Bulan</label>
             <select class="form-select" id="penghasilan_wali" name="penghasilan_wali">
                 <option value="">Pilih Range Penghasilan</option>
-                <option value="< 1 juta" <?= old('penghasilan_wali') === '< 1 juta' ? 'selected' : '' ?>>< Rp 1.000.000</option>
-                <option value="1-2 juta" <?= old('penghasilan_wali') === '1-2 juta' ? 'selected' : '' ?>>Rp 1.000.000 - Rp 2.000.000</option>
-                <option value="2-3 juta" <?= old('penghasilan_wali') === '2-3 juta' ? 'selected' : '' ?>>Rp 2.000.000 - Rp 3.000.000</option>
-                <option value="3-5 juta" <?= old('penghasilan_wali') === '3-5 juta' ? 'selected' : '' ?>>Rp 3.000.000 - Rp 5.000.000</option>
-                <option value="5-10 juta" <?= old('penghasilan_wali') === '5-10 juta' ? 'selected' : '' ?>>Rp 5.000.000 - Rp 10.000.000</option>
-                <option value="> 10 juta" <?= old('penghasilan_wali') === '> 10 juta' ? 'selected' : '' ?>>> Rp 10.000.000</option>
-                <option value="Tidak Berpenghasilan" <?= old('penghasilan_wali') === 'Tidak Berpenghasilan' ? 'selected' : '' ?>>Tidak Berpenghasilan</option>
+                <option value="Dibawah 800.000" <?= old('penghasilan_wali') === 'Dibawah 800.000' ? 'selected' : '' ?>>Dibawah Rp 800.000</option>
+                <option value="800.001-1.200.000" <?= old('penghasilan_wali') === '800.001-1.200.000' ? 'selected' : '' ?>>Rp 800.001 - Rp 1.200.000</option>
+                <option value="1.200.001-1.800.000" <?= old('penghasilan_wali') === '1.200.001-1.800.000' ? 'selected' : '' ?>>Rp 1.200.001 - Rp 1.800.000</option>
+                <option value="1.800.001-2.500.000" <?= old('penghasilan_wali') === '1.800.001-2.500.000' ? 'selected' : '' ?>>Rp 1.800.001 - Rp 2.500.000</option>
+                <option value="2.500.001-3.500.000" <?= old('penghasilan_wali') === '2.500.001-3.500.000' ? 'selected' : '' ?>>Rp 2.500.001 - Rp 3.500.000</option>
+                <option value="3.500.001-4.800.000" <?= old('penghasilan_wali') === '3.500.001-4.800.000' ? 'selected' : '' ?>>Rp 3.500.001 - Rp 4.800.000</option>
+                <option value="4.800.001-6.500.000" <?= old('penghasilan_wali') === '4.800.001-6.500.000' ? 'selected' : '' ?>>Rp 4.800.001 - Rp 6.500.000</option>
+                <option value="6.500.001-10.000.000" <?= old('penghasilan_wali') === '6.500.001-10.000.000' ? 'selected' : '' ?>>Rp 6.500.001 - Rp 10.000.000</option>
+                <option value="10.000.001-20.000.000" <?= old('penghasilan_wali') === '10.000.001-20.000.000' ? 'selected' : '' ?>>Rp 10.000.001 - Rp 20.000.000</option>
+                <option value="Diatas 20.000.000" <?= old('penghasilan_wali') === 'Diatas 20.000.000' ? 'selected' : '' ?>>Diatas Rp 20.000.000</option>
             </select>
         </div>
 
