@@ -664,7 +664,7 @@
                 let reviewHtml = '';
 
                 const sections = {
-                    'Data Diri': ['nisn', 'nik', 'nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'status_keluarga', 'anak_ke', 'jumlah_saudara', 'yang_membiayai_sekolah', 'hobi', 'cita_cita', 'pernah_paud', 'pernah_tk', 'kebutuhan_disabilitas', 'kebutuhan_khusus', 'imunisasi', 'no_hp', 'ukuran_baju', 'prestasi', 'minat_bakat'],
+                    'Data Diri': ['nisn', 'nik', 'nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'status_keluarga', 'anak_ke', 'jumlah_saudara', 'yang_membiayai_sekolah', 'hobi', 'cita_cita', 'pernah_paud', 'pernah_tk', 'kebutuhan_disabilitas[]', 'kebutuhan_khusus', 'imunisasi[]', 'no_hp', 'ukuran_baju', 'prestasi', 'minat_bakat'],
                     'Data Alamat': ['nomor_kk', 'nama_kepala_keluarga', 'jenis_tempat_tinggal', 'alamat', 'rt_rw', 'desa', 'kecamatan', 'kabupaten', 'provinsi', 'kode_pos', 'tinggal_bersama', 'jarak_ke_sekolah', 'waktu_tempuh', 'transportasi', 'email', 'media_sosial'],
                     'Data Ayah': ['nama_ayah', 'nik_ayah', 'tempat_lahir_ayah', 'tanggal_lahir_ayah', 'status_ayah', 'pendidikan_ayah', 'pekerjaan_ayah', 'penghasilan_ayah', 'hp_ayah', 'alamat_ayah'],
                     'Data Ibu': ['nama_ibu', 'nik_ibu', 'tempat_lahir_ibu', 'tanggal_lahir_ibu', 'status_ibu', 'pendidikan_ibu', 'pekerjaan_ibu', 'penghasilan_ibu', 'hp_ibu', 'alamat_ibu'],
@@ -679,19 +679,47 @@
                     reviewHtml += '<table class="review-table"><tbody>';
 
                     sections[sectionTitle].forEach(fieldName => {
-                        const field = formData.find(f => f.name === fieldName);
-                        if (field && field.value) {
-                            const label = $('[name="' + fieldName + '"]').closest('.mb-3').find('label').text().replace('*', '').trim();
-                            let value = field.value;
+                        let value = '';
+                        let label = '';
 
-                            if (value === '1' && $('[name="' + fieldName + '"]').attr('type') === 'checkbox') {
-                                value = 'Ya';
-                            } else if (value === 'L') {
-                                value = 'Laki-laki';
-                            } else if (value === 'P') {
-                                value = 'Perempuan';
+                        // Handle checkbox arrays (name ends with [])
+                        if (fieldName.endsWith('[]')) {
+                            const fields = formData.filter(f => f.name === fieldName);
+                            if (fields.length > 0) {
+                                const values = fields.map(f => f.value);
+                                value = values.join(', ');
+                                const $input = $('[name="' + fieldName + '"]').first();
+                                label = $input.closest('.mb-3').find('label').first().text().replace('*', '').trim();
                             }
+                        } else {
+                            // Handle regular fields
+                            const field = formData.find(f => f.name === fieldName);
+                            if (field && field.value) {
+                                const $input = $('[name="' + fieldName + '"]');
+                                value = field.value;
 
+                                // Get appropriate label based on input type
+                                if ($input.attr('type') === 'checkbox' && $input.closest('.form-check').length) {
+                                    // For single checkboxes in form-check, use the check label
+                                    label = $input.closest('.form-check').find('.form-check-label').text().trim();
+                                    if (value === '1') {
+                                        value = 'Ya';
+                                    }
+                                } else {
+                                    // For other inputs, use the main label
+                                    label = $input.closest('.mb-3').find('label').first().text().replace('*', '').trim();
+                                }
+
+                                // Format special values
+                                if (value === 'L') {
+                                    value = 'Laki-laki';
+                                } else if (value === 'P') {
+                                    value = 'Perempuan';
+                                }
+                            }
+                        }
+
+                        if (value) {
                             reviewHtml += '<tr><td style="width: 40%; font-weight: 600;">' + label + '</td><td>' + value + '</td></tr>';
                         }
                     });
