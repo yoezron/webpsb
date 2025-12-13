@@ -205,6 +205,20 @@
             </div>
         </div>
 
+        <!-- Kebutuhan Khusus (Dropdown) -->
+        <div class="col-md-6 mb-3">
+            <label for="kebutuhan_khusus" class="form-label required">Kebutuhan Khusus</label>
+            <select class="form-select" id="kebutuhan_khusus" name="kebutuhan_khusus" required>
+                <option value="">Pilih Kebutuhan Khusus</option>
+                <option value="Tidak ada" <?= old('kebutuhan_khusus') === 'Tidak ada' ? 'selected' : '' ?>>Tidak ada</option>
+                <option value="Lamban Belajar" <?= old('kebutuhan_khusus') === 'Lamban Belajar' ? 'selected' : '' ?>>Lamban Belajar</option>
+                <option value="Kesulitan belajar Spesifik" <?= old('kebutuhan_khusus') === 'Kesulitan belajar Spesifik' ? 'selected' : '' ?>>Kesulitan belajar Spesifik</option>
+                <option value="Gangguan Komunikasi" <?= old('kebutuhan_khusus') === 'Gangguan Komunikasi' ? 'selected' : '' ?>>Gangguan Komunikasi</option>
+                <option value="Berbakat/memiliki kemampuan dan kecerdasan luar biasa" <?= old('kebutuhan_khusus') === 'Berbakat/memiliki kemampuan dan kecerdasan luar biasa' ? 'selected' : '' ?>>Berbakat/memiliki kemampuan dan kecerdasan luar biasa</option>
+                <option value="Lainnya" <?= old('kebutuhan_khusus') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
+            </select>
+        </div>
+
         <!-- Imunisasi (Checkbox) -->
         <div class="col-md-12 mb-3">
             <label class="form-label required">Riwayat Imunisasi</label>

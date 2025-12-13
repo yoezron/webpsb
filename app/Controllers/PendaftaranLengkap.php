@@ -309,13 +309,16 @@ class PendaftaranLengkap extends BaseController
             'jumlah_saudara' => $this->request->getPost('jumlah_saudara') ?: null,
             'hobi' => trim($this->request->getPost('hobi') ?? ''),
             'cita_cita' => trim($this->request->getPost('cita_cita') ?? ''),
+            'yang_membiayai_sekolah' => $this->request->getPost('yang_membiayai_sekolah'),  // Sprint 2 NEW
             'pernah_paud' => $this->request->getPost('pernah_paud') ? 1 : 0,
             'pernah_tk' => $this->request->getPost('pernah_tk') ? 1 : 0,
             'kebutuhan_disabilitas' => $this->request->getPost('kebutuhan_disabilitas') ? implode(', ', $this->request->getPost('kebutuhan_disabilitas')) : null,
+            'kebutuhan_khusus' => $this->request->getPost('kebutuhan_khusus'),  // Sprint 2 NEW
             'imunisasi' => $this->request->getPost('imunisasi') ? implode(', ', $this->request->getPost('imunisasi')) : null,
             'no_hp' => trim($this->request->getPost('no_hp') ?? ''),
             'ukuran_baju' => $this->request->getPost('ukuran_baju'),
             'prestasi' => trim($this->request->getPost('prestasi') ?? ''),
+            'minat_bakat' => trim($this->request->getPost('minat_bakat') ?? ''),  // Sprint 2 NEW
         ];
     }
 
