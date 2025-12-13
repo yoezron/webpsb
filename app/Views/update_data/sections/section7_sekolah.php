@@ -51,6 +51,41 @@
                 value="<?= old('lokasi_sekolah', $sekolah['lokasi_sekolah'] ?? '') ?>" placeholder="Kota/Kabupaten sekolah">
         </div>
 
+        <!-- Alamat Sekolah Asal (Sprint 2) -->
+        <div class="col-md-12 mb-3">
+            <label for="alamat_sekolah" class="form-label">Alamat Sekolah Asal</label>
+            <textarea class="form-control" id="alamat_sekolah" name="alamat_sekolah" rows="2"
+                placeholder="Alamat lengkap sekolah asal"><?= old('alamat_sekolah', $sekolah['alamat_sekolah'] ?? '') ?></textarea>
+        </div>
+
+        <!-- Tahun Lulus (Sprint 2) -->
+        <div class="col-md-6 mb-3">
+            <label for="tahun_lulus" class="form-label">Tahun Lulus</label>
+            <input type="number" class="form-control" id="tahun_lulus" name="tahun_lulus"
+                value="<?= old('tahun_lulus', $sekolah['tahun_lulus'] ?? '') ?>" placeholder="Contoh: 2026" min="2000" max="2030">
+        </div>
+
+        <!-- Rata-rata Nilai Raport (Sprint 2) -->
+        <div class="col-md-6 mb-3">
+            <label for="rata_rata_rapor" class="form-label">Rata-rata Nilai Raport Tahun Berjalan</label>
+            <input type="number" class="form-control" id="rata_rata_rapor" name="rata_rata_rapor"
+                value="<?= old('rata_rata_rapor', $sekolah['rata_rata_rapor'] ?? '') ?>" placeholder="Contoh: 85.5" step="0.01" min="0" max="100">
+        </div>
+
+        <!-- Nilai TKA (Sprint 2) -->
+        <div class="col-md-6 mb-3">
+            <label for="nilai_tka" class="form-label">Nilai TKA (Kalau sudah Melaksanakan)</label>
+            <input type="number" class="form-control" id="nilai_tka" name="nilai_tka"
+                value="<?= old('nilai_tka', $sekolah['nilai_tka'] ?? '') ?>" placeholder="Kosongkan jika belum TKA" step="0.01" min="0" max="100">
+        </div>
+
+        <!-- Sekolah MD (Sprint 2) -->
+        <div class="col-md-6 mb-3">
+            <label for="sekolah_md" class="form-label">Sekolah MD (Madrasah Diniyah sore)</label>
+            <input type="text" class="form-control" id="sekolah_md" name="sekolah_md"
+                value="<?= old('sekolah_md', $sekolah['sekolah_md'] ?? '') ?>" placeholder="Nama Madrasah Diniyah">
+        </div>
+
         <!-- Asal Jenjang -->
         <div class="col-md-12 mb-3">
             <label for="asal_jenjang" class="form-label">Keterangan Tambahan</label>

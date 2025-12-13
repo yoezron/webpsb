@@ -76,6 +76,18 @@
                 value="<?= old('jumlah_saudara', $pendaftar['jumlah_saudara'] ?? '') ?>" placeholder="Masukkan jumlah saudara" min="0" max="20">
         </div>
 
+        <!-- Yang Membiayai Sekolah (Sprint 2) -->
+        <div class="col-md-6 mb-3">
+            <label for="yang_membiayai_sekolah" class="form-label">Yang Membiayai Sekolah</label>
+            <select class="form-select" id="yang_membiayai_sekolah" name="yang_membiayai_sekolah">
+                <option value="">Pilih</option>
+                <option value="Orang Tua" <?= old('yang_membiayai_sekolah', $pendaftar['yang_membiayai_sekolah'] ?? '') === 'Orang Tua' ? 'selected' : '' ?>>Orang Tua</option>
+                <option value="Wali/Orang Tua Asuh" <?= old('yang_membiayai_sekolah', $pendaftar['yang_membiayai_sekolah'] ?? '') === 'Wali/Orang Tua Asuh' ? 'selected' : '' ?>>Wali/Orang Tua Asuh</option>
+                <option value="Tanggungan Sendiri" <?= old('yang_membiayai_sekolah', $pendaftar['yang_membiayai_sekolah'] ?? '') === 'Tanggungan Sendiri' ? 'selected' : '' ?>>Tanggungan Sendiri</option>
+                <option value="Lainnya" <?= old('yang_membiayai_sekolah', $pendaftar['yang_membiayai_sekolah'] ?? '') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
+            </select>
+        </div>
+
         <!-- Hobi -->
         <div class="col-md-6 mb-3">
             <label for="hobi" class="form-label">Hobi</label>
@@ -107,9 +119,16 @@
 
         <!-- Kebutuhan Disabilitas -->
         <div class="col-md-6 mb-3">
-            <label for="kebutuhan_disabilitas" class="form-label">Kebutuhan Khusus/Disabilitas</label>
+            <label for="kebutuhan_disabilitas" class="form-label">Kebutuhan Disabilitas</label>
             <input type="text" class="form-control" id="kebutuhan_disabilitas" name="kebutuhan_disabilitas"
                 value="<?= old('kebutuhan_disabilitas', $pendaftar['kebutuhan_disabilitas'] ?? '') ?>" placeholder="Kosongkan jika tidak ada">
+        </div>
+
+        <!-- Kebutuhan Khusus (Sprint 2) -->
+        <div class="col-md-6 mb-3">
+            <label for="kebutuhan_khusus" class="form-label">Kebutuhan Khusus Lainnya</label>
+            <input type="text" class="form-control" id="kebutuhan_khusus" name="kebutuhan_khusus"
+                value="<?= old('kebutuhan_khusus', $pendaftar['kebutuhan_khusus'] ?? '') ?>" placeholder="Kosongkan jika tidak ada">
         </div>
 
         <!-- Imunisasi -->
@@ -144,6 +163,13 @@
             <label for="prestasi" class="form-label">Prestasi yang Pernah Diraih</label>
             <textarea class="form-control" id="prestasi" name="prestasi" rows="3"
                 placeholder="Tuliskan prestasi yang pernah diraih (jika ada)"><?= old('prestasi', $pendaftar['prestasi'] ?? '') ?></textarea>
+        </div>
+
+        <!-- Minat & Bakat (Sprint 2) -->
+        <div class="col-md-12 mb-3">
+            <label for="minat_bakat" class="form-label">Minat & Bakat</label>
+            <textarea class="form-control" id="minat_bakat" name="minat_bakat" rows="3"
+                placeholder="Tuliskan minat dan bakat yang dimiliki"><?= old('minat_bakat', $pendaftar['minat_bakat'] ?? '') ?></textarea>
         </div>
     </div>
 </div>
