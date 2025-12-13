@@ -124,18 +124,148 @@
             </div>
         </div>
 
-        <!-- Kebutuhan Disabilitas -->
-        <div class="col-md-6 mb-3">
-            <label for="kebutuhan_disabilitas" class="form-label">Kebutuhan Khusus/Disabilitas</label>
-            <input type="text" class="form-control" id="kebutuhan_disabilitas" name="kebutuhan_disabilitas"
-                value="<?= old('kebutuhan_disabilitas') ?>" placeholder="Kosongkan jika tidak ada">
+        <!-- Kebutuhan Disabilitas (Checkbox) -->
+        <div class="col-md-12 mb-3">
+            <label class="form-label required">Kebutuhan Disabilitas</label>
+            <div class="form-text mb-2">Centang jika memiliki kebutuhan khusus disabilitas</div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="disabilitas_tidak"
+                               name="kebutuhan_disabilitas[]" value="Tidak Ada" <?= is_array(old('kebutuhan_disabilitas')) && in_array('Tidak Ada', old('kebutuhan_disabilitas')) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="disabilitas_tidak">
+                            Tidak Ada
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="disabilitas_netra"
+                               name="kebutuhan_disabilitas[]" value="Tuna Netra" <?= is_array(old('kebutuhan_disabilitas')) && in_array('Tuna Netra', old('kebutuhan_disabilitas')) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="disabilitas_netra">
+                            Tuna Netra
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="disabilitas_rungu"
+                               name="kebutuhan_disabilitas[]" value="Tuna Rungu" <?= is_array(old('kebutuhan_disabilitas')) && in_array('Tuna Rungu', old('kebutuhan_disabilitas')) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="disabilitas_rungu">
+                            Tuna Rungu
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="disabilitas_daksa"
+                               name="kebutuhan_disabilitas[]" value="Tuna Daksa" <?= is_array(old('kebutuhan_disabilitas')) && in_array('Tuna Daksa', old('kebutuhan_disabilitas')) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="disabilitas_daksa">
+                            Tuna Daksa
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="disabilitas_grahita"
+                               name="kebutuhan_disabilitas[]" value="Tuna Grahita" <?= is_array(old('kebutuhan_disabilitas')) && in_array('Tuna Grahita', old('kebutuhan_disabilitas')) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="disabilitas_grahita">
+                            Tuna Grahita
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="disabilitas_laras"
+                               name="kebutuhan_disabilitas[]" value="Tuna Laras" <?= is_array(old('kebutuhan_disabilitas')) && in_array('Tuna Laras', old('kebutuhan_disabilitas')) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="disabilitas_laras">
+                            Tuna Laras
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="disabilitas_wicara"
+                               name="kebutuhan_disabilitas[]" value="Tuna Wicara" <?= is_array(old('kebutuhan_disabilitas')) && in_array('Tuna Wicara', old('kebutuhan_disabilitas')) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="disabilitas_wicara">
+                            Tuna Wicara
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="disabilitas_lainnya"
+                               name="kebutuhan_disabilitas[]" value="Lainnya" <?= is_array(old('kebutuhan_disabilitas')) && in_array('Lainnya', old('kebutuhan_disabilitas')) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="disabilitas_lainnya">
+                            Lainnya
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Imunisasi -->
-        <div class="col-md-6 mb-3">
-            <label for="imunisasi" class="form-label">Riwayat Imunisasi</label>
-            <input type="text" class="form-control" id="imunisasi" name="imunisasi"
-                value="<?= old('imunisasi') ?>" placeholder="Contoh: Lengkap, Tidak Lengkap">
+        <!-- Imunisasi (Checkbox) -->
+        <div class="col-md-12 mb-3">
+            <label class="form-label required">Riwayat Imunisasi</label>
+            <div class="form-text mb-2">Centang jenis imunisasi yang sudah diterima</div>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="imunisasi_hepatitis"
+                               name="imunisasi[]" value="Hepatitis B" <?= is_array(old('imunisasi')) && in_array('Hepatitis B', old('imunisasi')) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="imunisasi_hepatitis">
+                            Hepatitis B
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="imunisasi_bcg"
+                               name="imunisasi[]" value="BCG" <?= is_array(old('imunisasi')) && in_array('BCG', old('imunisasi')) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="imunisasi_bcg">
+                            BCG
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="imunisasi_dpt"
+                               name="imunisasi[]" value="DPT" <?= is_array(old('imunisasi')) && in_array('DPT', old('imunisasi')) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="imunisasi_dpt">
+                            DPT
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="imunisasi_polio"
+                               name="imunisasi[]" value="Polio" <?= is_array(old('imunisasi')) && in_array('Polio', old('imunisasi')) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="imunisasi_polio">
+                            Polio
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="imunisasi_campak"
+                               name="imunisasi[]" value="Campak" <?= is_array(old('imunisasi')) && in_array('Campak', old('imunisasi')) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="imunisasi_campak">
+                            Campak
+                        </label>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="imunisasi_covid"
+                               name="imunisasi[]" value="Covid-19" <?= is_array(old('imunisasi')) && in_array('Covid-19', old('imunisasi')) ? 'checked' : '' ?>>
+                        <label class="form-check-label" for="imunisasi_covid">
+                            Covid-19
+                        </label>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- No HP -->
