@@ -819,7 +819,7 @@ class PendaftaranLengkap extends BaseController
             'status_ayah' => 'permit_empty|in_list[Masih Hidup,Sudah Meninggal,Tidak Diketahui]',
             'pendidikan_ayah' => 'permit_empty|in_list[Tidak Sekolah,SD/MI,SMP/MTs,SMA/MA/SMK,D1,D2,D3,D4/S1,S2,S3]',
             'pekerjaan_ayah' => 'required|in_list[Tidak Bekerja,Pensiun,PNS,TNI/Polri,Guru/Dosen,Pegawai Swasta,Wiraswasta,Pengacara/Jaksa/Hakim/Notaris,Seniman/Pelukis/Artis/Sejenis,Dokter/Bidan/Perawat,Pilot/Pramugara,Pedagang,Petani/Peternak,Nelayan,Buruh (Tani/Pabrik/Bangunan),Sopir/Masinis/Kondektur,Politikus,Lainnya]',
-            'penghasilan_ayah' => 'permit_empty|in_list[< 1 juta,1-2 juta,2-3 juta,3-5 juta,5-10 juta,> 10 juta,Tidak Berpenghasilan]',
+            'penghasilan_ayah' => 'required|in_list[Dibawah 800.000,800.001-1.200.000,1.200.001-1.800.000,1.800.001-2.500.000,2.500.001-3.500.000,3.500.001-4.800.000,4.800.001-6.500.000,6.500.001-10.000.000,10.000.001-20.000.000,Diatas 20.000.000]',
             'hp_ayah' => 'required|max_length[20]',
             'alamat_ayah' => 'permit_empty|max_length[500]',
 
@@ -833,7 +833,7 @@ class PendaftaranLengkap extends BaseController
             'status_ibu' => 'permit_empty|in_list[Masih Hidup,Sudah Meninggal,Tidak Diketahui]',
             'pendidikan_ibu' => 'permit_empty|in_list[Tidak Sekolah,SD/MI,SMP/MTs,SMA/MA/SMK,D1,D2,D3,D4/S1,S2,S3]',
             'pekerjaan_ibu' => 'required|in_list[Tidak Bekerja,Pensiun,PNS,TNI/Polri,Guru/Dosen,Pegawai Swasta,Wiraswasta,Pengacara/Jaksa/Hakim/Notaris,Seniman/Pelukis/Artis/Sejenis,Dokter/Bidan/Perawat,Pilot/Pramugara,Pedagang,Petani/Peternak,Nelayan,Buruh (Tani/Pabrik/Bangunan),Sopir/Masinis/Kondektur,Politikus,Lainnya]',
-            'penghasilan_ibu' => 'permit_empty|in_list[< 1 juta,1-2 juta,2-3 juta,3-5 juta,5-10 juta,> 10 juta,Tidak Berpenghasilan]',
+            'penghasilan_ibu' => 'required|in_list[Dibawah 800.000,800.001-1.200.000,1.200.001-1.800.000,1.800.001-2.500.000,2.500.001-3.500.000,3.500.001-4.800.000,4.800.001-6.500.000,6.500.001-10.000.000,10.000.001-20.000.000,Diatas 20.000.000]',
             'hp_ibu' => 'required|max_length[20]',
             'alamat_ibu' => 'permit_empty|max_length[500]',
 
@@ -845,7 +845,7 @@ class PendaftaranLengkap extends BaseController
             'tahun_lahir_wali' => 'permit_empty|numeric|exact_length[4]',
             'pendidikan_wali' => 'permit_empty|in_list[Tidak Sekolah,SD/MI,SMP/MTs,SMA/MA/SMK,D1,D2,D3,D4/S1,S2,S3]',
             'pekerjaan_wali' => 'permit_empty|in_list[Tidak Bekerja,Pensiun,PNS,TNI/Polri,Guru/Dosen,Pegawai Swasta,Wiraswasta,Pengacara/Jaksa/Hakim/Notaris,Seniman/Pelukis/Artis/Sejenis,Dokter/Bidan/Perawat,Pilot/Pramugara,Pedagang,Petani/Peternak,Nelayan,Buruh (Tani/Pabrik/Bangunan),Sopir/Masinis/Kondektur,Politikus,Lainnya]',
-            'penghasilan_wali' => 'permit_empty|in_list[< 1 juta,1-2 juta,2-3 juta,3-5 juta,5-10 juta,> 10 juta,Tidak Berpenghasilan]',
+            'penghasilan_wali' => 'permit_empty|in_list[Dibawah 800.000,800.001-1.200.000,1.200.001-1.800.000,1.800.001-2.500.000,2.500.001-3.500.000,3.500.001-4.800.000,4.800.001-6.500.000,6.500.001-10.000.000,10.000.001-20.000.000,Diatas 20.000.000]',
             'hp_wali' => 'permit_empty|max_length[20]',
 
             // =====================================================
