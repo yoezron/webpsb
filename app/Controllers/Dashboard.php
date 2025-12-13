@@ -462,10 +462,10 @@ class Dashboard extends BaseController
         // Build query with ALL related tables
         $builder = $this->pendaftarModel
             ->select('pendaftar.*,
-                      alamat_pendaftar.nomor_kk, alamat_pendaftar.jenis_tempat_tinggal,
-                      alamat_pendaftar.alamat, alamat_pendaftar.desa, alamat_pendaftar.kecamatan,
+                      alamat_pendaftar.nomor_kk, alamat_pendaftar.nama_kepala_keluarga, alamat_pendaftar.jenis_tempat_tinggal,
+                      alamat_pendaftar.alamat, alamat_pendaftar.rt_rw, alamat_pendaftar.desa, alamat_pendaftar.kecamatan,
                       alamat_pendaftar.kabupaten, alamat_pendaftar.provinsi, alamat_pendaftar.kode_pos,
-                      alamat_pendaftar.jarak_ke_sekolah, alamat_pendaftar.waktu_tempuh,
+                      alamat_pendaftar.tinggal_bersama, alamat_pendaftar.jarak_ke_sekolah, alamat_pendaftar.waktu_tempuh,
                       alamat_pendaftar.transportasi, alamat_pendaftar.email, alamat_pendaftar.media_sosial,
                       data_ayah.nama_ayah, data_ayah.nik_ayah, data_ayah.pendidikan_ayah,
                       data_ayah.pekerjaan_ayah, data_ayah.penghasilan_ayah,
@@ -473,12 +473,14 @@ class Dashboard extends BaseController
                       data_ibu.nama_ibu, data_ibu.nik_ibu, data_ibu.pendidikan_ibu,
                       data_ibu.pekerjaan_ibu, data_ibu.penghasilan_ibu,
                       data_ibu.hp_ibu, data_ibu.status_ibu,
-                      data_wali.nama_wali, data_wali.nik_wali, data_wali.pendidikan_wali,
-                      data_wali.pekerjaan_wali, data_wali.penghasilan_wali,
+                      data_wali.nama_wali, data_wali.nik_wali, data_wali.tempat_lahir_wali, data_wali.tanggal_lahir_wali,
+                      data_wali.pendidikan_wali, data_wali.pekerjaan_wali, data_wali.penghasilan_wali,
                       data_wali.hp_wali,
                       bansos_pendaftar.no_kks, bansos_pendaftar.no_pkh, bansos_pendaftar.no_kip,
                       asal_sekolah.npsn, asal_sekolah.nama_asal_sekolah, asal_sekolah.jenjang_sekolah,
-                      asal_sekolah.status_sekolah, asal_sekolah.lokasi_sekolah, asal_sekolah.asal_jenjang')
+                      asal_sekolah.status_sekolah, asal_sekolah.lokasi_sekolah, asal_sekolah.alamat_sekolah,
+                      asal_sekolah.tahun_lulus, asal_sekolah.rata_rata_rapor, asal_sekolah.nilai_tka,
+                      asal_sekolah.sekolah_md, asal_sekolah.asal_jenjang')
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('data_ayah', 'data_ayah.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('data_ibu', 'data_ibu.id_pendaftar = pendaftar.id_pendaftar', 'left')
@@ -544,11 +546,12 @@ class Dashboard extends BaseController
             // Pendaftar Data
             'No', 'Nomor Pendaftaran', 'NISN', 'NIK', 'Nama Lengkap', 'Jenis Kelamin',
             'Tempat Lahir', 'Tanggal Lahir', 'Jalur Pendaftaran', 'Status Keluarga',
-            'Anak Ke', 'Jumlah Saudara', 'No HP', 'Tanggal Daftar',
+            'Anak Ke', 'Jumlah Saudara', 'Yang Membiayai Sekolah', 'Kebutuhan Khusus',
+            'Minat & Bakat', 'No HP', 'Tanggal Daftar',
             // Alamat Data
-            'Nomor KK', 'Jenis Tempat Tinggal', 'Alamat Lengkap', 'Desa/Kelurahan',
-            'Kecamatan', 'Kabupaten', 'Provinsi', 'Kode Pos', 'Jarak ke Sekolah (KM)',
-            'Waktu Tempuh', 'Transportasi', 'Email', 'Media Sosial',
+            'Nomor KK', 'Nama Kepala Keluarga', 'Jenis Tempat Tinggal', 'Alamat Lengkap', 'RT/RW',
+            'Desa/Kelurahan', 'Kecamatan', 'Kabupaten', 'Provinsi', 'Kode Pos',
+            'Tinggal Bersama', 'Jarak ke Sekolah (KM)', 'Waktu Tempuh', 'Transportasi', 'Email', 'Media Sosial',
             // Data Ayah
             'Nama Ayah', 'NIK Ayah', 'Pendidikan Ayah', 'Pekerjaan Ayah',
             'Penghasilan Ayah', 'No HP Ayah', 'Status Ayah',
@@ -556,13 +559,14 @@ class Dashboard extends BaseController
             'Nama Ibu', 'NIK Ibu', 'Pendidikan Ibu', 'Pekerjaan Ibu',
             'Penghasilan Ibu', 'No HP Ibu', 'Status Ibu',
             // Data Wali
-            'Nama Wali', 'NIK Wali', 'Pendidikan Wali', 'Pekerjaan Wali',
-            'Penghasilan Wali', 'No HP Wali',
+            'Nama Wali', 'NIK Wali', 'Tempat Lahir Wali', 'Tanggal Lahir Wali',
+            'Pendidikan Wali', 'Pekerjaan Wali', 'Penghasilan Wali', 'No HP Wali',
             // Bansos
             'No. KKS', 'No. PKH', 'No. KIP',
             // Asal Sekolah
             'NPSN', 'Nama Asal Sekolah', 'Jenjang Sekolah', 'Status Sekolah',
-            'Lokasi Sekolah', 'Asal Jenjang'
+            'Lokasi Sekolah', 'Alamat Sekolah', 'Tahun Lulus', 'Rata-rata Rapor',
+            'Nilai TKA', 'Sekolah MD', 'Asal Jenjang'
         ], ',', '"', '\\');
 
         // Comprehensive CSV Data
@@ -582,17 +586,23 @@ class Dashboard extends BaseController
                 $row['status_keluarga'] ?? '-',
                 $row['anak_ke'] ?? '-',
                 $row['jumlah_saudara'] ?? '-',
+                $row['yang_membiayai_sekolah'] ?? '-',
+                $row['kebutuhan_khusus'] ?? '-',
+                $row['minat_bakat'] ?? '-',
                 $row['no_hp'] ?? '-',
                 !empty($row['tanggal_daftar']) ? date('d/m/Y H:i', strtotime($row['tanggal_daftar'])) : '-',
                 // Alamat Data
                 $row['nomor_kk'] ?? '-',
+                $row['nama_kepala_keluarga'] ?? '-',
                 $row['jenis_tempat_tinggal'] ?? '-',
                 $row['alamat'] ?? '-',
+                $row['rt_rw'] ?? '-',
                 $row['desa'] ?? '-',
                 $row['kecamatan'] ?? '-',
                 $row['kabupaten'] ?? '-',
                 $row['provinsi'] ?? '-',
                 $row['kode_pos'] ?? '-',
+                $row['tinggal_bersama'] ?? '-',
                 $row['jarak_ke_sekolah'] ?? '-',
                 $row['waktu_tempuh'] ?? '-',
                 $row['transportasi'] ?? '-',
@@ -617,6 +627,8 @@ class Dashboard extends BaseController
                 // Data Wali
                 $row['nama_wali'] ?? '-',
                 $row['nik_wali'] ?? '-',
+                $row['tempat_lahir_wali'] ?? '-',
+                !empty($row['tanggal_lahir_wali']) ? date('d/m/Y', strtotime($row['tanggal_lahir_wali'])) : '-',
                 $row['pendidikan_wali'] ?? '-',
                 $row['pekerjaan_wali'] ?? '-',
                 $row['penghasilan_wali'] ?? '-',
@@ -631,6 +643,11 @@ class Dashboard extends BaseController
                 $row['jenjang_sekolah'] ?? '-',
                 $row['status_sekolah'] ?? '-',
                 $row['lokasi_sekolah'] ?? '-',
+                $row['alamat_sekolah'] ?? '-',
+                $row['tahun_lulus'] ?? '-',
+                $row['rata_rata_rapor'] ?? '-',
+                $row['nilai_tka'] ?? '-',
+                $row['sekolah_md'] ?? '-',
                 $row['asal_jenjang'] ?? '-'
             ], ',', '"', '\\');
         }
@@ -655,10 +672,10 @@ class Dashboard extends BaseController
         // Build query with ALL related tables (same as CSV export)
         $builder = $this->pendaftarModel
             ->select('pendaftar.*,
-                      alamat_pendaftar.nomor_kk, alamat_pendaftar.jenis_tempat_tinggal,
-                      alamat_pendaftar.alamat, alamat_pendaftar.desa, alamat_pendaftar.kecamatan,
+                      alamat_pendaftar.nomor_kk, alamat_pendaftar.nama_kepala_keluarga, alamat_pendaftar.jenis_tempat_tinggal,
+                      alamat_pendaftar.alamat, alamat_pendaftar.rt_rw, alamat_pendaftar.desa, alamat_pendaftar.kecamatan,
                       alamat_pendaftar.kabupaten, alamat_pendaftar.provinsi, alamat_pendaftar.kode_pos,
-                      alamat_pendaftar.jarak_ke_sekolah, alamat_pendaftar.waktu_tempuh,
+                      alamat_pendaftar.tinggal_bersama, alamat_pendaftar.jarak_ke_sekolah, alamat_pendaftar.waktu_tempuh,
                       alamat_pendaftar.transportasi, alamat_pendaftar.email, alamat_pendaftar.media_sosial,
                       data_ayah.nama_ayah, data_ayah.nik_ayah, data_ayah.pendidikan_ayah,
                       data_ayah.pekerjaan_ayah, data_ayah.penghasilan_ayah,
@@ -666,12 +683,14 @@ class Dashboard extends BaseController
                       data_ibu.nama_ibu, data_ibu.nik_ibu, data_ibu.pendidikan_ibu,
                       data_ibu.pekerjaan_ibu, data_ibu.penghasilan_ibu,
                       data_ibu.hp_ibu, data_ibu.status_ibu,
-                      data_wali.nama_wali, data_wali.nik_wali, data_wali.pendidikan_wali,
-                      data_wali.pekerjaan_wali, data_wali.penghasilan_wali,
+                      data_wali.nama_wali, data_wali.nik_wali, data_wali.tempat_lahir_wali, data_wali.tanggal_lahir_wali,
+                      data_wali.pendidikan_wali, data_wali.pekerjaan_wali, data_wali.penghasilan_wali,
                       data_wali.hp_wali,
                       bansos_pendaftar.no_kks, bansos_pendaftar.no_pkh, bansos_pendaftar.no_kip,
                       asal_sekolah.npsn, asal_sekolah.nama_asal_sekolah, asal_sekolah.jenjang_sekolah,
-                      asal_sekolah.status_sekolah, asal_sekolah.lokasi_sekolah, asal_sekolah.asal_jenjang')
+                      asal_sekolah.status_sekolah, asal_sekolah.lokasi_sekolah, asal_sekolah.alamat_sekolah,
+                      asal_sekolah.tahun_lulus, asal_sekolah.rata_rata_rapor, asal_sekolah.nilai_tka,
+                      asal_sekolah.sekolah_md, asal_sekolah.asal_jenjang')
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('data_ayah', 'data_ayah.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('data_ibu', 'data_ibu.id_pendaftar = pendaftar.id_pendaftar', 'left')
@@ -805,11 +824,12 @@ class Dashboard extends BaseController
             // Pendaftar Data
             'No', 'Nomor Pendaftaran', 'NISN', 'NIK', 'Nama Lengkap', 'Jenis Kelamin',
             'Tempat Lahir', 'Tanggal Lahir', 'Jalur Pendaftaran', 'Status Keluarga',
-            'Anak Ke', 'Jumlah Saudara', 'No HP', 'Tanggal Daftar',
+            'Anak Ke', 'Jumlah Saudara', 'Yang Membiayai Sekolah', 'Kebutuhan Khusus',
+            'Minat & Bakat', 'No HP', 'Tanggal Daftar',
             // Alamat Data
-            'Nomor KK', 'Jenis Tempat Tinggal', 'Alamat Lengkap', 'Desa/Kelurahan',
-            'Kecamatan', 'Kabupaten', 'Provinsi', 'Kode Pos', 'Jarak ke Sekolah (KM)',
-            'Waktu Tempuh', 'Transportasi', 'Email', 'Media Sosial',
+            'Nomor KK', 'Nama Kepala Keluarga', 'Jenis Tempat Tinggal', 'Alamat Lengkap', 'RT/RW',
+            'Desa/Kelurahan', 'Kecamatan', 'Kabupaten', 'Provinsi', 'Kode Pos',
+            'Tinggal Bersama', 'Jarak ke Sekolah (KM)', 'Waktu Tempuh', 'Transportasi', 'Email', 'Media Sosial',
             // Data Ayah
             'Nama Ayah', 'NIK Ayah', 'Pendidikan Ayah', 'Pekerjaan Ayah',
             'Penghasilan Ayah', 'No HP Ayah', 'Status Ayah',
@@ -817,13 +837,14 @@ class Dashboard extends BaseController
             'Nama Ibu', 'NIK Ibu', 'Pendidikan Ibu', 'Pekerjaan Ibu',
             'Penghasilan Ibu', 'No HP Ibu', 'Status Ibu',
             // Data Wali
-            'Nama Wali', 'NIK Wali', 'Pendidikan Wali', 'Pekerjaan Wali',
-            'Penghasilan Wali', 'No HP Wali',
+            'Nama Wali', 'NIK Wali', 'Tempat Lahir Wali', 'Tanggal Lahir Wali',
+            'Pendidikan Wali', 'Pekerjaan Wali', 'Penghasilan Wali', 'No HP Wali',
             // Bansos
             'No. KKS', 'No. PKH', 'No. KIP',
             // Asal Sekolah
             'NPSN', 'Nama Asal Sekolah', 'Jenjang Sekolah', 'Status Sekolah',
-            'Lokasi Sekolah', 'Asal Jenjang'
+            'Lokasi Sekolah', 'Alamat Sekolah', 'Tahun Lulus', 'Rata-rata Rapor',
+            'Nilai TKA', 'Sekolah MD', 'Asal Jenjang'
         ];
 
         $col = 'A';
@@ -863,17 +884,23 @@ class Dashboard extends BaseController
                 $row['status_keluarga'] ?? '-',
                 $row['anak_ke'] ?? '-',
                 $row['jumlah_saudara'] ?? '-',
+                $row['yang_membiayai_sekolah'] ?? '-',
+                $row['kebutuhan_khusus'] ?? '-',
+                $row['minat_bakat'] ?? '-',
                 $row['no_hp'] ?? '-',
                 !empty($row['tanggal_daftar']) ? date('d/m/Y H:i', strtotime($row['tanggal_daftar'])) : '-',
                 // Alamat Data
                 $row['nomor_kk'] ?? '-',
+                $row['nama_kepala_keluarga'] ?? '-',
                 $row['jenis_tempat_tinggal'] ?? '-',
                 $row['alamat'] ?? '-',
+                $row['rt_rw'] ?? '-',
                 $row['desa'] ?? '-',
                 $row['kecamatan'] ?? '-',
                 $row['kabupaten'] ?? '-',
                 $row['provinsi'] ?? '-',
                 $row['kode_pos'] ?? '-',
+                $row['tinggal_bersama'] ?? '-',
                 $row['jarak_ke_sekolah'] ?? '-',
                 $row['waktu_tempuh'] ?? '-',
                 $row['transportasi'] ?? '-',
@@ -898,6 +925,8 @@ class Dashboard extends BaseController
                 // Data Wali
                 $row['nama_wali'] ?? '-',
                 $row['nik_wali'] ?? '-',
+                $row['tempat_lahir_wali'] ?? '-',
+                !empty($row['tanggal_lahir_wali']) ? date('d/m/Y', strtotime($row['tanggal_lahir_wali'])) : '-',
                 $row['pendidikan_wali'] ?? '-',
                 $row['pekerjaan_wali'] ?? '-',
                 $row['penghasilan_wali'] ?? '-',
@@ -912,6 +941,11 @@ class Dashboard extends BaseController
                 $row['jenjang_sekolah'] ?? '-',
                 $row['status_sekolah'] ?? '-',
                 $row['lokasi_sekolah'] ?? '-',
+                $row['alamat_sekolah'] ?? '-',
+                $row['tahun_lulus'] ?? '-',
+                $row['rata_rata_rapor'] ?? '-',
+                $row['nilai_tka'] ?? '-',
+                $row['sekolah_md'] ?? '-',
                 $row['asal_jenjang'] ?? '-'
             ];
 

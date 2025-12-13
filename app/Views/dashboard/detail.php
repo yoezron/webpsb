@@ -338,9 +338,51 @@
                         <span class="info-value"><?= esc($pendaftar['anak_ke'] ?? '-') ?> dari <?= esc($pendaftar['jumlah_saudara'] ?? '-') ?> bersaudara</span>
                     </div>
                     <div class="info-item">
+                        <span class="info-label">Yang Membiayai Sekolah</span>
+                        <span class="info-value"><?= esc($pendaftar['yang_membiayai_sekolah'] ?? '-') ?></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Hobi</span>
+                        <span class="info-value"><?= esc($pendaftar['hobi'] ?? '-') ?></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Cita-cita</span>
+                        <span class="info-value"><?= esc($pendaftar['cita_cita'] ?? '-') ?></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Pernah PAUD</span>
+                        <span class="info-value"><?= isset($pendaftar['pernah_paud']) && $pendaftar['pernah_paud'] == 1 ? 'Ya' : 'Tidak' ?></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Pernah TK</span>
+                        <span class="info-value"><?= isset($pendaftar['pernah_tk']) && $pendaftar['pernah_tk'] == 1 ? 'Ya' : 'Tidak' ?></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Kebutuhan Disabilitas</span>
+                        <span class="info-value"><?= esc($pendaftar['kebutuhan_disabilitas'] ?? '-') ?></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Kebutuhan Khusus</span>
+                        <span class="info-value"><?= esc($pendaftar['kebutuhan_khusus'] ?? '-') ?></span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Imunisasi</span>
+                        <span class="info-value"><?= esc($pendaftar['imunisasi'] ?? '-') ?></span>
+                    </div>
+                    <div class="info-item">
                         <span class="info-label">Ukuran Baju</span>
                         <span class="info-value"><?= esc($pendaftar['ukuran_baju'] ?? '-') ?></span>
                     </div>
+                    <div class="info-item">
+                        <span class="info-label">Prestasi</span>
+                        <span class="info-value"><?= esc($pendaftar['prestasi'] ?? '-') ?></span>
+                    </div>
+                    <?php if (!empty($pendaftar['minat_bakat'])): ?>
+                    <div class="info-item" style="grid-column: 1 / -1;">
+                        <span class="info-label">Minat & Bakat</span>
+                        <span class="info-value"><?= nl2br(esc($pendaftar['minat_bakat'])) ?></span>
+                    </div>
+                    <?php endif; ?>
                     <div class="info-item">
                         <span class="info-label">Tanggal Daftar</span>
                         <span class="info-value"><?= date('d F Y, H:i', strtotime($pendaftar['tanggal_daftar'])) ?> WIB</span>
@@ -355,8 +397,24 @@
                     </h3>
                     <div class="info-grid">
                         <div class="info-item">
+                            <span class="info-label">Nomor KK</span>
+                            <span class="info-value"><?= esc($alamat['nomor_kk'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Nama Kepala Keluarga</span>
+                            <span class="info-value"><?= esc($alamat['nama_kepala_keluarga'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Jenis Tempat Tinggal</span>
+                            <span class="info-value"><?= esc($alamat['jenis_tempat_tinggal'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
                             <span class="info-label">Alamat</span>
                             <span class="info-value"><?= esc($alamat['alamat'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">RT/RW</span>
+                            <span class="info-value"><?= esc($alamat['rt_rw'] ?? '-') ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Desa/Kelurahan</span>
@@ -379,12 +437,28 @@
                             <span class="info-value"><?= esc($alamat['kode_pos'] ?? '-') ?></span>
                         </div>
                         <div class="info-item">
+                            <span class="info-label">Tinggal Bersama</span>
+                            <span class="info-value"><?= esc($alamat['tinggal_bersama'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
                             <span class="info-label">Jarak ke Pesantren</span>
-                            <span class="info-value"><?= esc($alamat['jarak_ke_sekolah'] ?? '-') ?></span>
+                            <span class="info-value"><?= esc($alamat['jarak_ke_sekolah'] ?? '-') ?> KM</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Waktu Tempuh</span>
+                            <span class="info-value"><?= esc($alamat['waktu_tempuh'] ?? '-') ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Transportasi</span>
                             <span class="info-value"><?= esc($alamat['transportasi'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email</span>
+                            <span class="info-value"><?= esc($alamat['email'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Media Sosial</span>
+                            <span class="info-value"><?= esc($alamat['media_sosial'] ?? '-') ?></span>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -473,6 +547,44 @@
                     </div>
                 <?php endif; ?>
 
+                <!-- Data Wali -->
+                <?php if ($wali && !empty($wali['nama_wali'])): ?>
+                    <h3 class="section-title">
+                        <i class="icofont-users"></i>
+                        Data Wali
+                    </h3>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">Nama Lengkap</span>
+                            <span class="info-value"><?= esc($wali['nama_wali'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">NIK</span>
+                            <span class="info-value"><?= esc($wali['nik_wali'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Tempat, Tanggal Lahir</span>
+                            <span class="info-value"><?= esc($wali['tempat_lahir_wali'] ?? '-') ?><?= !empty($wali['tanggal_lahir_wali']) ? ', ' . date('d F Y', strtotime($wali['tanggal_lahir_wali'])) : '' ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Pendidikan Terakhir</span>
+                            <span class="info-value"><?= esc($wali['pendidikan_wali'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Pekerjaan</span>
+                            <span class="info-value"><?= esc($wali['pekerjaan_wali'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Penghasilan</span>
+                            <span class="info-value"><?= esc($wali['penghasilan_wali'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">No. HP</span>
+                            <span class="info-value"><?= esc($wali['hp_wali'] ?? '-') ?></span>
+                        </div>
+                    </div>
+                <?php endif; ?>
+
                 <!-- Data Sekolah -->
                 <?php if ($sekolah): ?>
                     <h3 class="section-title">
@@ -499,6 +611,26 @@
                         <div class="info-item">
                             <span class="info-label">Lokasi</span>
                             <span class="info-value"><?= esc($sekolah['lokasi_sekolah'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Alamat Sekolah</span>
+                            <span class="info-value"><?= esc($sekolah['alamat_sekolah'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Tahun Lulus</span>
+                            <span class="info-value"><?= esc($sekolah['tahun_lulus'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Rata-rata Nilai Rapor</span>
+                            <span class="info-value"><?= esc($sekolah['rata_rata_rapor'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Nilai TKA</span>
+                            <span class="info-value"><?= esc($sekolah['nilai_tka'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Sekolah MD (Madrasah Diniyah)</span>
+                            <span class="info-value"><?= esc($sekolah['sekolah_md'] ?? '-') ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Asal Jenjang</span>
