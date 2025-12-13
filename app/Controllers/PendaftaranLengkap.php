@@ -397,7 +397,8 @@ class PendaftaranLengkap extends BaseController
             'id_pendaftar' => $idPendaftar,
             'nama_wali' => trim($this->request->getPost('nama_wali')),
             'nik_wali' => trim($this->request->getPost('nik_wali') ?? ''),
-            'tahun_lahir_wali' => $this->request->getPost('tahun_lahir_wali') ?: null,
+            'tempat_lahir_wali' => trim($this->request->getPost('tempat_lahir_wali') ?? ''),  // Sprint 2 NEW
+            'tanggal_lahir_wali' => $this->request->getPost('tanggal_lahir_wali') ?: null,  // Sprint 2 NEW
             'pendidikan_wali' => $this->request->getPost('pendidikan_wali'),
             'pekerjaan_wali' => $this->request->getPost('pekerjaan_wali'),
             'penghasilan_wali' => $this->request->getPost('penghasilan_wali'),
@@ -430,6 +431,11 @@ class PendaftaranLengkap extends BaseController
             'status_sekolah' => $this->request->getPost('status_sekolah'),
             'npsn' => trim($this->request->getPost('npsn') ?? ''),
             'lokasi_sekolah' => trim($this->request->getPost('lokasi_sekolah') ?? ''),
+            'alamat_sekolah' => trim($this->request->getPost('alamat_sekolah') ?? ''),  // Sprint 2 NEW
+            'tahun_lulus' => $this->request->getPost('tahun_lulus') ?: null,  // Sprint 2 NEW
+            'rata_rata_rapor' => $this->request->getPost('rata_rata_rapor') ?: null,  // Sprint 2 NEW
+            'nilai_tka' => $this->request->getPost('nilai_tka') ?: null,  // Sprint 2 NEW
+            'sekolah_md' => trim($this->request->getPost('sekolah_md') ?? ''),  // Sprint 2 NEW
             'asal_jenjang' => $this->request->getPost('asal_jenjang'),
         ];
     }
