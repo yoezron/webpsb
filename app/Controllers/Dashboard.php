@@ -539,34 +539,87 @@ class Dashboard extends BaseController
         $output = fopen('php://output', 'w');
 
         // Add BOM for Excel UTF-8 compatibility
-        fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+        fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
         // Comprehensive CSV Headers - All fields from 7 tables
         fputcsv($output, [
             // Pendaftar Data
-            'No', 'Nomor Pendaftaran', 'NISN', 'NIK', 'Nama Lengkap', 'Jenis Kelamin',
-            'Tempat Lahir', 'Tanggal Lahir', 'Jalur Pendaftaran', 'Status Keluarga',
-            'Anak Ke', 'Jumlah Saudara', 'Yang Membiayai Sekolah', 'Kebutuhan Khusus',
-            'Minat & Bakat', 'No HP', 'Tanggal Daftar',
+            'No',
+            'Nomor Pendaftaran',
+            'NISN',
+            'NIK',
+            'Nama Lengkap',
+            'Jenis Kelamin',
+            'Tempat Lahir',
+            'Tanggal Lahir',
+            'Jalur Pendaftaran',
+            'Status Keluarga',
+            'Anak Ke',
+            'Jumlah Saudara',
+            'Yang Membiayai Sekolah',
+            'Kebutuhan Khusus',
+            'Minat & Bakat',
+            'No HP',
+            'Tanggal Daftar',
             // Alamat Data
-            'Nomor KK', 'Nama Kepala Keluarga', 'Jenis Tempat Tinggal', 'Alamat Lengkap', 'RT/RW',
-            'Desa/Kelurahan', 'Kecamatan', 'Kabupaten', 'Provinsi', 'Kode Pos',
-            'Tinggal Bersama', 'Jarak ke Sekolah (KM)', 'Waktu Tempuh', 'Transportasi', 'Email', 'Media Sosial',
+            'Nomor KK',
+            'Nama Kepala Keluarga',
+            'Jenis Tempat Tinggal',
+            'Alamat Lengkap',
+            'RT/RW',
+            'Desa/Kelurahan',
+            'Kecamatan',
+            'Kabupaten',
+            'Provinsi',
+            'Kode Pos',
+            'Tinggal Bersama',
+            'Jarak ke Sekolah (KM)',
+            'Waktu Tempuh',
+            'Transportasi',
+            'Email',
+            'Media Sosial',
             // Data Ayah
-            'Nama Ayah', 'NIK Ayah', 'Pendidikan Ayah', 'Pekerjaan Ayah',
-            'Penghasilan Ayah', 'No HP Ayah', 'Status Ayah',
+            'Nama Ayah',
+            'NIK Ayah',
+            'Pendidikan Ayah',
+            'Pekerjaan Ayah',
+            'Penghasilan Ayah',
+            'No HP Ayah',
+            'Status Ayah',
             // Data Ibu
-            'Nama Ibu', 'NIK Ibu', 'Pendidikan Ibu', 'Pekerjaan Ibu',
-            'Penghasilan Ibu', 'No HP Ibu', 'Status Ibu',
+            'Nama Ibu',
+            'NIK Ibu',
+            'Pendidikan Ibu',
+            'Pekerjaan Ibu',
+            'Penghasilan Ibu',
+            'No HP Ibu',
+            'Status Ibu',
             // Data Wali
-            'Nama Wali', 'Hubungan Wali', 'NIK Wali', 'Tempat Lahir Wali', 'Tanggal Lahir Wali',
-            'Pendidikan Wali', 'Pekerjaan Wali', 'Penghasilan Wali', 'No HP Wali',
+            'Nama Wali',
+            'Hubungan Wali',
+            'NIK Wali',
+            'Tempat Lahir Wali',
+            'Tanggal Lahir Wali',
+            'Pendidikan Wali',
+            'Pekerjaan Wali',
+            'Penghasilan Wali',
+            'No HP Wali',
             // Bansos
-            'No. KKS', 'No. PKH', 'No. KIP',
+            'No. KKS',
+            'No. PKH',
+            'No. KIP',
             // Asal Sekolah
-            'NPSN', 'Nama Asal Sekolah', 'Jenjang Sekolah', 'Status Sekolah',
-            'Lokasi Sekolah', 'Alamat Sekolah', 'Tahun Lulus', 'Rata-rata Rapor',
-            'Nilai TKA', 'Sekolah MD', 'Asal Jenjang'
+            'NPSN',
+            'Nama Asal Sekolah',
+            'Jenjang Sekolah',
+            'Status Sekolah',
+            'Lokasi Sekolah',
+            'Alamat Sekolah',
+            'Tahun Lulus',
+            'Rata-rata Rapor',
+            'Nilai TKA',
+            'Sekolah MD',
+            'Asal Jenjang'
         ], ',', '"', '\\');
 
         // Comprehensive CSV Data
@@ -753,7 +806,7 @@ class Dashboard extends BaseController
 
         // Summary header
         $summarySheet->setCellValue('A1', 'LAPORAN DATA PENDAFTAR');
-        $summarySheet->setCellValue('A2', 'PSB PERSIS 31 CIAMIS');
+        $summarySheet->setCellValue('A2', 'PSB PERSIS 31 BANJARAN');
         $summarySheet->mergeCells('A1:D1');
         $summarySheet->mergeCells('A2:D2');
 
@@ -823,29 +876,82 @@ class Dashboard extends BaseController
         // Comprehensive Headers - All fields from 7 tables
         $headers = [
             // Pendaftar Data
-            'No', 'Nomor Pendaftaran', 'NISN', 'NIK', 'Nama Lengkap', 'Jenis Kelamin',
-            'Tempat Lahir', 'Tanggal Lahir', 'Jalur Pendaftaran', 'Status Keluarga',
-            'Anak Ke', 'Jumlah Saudara', 'Yang Membiayai Sekolah', 'Kebutuhan Khusus',
-            'Minat & Bakat', 'No HP', 'Tanggal Daftar',
+            'No',
+            'Nomor Pendaftaran',
+            'NISN',
+            'NIK',
+            'Nama Lengkap',
+            'Jenis Kelamin',
+            'Tempat Lahir',
+            'Tanggal Lahir',
+            'Jalur Pendaftaran',
+            'Status Keluarga',
+            'Anak Ke',
+            'Jumlah Saudara',
+            'Yang Membiayai Sekolah',
+            'Kebutuhan Khusus',
+            'Minat & Bakat',
+            'No HP',
+            'Tanggal Daftar',
             // Alamat Data
-            'Nomor KK', 'Nama Kepala Keluarga', 'Jenis Tempat Tinggal', 'Alamat Lengkap', 'RT/RW',
-            'Desa/Kelurahan', 'Kecamatan', 'Kabupaten', 'Provinsi', 'Kode Pos',
-            'Tinggal Bersama', 'Jarak ke Sekolah (KM)', 'Waktu Tempuh', 'Transportasi', 'Email', 'Media Sosial',
+            'Nomor KK',
+            'Nama Kepala Keluarga',
+            'Jenis Tempat Tinggal',
+            'Alamat Lengkap',
+            'RT/RW',
+            'Desa/Kelurahan',
+            'Kecamatan',
+            'Kabupaten',
+            'Provinsi',
+            'Kode Pos',
+            'Tinggal Bersama',
+            'Jarak ke Sekolah (KM)',
+            'Waktu Tempuh',
+            'Transportasi',
+            'Email',
+            'Media Sosial',
             // Data Ayah
-            'Nama Ayah', 'NIK Ayah', 'Pendidikan Ayah', 'Pekerjaan Ayah',
-            'Penghasilan Ayah', 'No HP Ayah', 'Status Ayah',
+            'Nama Ayah',
+            'NIK Ayah',
+            'Pendidikan Ayah',
+            'Pekerjaan Ayah',
+            'Penghasilan Ayah',
+            'No HP Ayah',
+            'Status Ayah',
             // Data Ibu
-            'Nama Ibu', 'NIK Ibu', 'Pendidikan Ibu', 'Pekerjaan Ibu',
-            'Penghasilan Ibu', 'No HP Ibu', 'Status Ibu',
+            'Nama Ibu',
+            'NIK Ibu',
+            'Pendidikan Ibu',
+            'Pekerjaan Ibu',
+            'Penghasilan Ibu',
+            'No HP Ibu',
+            'Status Ibu',
             // Data Wali
-            'Nama Wali', 'Hubungan Wali', 'NIK Wali', 'Tempat Lahir Wali', 'Tanggal Lahir Wali',
-            'Pendidikan Wali', 'Pekerjaan Wali', 'Penghasilan Wali', 'No HP Wali',
+            'Nama Wali',
+            'Hubungan Wali',
+            'NIK Wali',
+            'Tempat Lahir Wali',
+            'Tanggal Lahir Wali',
+            'Pendidikan Wali',
+            'Pekerjaan Wali',
+            'Penghasilan Wali',
+            'No HP Wali',
             // Bansos
-            'No. KKS', 'No. PKH', 'No. KIP',
+            'No. KKS',
+            'No. PKH',
+            'No. KIP',
             // Asal Sekolah
-            'NPSN', 'Nama Asal Sekolah', 'Jenjang Sekolah', 'Status Sekolah',
-            'Lokasi Sekolah', 'Alamat Sekolah', 'Tahun Lulus', 'Rata-rata Rapor',
-            'Nilai TKA', 'Sekolah MD', 'Asal Jenjang'
+            'NPSN',
+            'Nama Asal Sekolah',
+            'Jenjang Sekolah',
+            'Status Sekolah',
+            'Lokasi Sekolah',
+            'Alamat Sekolah',
+            'Tahun Lulus',
+            'Rata-rata Rapor',
+            'Nilai TKA',
+            'Sekolah MD',
+            'Asal Jenjang'
         ];
 
         $col = 'A';
@@ -854,8 +960,8 @@ class Dashboard extends BaseController
             $col++;
         }
 
-        // Style header row (56 columns = A to BD)
-        $dataSheet->getStyle('A1:BD1')->applyFromArray([
+        // Style header row (56 columns = A to BR)
+        $dataSheet->getStyle('A1:BR1')->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => [
                 'fillType' => Fill::FILL_SOLID,
@@ -956,7 +1062,7 @@ class Dashboard extends BaseController
 
             // Zebra striping
             if ($rowNum % 2 == 0) {
-                $dataSheet->getStyle('A' . $rowNum . ':BD' . $rowNum)->applyFromArray([
+                $dataSheet->getStyle('A' . $rowNum . ':BR' . $rowNum)->applyFromArray([
                     'fill' => [
                         'fillType' => Fill::FILL_SOLID,
                         'startColor' => ['rgb' => 'F8F9FA']
@@ -968,13 +1074,13 @@ class Dashboard extends BaseController
         }
 
         // Apply borders to all data
-        $dataSheet->getStyle('A1:BD' . ($rowNum - 1))->applyFromArray([
+        $dataSheet->getStyle('A1:BR' . ($rowNum - 1))->applyFromArray([
             'borders' => [
                 'allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'CCCCCC']]
             ]
         ]);
 
-        // Auto-width for all columns (A to BD = 56 columns)
+        // Auto-width for all columns (A to BR = 56 columns)
         foreach (range('A', 'Z') as $col) {
             $dataSheet->getColumnDimension($col)->setAutoSize(true);
         }
