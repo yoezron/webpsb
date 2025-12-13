@@ -84,7 +84,13 @@ class PendaftarModel extends Model
 
     /**
      * Generate nomor pendaftaran otomatis
-     * Format: T2026-001 (Tsanawiyyah) atau M2026-001 (Mu'allimin)
+     * Format: T-26270001 (Tsanawiyyah/MTs) atau M-26270001 (Muallimin/MA)
+     *
+     * Format breakdown:
+     * - T/M: Prefix (T = Tsanawiyyah/MTs, M = Muallimin/MA)
+     * - 26: Tahun sekarang (2 digit terakhir dari 2026)
+     * - 27: Tahun ajaran berikutnya (2 digit terakhir dari 2027)
+     * - 0001: Counter auto-increment (4 digit dengan leading zeros)
      */
     protected function generateNomorPendaftaran(array $data)
     {
@@ -93,22 +99,34 @@ class PendaftarModel extends Model
         }
 
         $jalur = $data['data']['jalur_pendaftaran'] ?? '';
-        // Tahun ajaran PSB 2026/2027
-        $tahunPSB = 2026;
+
+        // Prefix: T untuk Tsanawiyyah (MTs), M untuk Muallimin (MA)
         $prefix = ($jalur === 'TSANAWIYYAH') ? 'T' : 'M';
 
-        // Get last number for this jalur and tahun PSB
-        $lastPendaftar = $this->like('nomor_pendaftaran', $prefix . $tahunPSB, 'after')
+        // Tahun PSB saat ini (2 digit terakhir)
+        $currentYear = date('y'); // 26 untuk tahun 2026
+
+        // Tahun ajaran berikutnya (2 digit terakhir)
+        $nextYear = str_pad((intval($currentYear) + 1) % 100, 2, '0', STR_PAD_LEFT); // 27 untuk tahun 2027
+
+        // Kombinasi tahun untuk pattern matching
+        $yearPattern = $currentYear . $nextYear; // 2627 untuk tahun ajaran 2026/2027
+
+        // Get last number for this jalur and year pattern
+        $lastPendaftar = $this->like('nomor_pendaftaran', $prefix . '-' . $yearPattern, 'after')
             ->orderBy('id_pendaftar', 'DESC')
             ->first();
 
-        if ($lastPendaftar && preg_match('/\d{3}$/', $lastPendaftar['nomor_pendaftaran'], $matches)) {
+        // Extract counter dari format T-26270001 atau M-26270001
+        if ($lastPendaftar && preg_match('/\d{4}$/', $lastPendaftar['nomor_pendaftaran'], $matches)) {
             $counter = intval($matches[0]) + 1;
         } else {
             $counter = 1;
         }
 
-        $data['data']['nomor_pendaftaran'] = sprintf('%s%s-%03d', $prefix, $tahunPSB, $counter);
+        // Format: T-26270001 atau M-26270001
+        // Menggunakan 4 digit counter dengan leading zeros
+        $data['data']['nomor_pendaftaran'] = sprintf('%s-%s%s%04d', $prefix, $currentYear, $nextYear, $counter);
 
         return $data;
     }

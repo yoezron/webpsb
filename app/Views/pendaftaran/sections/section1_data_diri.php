@@ -15,9 +15,10 @@
 
         <!-- NIK -->
         <div class="col-md-6 mb-3">
-            <label for="nik" class="form-label">NIK</label>
+            <label for="nik" class="form-label required">NIK</label>
             <input type="text" class="form-control numeric-only" id="nik" name="nik"
-                value="<?= old('nik') ?>" placeholder="Masukkan NIK" maxlength="20">
+                value="<?= old('nik') ?>" placeholder="Masukkan NIK (16 digit)" maxlength="16" required>
+            <div class="form-text">Nomor Induk Kependudukan (wajib diisi, 16 digit).</div>
         </div>
 
         <!-- Nama Lengkap -->
@@ -78,16 +79,34 @@
 
         <!-- Hobi -->
         <div class="col-md-6 mb-3">
-            <label for="hobi" class="form-label">Hobi</label>
-            <input type="text" class="form-control" id="hobi" name="hobi"
-                value="<?= old('hobi') ?>" placeholder="Masukkan hobi">
+            <label for="hobi" class="form-label required">Hobi</label>
+            <select class="form-select" id="hobi" name="hobi" required>
+                <option value="">Pilih Hobi</option>
+                <option value="Olah Raga" <?= old('hobi') === 'Olah Raga' ? 'selected' : '' ?>>Olah Raga</option>
+                <option value="Kesenian" <?= old('hobi') === 'Kesenian' ? 'selected' : '' ?>>Kesenian</option>
+                <option value="Membaca" <?= old('hobi') === 'Membaca' ? 'selected' : '' ?>>Membaca</option>
+                <option value="Menulis" <?= old('hobi') === 'Menulis' ? 'selected' : '' ?>>Menulis</option>
+                <option value="Jalan-jalan" <?= old('hobi') === 'Jalan-jalan' ? 'selected' : '' ?>>Jalan-jalan</option>
+                <option value="Lainnya" <?= old('hobi') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
+            </select>
         </div>
 
         <!-- Cita-cita -->
         <div class="col-md-6 mb-3">
-            <label for="cita_cita" class="form-label">Cita-cita</label>
-            <input type="text" class="form-control" id="cita_cita" name="cita_cita"
-                value="<?= old('cita_cita') ?>" placeholder="Masukkan cita-cita">
+            <label for="cita_cita" class="form-label required">Cita-cita</label>
+            <select class="form-select" id="cita_cita" name="cita_cita" required>
+                <option value="">Pilih Cita-cita</option>
+                <option value="PNS" <?= old('cita_cita') === 'PNS' ? 'selected' : '' ?>>PNS</option>
+                <option value="TNI/Polri" <?= old('cita_cita') === 'TNI/Polri' ? 'selected' : '' ?>>TNI/Polri</option>
+                <option value="Guru/Dosen" <?= old('cita_cita') === 'Guru/Dosen' ? 'selected' : '' ?>>Guru/Dosen</option>
+                <option value="Dokter" <?= old('cita_cita') === 'Dokter' ? 'selected' : '' ?>>Dokter</option>
+                <option value="Politikus" <?= old('cita_cita') === 'Politikus' ? 'selected' : '' ?>>Politikus</option>
+                <option value="Wiraswasta" <?= old('cita_cita') === 'Wiraswasta' ? 'selected' : '' ?>>Wiraswasta</option>
+                <option value="Seniman/Artis" <?= old('cita_cita') === 'Seniman/Artis' ? 'selected' : '' ?>>Seniman/Artis</option>
+                <option value="Ilmuwan" <?= old('cita_cita') === 'Ilmuwan' ? 'selected' : '' ?>>Ilmuwan</option>
+                <option value="Agamawan" <?= old('cita_cita') === 'Agamawan' ? 'selected' : '' ?>>Agamawan</option>
+                <option value="Lainnya" <?= old('cita_cita') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
+            </select>
         </div>
 
         <!-- Pendidikan Sebelumnya -->
