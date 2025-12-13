@@ -109,6 +109,18 @@
             </select>
         </div>
 
+        <!-- Yang Membiayai Sekolah -->
+        <div class="col-md-6 mb-3">
+            <label for="yang_membiayai_sekolah" class="form-label required">Yang Membiayai Sekolah</label>
+            <select class="form-select" id="yang_membiayai_sekolah" name="yang_membiayai_sekolah" required>
+                <option value="">Pilih</option>
+                <option value="Orang Tua" <?= old('yang_membiayai_sekolah') === 'Orang Tua' ? 'selected' : '' ?>>Orang Tua</option>
+                <option value="Wali/Orang Tua Asuh" <?= old('yang_membiayai_sekolah') === 'Wali/Orang Tua Asuh' ? 'selected' : '' ?>>Wali/Orang Tua Asuh</option>
+                <option value="Tanggungan Sendiri" <?= old('yang_membiayai_sekolah') === 'Tanggungan Sendiri' ? 'selected' : '' ?>>Tanggungan Sendiri</option>
+                <option value="Lainnya" <?= old('yang_membiayai_sekolah') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
+            </select>
+        </div>
+
         <!-- Pendidikan Sebelumnya -->
         <div class="col-md-12 mb-3">
             <label class="form-label">Pendidikan Sebelumnya</label>
@@ -307,6 +319,13 @@
             <label for="prestasi" class="form-label">Prestasi yang Pernah Diraih</label>
             <textarea class="form-control" id="prestasi" name="prestasi" rows="3"
                 placeholder="Tuliskan prestasi yang pernah diraih (jika ada)"><?= old('prestasi') ?></textarea>
+        </div>
+
+        <!-- Minat & Bakat -->
+        <div class="col-md-12 mb-3">
+            <label for="minat_bakat" class="form-label">Minat & Bakat</label>
+            <textarea class="form-control" id="minat_bakat" name="minat_bakat" rows="3"
+                placeholder="Tuliskan minat dan bakat yang dimiliki"><?= old('minat_bakat') ?></textarea>
         </div>
     </div>
 </div>

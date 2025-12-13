@@ -330,13 +330,16 @@ class PendaftaranLengkap extends BaseController
         return [
             'id_pendaftar' => $idPendaftar,
             'nomor_kk' => trim($this->request->getPost('nomor_kk') ?? ''),
+            'nama_kepala_keluarga' => trim($this->request->getPost('nama_kepala_keluarga') ?? ''),  // Sprint 2 NEW
             'jenis_tempat_tinggal' => $this->request->getPost('jenis_tempat_tinggal'),
             'alamat' => trim($this->request->getPost('alamat') ?? ''),
+            'rt_rw' => trim($this->request->getPost('rt_rw') ?? ''),  // Sprint 2 NEW
             'desa' => trim($this->request->getPost('desa') ?? ''),
             'kecamatan' => trim($this->request->getPost('kecamatan') ?? ''),
             'kabupaten' => trim($this->request->getPost('kabupaten') ?? ''),
             'provinsi' => trim($this->request->getPost('provinsi') ?? ''),
             'kode_pos' => trim($this->request->getPost('kode_pos') ?? ''),
+            'tinggal_bersama' => $this->request->getPost('tinggal_bersama'),  // Sprint 2 NEW
             'jarak_ke_sekolah' => $this->request->getPost('jarak_ke_sekolah'),
             'waktu_tempuh' => $this->request->getPost('waktu_tempuh'),
             'transportasi' => $this->request->getPost('transportasi'),
