@@ -64,9 +64,28 @@
 
         <!-- Pekerjaan Ibu -->
         <div class="col-md-6 mb-3">
-            <label for="pekerjaan_ibu" class="form-label">Pekerjaan Ibu</label>
-            <input type="text" class="form-control" id="pekerjaan_ibu" name="pekerjaan_ibu"
-                value="<?= old('pekerjaan_ibu') ?>" placeholder="Contoh: Ibu Rumah Tangga, PNS, Wiraswasta">
+            <label for="pekerjaan_ibu" class="form-label required">Pekerjaan Utama Ibu</label>
+            <select class="form-select" id="pekerjaan_ibu" name="pekerjaan_ibu" required>
+                <option value="">Pilih Pekerjaan</option>
+                <option value="Tidak Bekerja" <?= old('pekerjaan_ibu') === 'Tidak Bekerja' ? 'selected' : '' ?>>Tidak Bekerja</option>
+                <option value="Pensiun" <?= old('pekerjaan_ibu') === 'Pensiun' ? 'selected' : '' ?>>Pensiun</option>
+                <option value="PNS" <?= old('pekerjaan_ibu') === 'PNS' ? 'selected' : '' ?>>PNS</option>
+                <option value="TNI/Polri" <?= old('pekerjaan_ibu') === 'TNI/Polri' ? 'selected' : '' ?>>TNI/Polri</option>
+                <option value="Guru/Dosen" <?= old('pekerjaan_ibu') === 'Guru/Dosen' ? 'selected' : '' ?>>Guru/Dosen</option>
+                <option value="Pegawai Swasta" <?= old('pekerjaan_ibu') === 'Pegawai Swasta' ? 'selected' : '' ?>>Pegawai Swasta</option>
+                <option value="Wiraswasta" <?= old('pekerjaan_ibu') === 'Wiraswasta' ? 'selected' : '' ?>>Wiraswasta</option>
+                <option value="Pengacara/Jaksa/Hakim/Notaris" <?= old('pekerjaan_ibu') === 'Pengacara/Jaksa/Hakim/Notaris' ? 'selected' : '' ?>>Pengacara/Jaksa/Hakim/Notaris</option>
+                <option value="Seniman/Pelukis/Artis/Sejenis" <?= old('pekerjaan_ibu') === 'Seniman/Pelukis/Artis/Sejenis' ? 'selected' : '' ?>>Seniman/Pelukis/Artis/Sejenis</option>
+                <option value="Dokter/Bidan/Perawat" <?= old('pekerjaan_ibu') === 'Dokter/Bidan/Perawat' ? 'selected' : '' ?>>Dokter/Bidan/Perawat</option>
+                <option value="Pilot/Pramugara" <?= old('pekerjaan_ibu') === 'Pilot/Pramugara' ? 'selected' : '' ?>>Pilot/Pramugara</option>
+                <option value="Pedagang" <?= old('pekerjaan_ibu') === 'Pedagang' ? 'selected' : '' ?>>Pedagang</option>
+                <option value="Petani/Peternak" <?= old('pekerjaan_ibu') === 'Petani/Peternak' ? 'selected' : '' ?>>Petani/Peternak</option>
+                <option value="Nelayan" <?= old('pekerjaan_ibu') === 'Nelayan' ? 'selected' : '' ?>>Nelayan</option>
+                <option value="Buruh (Tani/Pabrik/Bangunan)" <?= old('pekerjaan_ibu') === 'Buruh (Tani/Pabrik/Bangunan)' ? 'selected' : '' ?>>Buruh (Tani/Pabrik/Bangunan)</option>
+                <option value="Sopir/Masinis/Kondektur" <?= old('pekerjaan_ibu') === 'Sopir/Masinis/Kondektur' ? 'selected' : '' ?>>Sopir/Masinis/Kondektur</option>
+                <option value="Politikus" <?= old('pekerjaan_ibu') === 'Politikus' ? 'selected' : '' ?>>Politikus</option>
+                <option value="Lainnya" <?= old('pekerjaan_ibu') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
+            </select>
         </div>
 
         <!-- Penghasilan Ibu -->

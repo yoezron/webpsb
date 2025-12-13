@@ -50,9 +50,28 @@
 
         <!-- Pekerjaan Wali -->
         <div class="col-md-6 mb-3">
-            <label for="pekerjaan_wali" class="form-label">Pekerjaan Wali</label>
-            <input type="text" class="form-control" id="pekerjaan_wali" name="pekerjaan_wali"
-                value="<?= old('pekerjaan_wali') ?>" placeholder="Contoh: Wiraswasta, PNS">
+            <label for="pekerjaan_wali" class="form-label">Pekerjaan Utama Wali</label>
+            <select class="form-select" id="pekerjaan_wali" name="pekerjaan_wali">
+                <option value="">Pilih Pekerjaan</option>
+                <option value="Tidak Bekerja" <?= old('pekerjaan_wali') === 'Tidak Bekerja' ? 'selected' : '' ?>>Tidak Bekerja</option>
+                <option value="Pensiun" <?= old('pekerjaan_wali') === 'Pensiun' ? 'selected' : '' ?>>Pensiun</option>
+                <option value="PNS" <?= old('pekerjaan_wali') === 'PNS' ? 'selected' : '' ?>>PNS</option>
+                <option value="TNI/Polri" <?= old('pekerjaan_wali') === 'TNI/Polri' ? 'selected' : '' ?>>TNI/Polri</option>
+                <option value="Guru/Dosen" <?= old('pekerjaan_wali') === 'Guru/Dosen' ? 'selected' : '' ?>>Guru/Dosen</option>
+                <option value="Pegawai Swasta" <?= old('pekerjaan_wali') === 'Pegawai Swasta' ? 'selected' : '' ?>>Pegawai Swasta</option>
+                <option value="Wiraswasta" <?= old('pekerjaan_wali') === 'Wiraswasta' ? 'selected' : '' ?>>Wiraswasta</option>
+                <option value="Pengacara/Jaksa/Hakim/Notaris" <?= old('pekerjaan_wali') === 'Pengacara/Jaksa/Hakim/Notaris' ? 'selected' : '' ?>>Pengacara/Jaksa/Hakim/Notaris</option>
+                <option value="Seniman/Pelukis/Artis/Sejenis" <?= old('pekerjaan_wali') === 'Seniman/Pelukis/Artis/Sejenis' ? 'selected' : '' ?>>Seniman/Pelukis/Artis/Sejenis</option>
+                <option value="Dokter/Bidan/Perawat" <?= old('pekerjaan_wali') === 'Dokter/Bidan/Perawat' ? 'selected' : '' ?>>Dokter/Bidan/Perawat</option>
+                <option value="Pilot/Pramugara" <?= old('pekerjaan_wali') === 'Pilot/Pramugara' ? 'selected' : '' ?>>Pilot/Pramugara</option>
+                <option value="Pedagang" <?= old('pekerjaan_wali') === 'Pedagang' ? 'selected' : '' ?>>Pedagang</option>
+                <option value="Petani/Peternak" <?= old('pekerjaan_wali') === 'Petani/Peternak' ? 'selected' : '' ?>>Petani/Peternak</option>
+                <option value="Nelayan" <?= old('pekerjaan_wali') === 'Nelayan' ? 'selected' : '' ?>>Nelayan</option>
+                <option value="Buruh (Tani/Pabrik/Bangunan)" <?= old('pekerjaan_wali') === 'Buruh (Tani/Pabrik/Bangunan)' ? 'selected' : '' ?>>Buruh (Tani/Pabrik/Bangunan)</option>
+                <option value="Sopir/Masinis/Kondektur" <?= old('pekerjaan_wali') === 'Sopir/Masinis/Kondektur' ? 'selected' : '' ?>>Sopir/Masinis/Kondektur</option>
+                <option value="Politikus" <?= old('pekerjaan_wali') === 'Politikus' ? 'selected' : '' ?>>Politikus</option>
+                <option value="Lainnya" <?= old('pekerjaan_wali') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
+            </select>
         </div>
 
         <!-- Penghasilan Wali -->
