@@ -26,13 +26,16 @@ class PendaftarModel extends Model
         'jumlah_saudara',
         'hobi',
         'cita_cita',
+        'yang_membiayai_sekolah',  // Sprint 2 - NEW
         'pernah_paud',
         'pernah_tk',
         'kebutuhan_disabilitas',
+        'kebutuhan_khusus',  // Sprint 2 - NEW
         'imunisasi',
         'no_hp',
         'ukuran_baju',
         'prestasi',
+        'minat_bakat',  // Sprint 2 - NEW
     ];
 
     // Dates

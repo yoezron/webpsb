@@ -16,7 +16,8 @@ class WaliModel extends Model
         'id_pendaftar',
         'nama_wali',
         'nik_wali',
-        'tahun_lahir_wali',
+        'tempat_lahir_wali',  // Sprint 2 - NEW (replace tahun_lahir_wali)
+        'tanggal_lahir_wali',  // Sprint 2 - NEW (replace tahun_lahir_wali)
         'pendidikan_wali',
         'pekerjaan_wali',
         'penghasilan_wali',
