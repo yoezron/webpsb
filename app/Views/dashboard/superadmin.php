@@ -474,6 +474,7 @@
                         <i class="icofont-close me-1"></i> Batal
                     </button>
                     <form id="deleteForm" method="POST" style="display: inline;">
+                        <?= csrf_field() ?>
                         <button type="submit" class="btn btn-danger">
                             <i class="icofont-trash me-1"></i> Ya, Hapus Permanen
                         </button>
