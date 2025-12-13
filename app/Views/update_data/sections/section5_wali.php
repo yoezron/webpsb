@@ -10,10 +10,25 @@
 
     <div class="row">
         <!-- Nama Wali -->
-        <div class="col-md-12 mb-3">
+        <div class="col-md-6 mb-3">
             <label for="nama_wali" class="form-label">Nama Wali</label>
             <input type="text" class="form-control" id="nama_wali" name="nama_wali"
                 value="<?= old('nama_wali', $wali['nama_wali'] ?? '') ?>" placeholder="Masukkan nama lengkap wali">
+        </div>
+
+        <!-- Hubungan Wali dengan Santri -->
+        <div class="col-md-6 mb-3">
+            <label for="hubungan_wali" class="form-label">Hubungan Wali dengan Santri</label>
+            <select class="form-select" id="hubungan_wali" name="hubungan_wali">
+                <option value="">Pilih Hubungan</option>
+                <option value="Kakek" <?= old('hubungan_wali', $wali['hubungan_wali'] ?? '') === 'Kakek' ? 'selected' : '' ?>>Kakek</option>
+                <option value="Nenek" <?= old('hubungan_wali', $wali['hubungan_wali'] ?? '') === 'Nenek' ? 'selected' : '' ?>>Nenek</option>
+                <option value="Paman" <?= old('hubungan_wali', $wali['hubungan_wali'] ?? '') === 'Paman' ? 'selected' : '' ?>>Paman</option>
+                <option value="Bibi" <?= old('hubungan_wali', $wali['hubungan_wali'] ?? '') === 'Bibi' ? 'selected' : '' ?>>Bibi</option>
+                <option value="Kakak" <?= old('hubungan_wali', $wali['hubungan_wali'] ?? '') === 'Kakak' ? 'selected' : '' ?>>Kakak</option>
+                <option value="Ayah/Ibu Tiri" <?= old('hubungan_wali', $wali['hubungan_wali'] ?? '') === 'Ayah/Ibu Tiri' ? 'selected' : '' ?>>Ayah/Ibu Tiri</option>
+                <option value="Lainnya" <?= old('hubungan_wali', $wali['hubungan_wali'] ?? '') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
+            </select>
         </div>
 
         <!-- NIK Wali -->

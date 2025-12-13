@@ -559,6 +559,10 @@
                             <span class="info-value"><?= esc($wali['nama_wali'] ?? '-') ?></span>
                         </div>
                         <div class="info-item">
+                            <span class="info-label">Hubungan dengan Santri</span>
+                            <span class="info-value"><?= esc($wali['hubungan_wali'] ?? '-') ?></span>
+                        </div>
+                        <div class="info-item">
                             <span class="info-label">NIK</span>
                             <span class="info-value"><?= esc($wali['nik_wali'] ?? '-') ?></span>
                         </div>

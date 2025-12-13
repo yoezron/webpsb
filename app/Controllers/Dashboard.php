@@ -559,7 +559,7 @@ class Dashboard extends BaseController
             'Nama Ibu', 'NIK Ibu', 'Pendidikan Ibu', 'Pekerjaan Ibu',
             'Penghasilan Ibu', 'No HP Ibu', 'Status Ibu',
             // Data Wali
-            'Nama Wali', 'NIK Wali', 'Tempat Lahir Wali', 'Tanggal Lahir Wali',
+            'Nama Wali', 'Hubungan Wali', 'NIK Wali', 'Tempat Lahir Wali', 'Tanggal Lahir Wali',
             'Pendidikan Wali', 'Pekerjaan Wali', 'Penghasilan Wali', 'No HP Wali',
             // Bansos
             'No. KKS', 'No. PKH', 'No. KIP',
@@ -626,6 +626,7 @@ class Dashboard extends BaseController
                 $row['status_ibu'] ?? '-',
                 // Data Wali
                 $row['nama_wali'] ?? '-',
+                $row['hubungan_wali'] ?? '-',
                 $row['nik_wali'] ?? '-',
                 $row['tempat_lahir_wali'] ?? '-',
                 !empty($row['tanggal_lahir_wali']) ? date('d/m/Y', strtotime($row['tanggal_lahir_wali'])) : '-',
@@ -837,7 +838,7 @@ class Dashboard extends BaseController
             'Nama Ibu', 'NIK Ibu', 'Pendidikan Ibu', 'Pekerjaan Ibu',
             'Penghasilan Ibu', 'No HP Ibu', 'Status Ibu',
             // Data Wali
-            'Nama Wali', 'NIK Wali', 'Tempat Lahir Wali', 'Tanggal Lahir Wali',
+            'Nama Wali', 'Hubungan Wali', 'NIK Wali', 'Tempat Lahir Wali', 'Tanggal Lahir Wali',
             'Pendidikan Wali', 'Pekerjaan Wali', 'Penghasilan Wali', 'No HP Wali',
             // Bansos
             'No. KKS', 'No. PKH', 'No. KIP',
@@ -924,6 +925,7 @@ class Dashboard extends BaseController
                 $row['status_ibu'] ?? '-',
                 // Data Wali
                 $row['nama_wali'] ?? '-',
+                $row['hubungan_wali'] ?? '-',
                 $row['nik_wali'] ?? '-',
                 $row['tempat_lahir_wali'] ?? '-',
                 !empty($row['tanggal_lahir_wali']) ? date('d/m/Y', strtotime($row['tanggal_lahir_wali'])) : '-',
