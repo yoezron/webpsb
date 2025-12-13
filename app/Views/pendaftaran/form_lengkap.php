@@ -638,13 +638,13 @@
 
                 // Group data by section
                 const sections = {
-                    'Data Diri': ['nisn', 'nik', 'nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'status_keluarga', 'anak_ke', 'jumlah_saudara', 'hobi', 'cita_cita', 'pernah_paud', 'pernah_tk', 'kebutuhan_disabilitas', 'imunisasi', 'no_hp', 'ukuran_baju', 'prestasi'],
-                    'Data Alamat': ['nomor_kk', 'jenis_tempat_tinggal', 'alamat', 'desa', 'kecamatan', 'kabupaten', 'provinsi', 'kode_pos', 'jarak_ke_sekolah', 'waktu_tempuh', 'transportasi', 'email', 'media_sosial'],
+                    'Data Diri': ['nisn', 'nik', 'nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'status_keluarga', 'anak_ke', 'jumlah_saudara', 'hobi', 'cita_cita', 'yang_membiayai_sekolah', 'pernah_paud', 'pernah_tk', 'kebutuhan_disabilitas', 'kebutuhan_khusus', 'imunisasi', 'no_hp', 'ukuran_baju', 'prestasi', 'minat_bakat'],
+                    'Data Alamat': ['nomor_kk', 'nama_kepala_keluarga', 'jenis_tempat_tinggal', 'alamat', 'rt_rw', 'desa', 'kecamatan', 'kabupaten', 'provinsi', 'kode_pos', 'tinggal_bersama', 'jarak_ke_sekolah', 'waktu_tempuh', 'transportasi', 'email', 'media_sosial'],
                     'Data Ayah': ['nama_ayah', 'nik_ayah', 'tempat_lahir_ayah', 'tanggal_lahir_ayah', 'status_ayah', 'pendidikan_ayah', 'pekerjaan_ayah', 'penghasilan_ayah', 'hp_ayah', 'alamat_ayah'],
                     'Data Ibu': ['nama_ibu', 'nik_ibu', 'tempat_lahir_ibu', 'tanggal_lahir_ibu', 'status_ibu', 'pendidikan_ibu', 'pekerjaan_ibu', 'penghasilan_ibu', 'hp_ibu', 'alamat_ibu'],
-                    'Data Wali': ['nama_wali', 'nik_wali', 'tahun_lahir_wali', 'pendidikan_wali', 'pekerjaan_wali', 'penghasilan_wali', 'hp_wali'],
+                    'Data Wali': ['nama_wali', 'nik_wali', 'tempat_lahir_wali', 'tanggal_lahir_wali', 'pendidikan_wali', 'pekerjaan_wali', 'penghasilan_wali', 'hp_wali'],
                     'Data Bansos': ['no_kks', 'no_pkh', 'no_kip'],
-                    'Data Asal Sekolah': ['nama_asal_sekolah', 'jenjang_sekolah', 'status_sekolah', 'npsn', 'lokasi_sekolah', 'asal_jenjang']
+                    'Data Asal Sekolah': ['nama_asal_sekolah', 'jenjang_sekolah', 'status_sekolah', 'npsn', 'lokasi_sekolah', 'alamat_sekolah', 'tahun_lulus', 'rata_rata_rapor', 'nilai_tka', 'sekolah_md', 'asal_jenjang']
                 };
 
                 Object.keys(sections).forEach(sectionTitle => {

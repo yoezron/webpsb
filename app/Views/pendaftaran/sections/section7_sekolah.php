@@ -55,6 +55,41 @@
                 value="<?= old('lokasi_sekolah') ?>" placeholder="Contoh: Bandung, Jawa Barat">
         </div>
 
+        <!-- Alamat Sekolah Asal -->
+        <div class="col-md-12 mb-3">
+            <label for="alamat_sekolah" class="form-label required">Alamat Sekolah Asal</label>
+            <textarea class="form-control" id="alamat_sekolah" name="alamat_sekolah" rows="2"
+                placeholder="Alamat lengkap sekolah asal" required><?= old('alamat_sekolah') ?></textarea>
+        </div>
+
+        <!-- Tahun Lulus -->
+        <div class="col-md-6 mb-3">
+            <label for="tahun_lulus" class="form-label">Tahun Lulus</label>
+            <input type="number" class="form-control" id="tahun_lulus" name="tahun_lulus"
+                value="<?= old('tahun_lulus') ?>" placeholder="Contoh: 2026" min="2000" max="2030">
+        </div>
+
+        <!-- Rata-rata Nilai Raport -->
+        <div class="col-md-6 mb-3">
+            <label for="rata_rata_rapor" class="form-label">Rata-rata Nilai Raport Tahun Berjalan</label>
+            <input type="number" class="form-control" id="rata_rata_rapor" name="rata_rata_rapor"
+                value="<?= old('rata_rata_rapor') ?>" placeholder="Contoh: 85.5" step="0.01" min="0" max="100">
+        </div>
+
+        <!-- Nilai TKA -->
+        <div class="col-md-6 mb-3">
+            <label for="nilai_tka" class="form-label">Nilai TKA (Kalau sudah Melaksanakan)</label>
+            <input type="number" class="form-control" id="nilai_tka" name="nilai_tka"
+                value="<?= old('nilai_tka') ?>" placeholder="Kosongkan jika belum TKA" step="0.01" min="0" max="100">
+        </div>
+
+        <!-- Sekolah MD (Madrasah Diniyah) -->
+        <div class="col-md-6 mb-3">
+            <label for="sekolah_md" class="form-label">Sekolah MD (Madrasah Diniyah sore)</label>
+            <input type="text" class="form-control" id="sekolah_md" name="sekolah_md"
+                value="<?= old('sekolah_md') ?>" placeholder="Nama Madrasah Diniyah">
+        </div>
+
         <!-- Asal Jenjang (Berbeda untuk Tsanawiyyah dan Muallimin) -->
         <div class="col-md-12 mb-3">
             <label for="asal_jenjang" class="form-label">

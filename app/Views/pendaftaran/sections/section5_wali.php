@@ -23,11 +23,18 @@
                 value="<?= old('nik_wali') ?>" placeholder="Masukkan NIK wali" maxlength="20">
         </div>
 
-        <!-- Tahun Lahir Wali -->
+        <!-- Tempat Lahir Wali -->
         <div class="col-md-6 mb-3">
-            <label for="tahun_lahir_wali" class="form-label">Tahun Lahir Wali</label>
-            <input type="number" class="form-control" id="tahun_lahir_wali" name="tahun_lahir_wali"
-                value="<?= old('tahun_lahir_wali') ?>" placeholder="Contoh: 1980" min="1940" max="<?= date('Y') ?>">
+            <label for="tempat_lahir_wali" class="form-label">Tempat Lahir Wali</label>
+            <input type="text" class="form-control" id="tempat_lahir_wali" name="tempat_lahir_wali"
+                value="<?= old('tempat_lahir_wali') ?>" placeholder="Masukkan tempat lahir wali">
+        </div>
+
+        <!-- Tanggal Lahir Wali -->
+        <div class="col-md-6 mb-3">
+            <label for="tanggal_lahir_wali" class="form-label">Tanggal Lahir Wali</label>
+            <input type="date" class="form-control" id="tanggal_lahir_wali" name="tanggal_lahir_wali"
+                value="<?= old('tanggal_lahir_wali') ?>" max="<?= date('Y-m-d') ?>">
         </div>
 
         <!-- Pendidikan Wali -->
