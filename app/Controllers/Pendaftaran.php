@@ -201,7 +201,6 @@ class Pendaftaran extends BaseController
             // Redirect to success page
             return redirect()->to(base_url('pendaftaran/sukses/' . $nomorPendaftaran))
                 ->with('success', 'Pendaftaran berhasil! Nomor pendaftaran Anda: ' . $nomorPendaftaran);
-
         } catch (\Exception $e) {
             $db->transRollback();
             log_message('error', 'Pendaftaran error: ' . $e->getMessage());

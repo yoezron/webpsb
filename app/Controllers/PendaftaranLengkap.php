@@ -259,7 +259,6 @@ class PendaftaranLengkap extends BaseController
             // Redirect to success page
             return redirect()->to(base_url('pendaftaran/success/' . $nomorPendaftaran))
                 ->with('success', 'Pendaftaran berhasil! Nomor pendaftaran Anda: ' . $nomorPendaftaran);
-
         } catch (DatabaseException $e) {
             // Database-specific error
             $this->db->transRollback();
@@ -273,7 +272,6 @@ class PendaftaranLengkap extends BaseController
 
             return redirect()->back()->withInput()
                 ->with('error', 'Terjadi kesalahan database. Silakan coba lagi atau hubungi administrator.');
-
         } catch (\Exception $e) {
             // General error
             $this->db->transRollback();
@@ -798,8 +796,8 @@ class PendaftaranLengkap extends BaseController
             'jumlah_saudara' => 'permit_empty|numeric|greater_than_equal_to[0]|less_than[20]',
             'hobi' => 'required|in_list[Olah Raga,Kesenian,Membaca,Menulis,Jalan-jalan,Lainnya]',
             'cita_cita' => 'required|in_list[PNS,TNI/Polri,Guru/Dosen,Dokter,Politikus,Wiraswasta,Seniman/Artis,Ilmuwan,Agamawan,Lainnya]',
-            'kebutuhan_disabilitas' => 'permit_empty|max_length[255]',
-            'imunisasi' => 'permit_empty|in_list[Lengkap,Tidak Lengkap,Tidak Tahu]',
+            'kebutuhan_disabilitas' => 'permit_empty',
+            'imunisasi' => 'permit_empty',
             'no_hp' => 'permit_empty|max_length[20]',
             'ukuran_baju' => 'permit_empty|in_list[XS,S,M,L,XL,XXL,XXXL]',
             'prestasi' => 'permit_empty|max_length[500]',

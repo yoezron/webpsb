@@ -87,7 +87,8 @@
             <label for="jarak_ke_sekolah" class="form-label">Jarak ke Sekolah</label>
             <select class="form-select" id="jarak_ke_sekolah" name="jarak_ke_sekolah">
                 <option value="">Pilih Jarak</option>
-                <option value="< 1 km" <?= old('jarak_ke_sekolah') === '< 1 km' ? 'selected' : '' ?>>< 1 km</option>
+                <option value="< 1 km" <?= old('jarak_ke_sekolah') === '< 1 km' ? 'selected' : '' ?>>
+                    < 1 km</option>
                 <option value="1-5 km" <?= old('jarak_ke_sekolah') === '1-5 km' ? 'selected' : '' ?>>1-5 km</option>
                 <option value="5-10 km" <?= old('jarak_ke_sekolah') === '5-10 km' ? 'selected' : '' ?>>5-10 km</option>
                 <option value="10-20 km" <?= old('jarak_ke_sekolah') === '10-20 km' ? 'selected' : '' ?>>10-20 km</option>
@@ -100,7 +101,8 @@
             <label for="waktu_tempuh" class="form-label">Waktu Tempuh ke Sekolah</label>
             <select class="form-select" id="waktu_tempuh" name="waktu_tempuh">
                 <option value="">Pilih Waktu Tempuh</option>
-                <option value="< 15 menit" <?= old('waktu_tempuh') === '< 15 menit' ? 'selected' : '' ?>>< 15 menit</option>
+                <option value="< 15 menit" <?= old('waktu_tempuh') === '< 15 menit' ? 'selected' : '' ?>>
+                    < 15 menit</option>
                 <option value="15-30 menit" <?= old('waktu_tempuh') === '15-30 menit' ? 'selected' : '' ?>>15-30 menit</option>
                 <option value="30-60 menit" <?= old('waktu_tempuh') === '30-60 menit' ? 'selected' : '' ?>>30-60 menit</option>
                 <option value="> 60 menit" <?= old('waktu_tempuh') === '> 60 menit' ? 'selected' : '' ?>>> 60 menit</option>
@@ -141,6 +143,7 @@
             <label for="tinggal_bersama" class="form-label required">Calon Siswa Tinggal Bersama</label>
             <select class="form-select" id="tinggal_bersama" name="tinggal_bersama" required>
                 <option value="">Pilih</option>
+                <option value="Tinggal dengan kedua orang tua" <?= old('tinggal_bersama') === 'Tinggal dengan kedua orang tua' ? 'selected' : '' ?>>Tinggal dengan kedua orang tua</option>
                 <option value="Tinggal dengan ayah kandung" <?= old('tinggal_bersama') === 'Tinggal dengan ayah kandung' ? 'selected' : '' ?>>Tinggal dengan ayah kandung</option>
                 <option value="Tinggal dengan Ibu Kandung" <?= old('tinggal_bersama') === 'Tinggal dengan Ibu Kandung' ? 'selected' : '' ?>>Tinggal dengan Ibu Kandung</option>
                 <option value="Tinggal dengan Wali" <?= old('tinggal_bersama') === 'Tinggal dengan Wali' ? 'selected' : '' ?>>Tinggal dengan Wali</option>

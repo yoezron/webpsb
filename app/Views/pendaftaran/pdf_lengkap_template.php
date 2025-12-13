@@ -10,16 +10,14 @@
         ============================================ */
         @page {
             margin: 1cm 1.5cm;
-            /* Margin sedikit diperkecil agar muat lebih banyak */
             size: A4 portrait;
         }
 
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
-            /* Font standar PDF aman */
             font-size: 10pt;
             color: #333;
-            line-height: 1.4;
+            line-height: 1.3;
         }
 
         /* Helper Classes */
@@ -43,18 +41,14 @@
             margin-bottom: 5px;
         }
 
-        .mb-2 {
-            margin-bottom: 10px;
-        }
-
         /* ============================================
-           HEADER (Table Based for Safety)
+           HEADER
         ============================================ */
         .header-table {
             width: 100%;
             border-bottom: 3px solid #1AB34A;
             padding-bottom: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .logo-cell {
@@ -93,7 +87,6 @@
             color: #555;
         }
 
-        /* Kotak Nomer Pendaftaran */
         .reg-box {
             border: 2px solid #F3C623;
             background-color: #fcfcfc;
@@ -120,30 +113,29 @@
            SECTIONS
         ============================================ */
         .section-container {
-            margin-bottom: 15px;
-            /* Mencegah section terpotong jelek di perpindahan halaman */
+            margin-bottom: 10px;
             page-break-inside: avoid;
         }
 
         .section-header {
             background-color: #1AB34A;
             color: white;
-            padding: 6px 10px;
+            padding: 5px 10px;
             font-weight: bold;
-            font-size: 11pt;
+            font-size: 10pt;
             border-radius: 4px 4px 0 0;
-            border-bottom: 2px solid #148f3b;
+            border-bottom: 1px solid #148f3b;
         }
 
         .sub-header {
             background-color: #eee;
             color: #333;
-            padding: 4px 10px;
+            padding: 3px 10px;
             font-weight: bold;
             font-size: 9pt;
             border-left: 4px solid #F3C623;
-            margin-top: 10px;
-            margin-bottom: 5px;
+            margin-top: 8px;
+            margin-bottom: 4px;
         }
 
         /* ============================================
@@ -152,47 +144,43 @@
         .table-data {
             width: 100%;
             border-collapse: collapse;
-            font-size: 9.5pt;
+            font-size: 9pt;
         }
 
         .table-data td {
-            padding: 5px 8px;
+            padding: 3px 5px;
             vertical-align: top;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #f0f0f0;
         }
 
-        /* Kolom Label */
         .td-label {
-            width: 35%;
+            width: 30%;
             font-weight: bold;
             color: #444;
             background-color: #fdfdfd;
         }
 
-        /* Kolom Titik Dua */
         .td-sep {
             width: 2%;
             text-align: center;
         }
 
-        /* Kolom Isi */
         .td-value {
-            width: 63%;
+            width: 68%;
             color: #000;
         }
 
-        /* Highlight */
         .val-highlight {
             color: #1AB34A;
             font-weight: bold;
         }
 
         /* ============================================
-           SIGNATURE
+           SIGNATURE & FOOTER
         ============================================ */
         .signature-table {
             width: 100%;
-            margin-top: 30px;
+            margin-top: 20px;
             page-break-inside: avoid;
         }
 
@@ -211,7 +199,7 @@
         .sign-role {
             font-weight: bold;
             font-size: 10pt;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
         }
 
         .sign-name {
@@ -221,12 +209,9 @@
             width: 80%;
         }
 
-        /* ============================================
-           FOOTER
-        ============================================ */
         .footer {
-            margin-top: 20px;
-            padding-top: 10px;
+            margin-top: 15px;
+            padding-top: 5px;
             border-top: 1px dotted #ccc;
             font-size: 8pt;
             color: #777;
@@ -238,12 +223,12 @@
             background-color: #e8f5e9;
             color: #1AB34A;
             border: 1px solid #1AB34A;
-            padding: 5px 10px;
-            border-radius: 15px;
-            font-size: 8pt;
+            padding: 3px 8px;
+            border-radius: 10px;
+            font-size: 7pt;
             font-weight: bold;
             display: inline-block;
-            margin-top: 5px;
+            margin-top: 3px;
         }
     </style>
 </head>
@@ -253,11 +238,11 @@
     <table class="header-table">
         <tr>
             <td class="logo-cell">
-                <img src="<?= FCPATH . 'assets/images/logo/01.png' ?>" width="70" alt="Logo">
+                <img src="<?= FCPATH . 'assets/images/logo/01.png' ?>" width="60" alt="Logo">
             </td>
             <td class="info-cell">
                 <div class="school-name">PESANTREN PERSIS 31 BANJARAN</div>
-                <div class="school-address">Jl. Raya Banjaran No. 123, Banjaran, Bandung, Jawa Barat</div>
+                <div class="school-address">Jl. Pajagalan No. 115, Banjaran, Bandung, Jawa Barat</div>
                 <div class="form-title">FORMULIR PENDAFTARAN SANTRI BARU</div>
                 <div style="font-size: 9pt;">Tahun Ajaran <?= date('Y') ?>/<?= date('Y') + 1 ?></div>
             </td>
@@ -279,9 +264,7 @@
             <tr>
                 <td class="td-label">NISN / NIK</td>
                 <td class="td-sep">:</td>
-                <td class="td-value">
-                    <?= esc($pendaftar['nisn'] ?? '-') ?> / <?= esc($pendaftar['nik'] ?? '-') ?>
-                </td>
+                <td class="td-value"><?= esc($pendaftar['nisn'] ?? '-') ?> / <?= esc($pendaftar['nik'] ?? '-') ?></td>
             </tr>
             <tr>
                 <td class="td-label">Nama Lengkap</td>
@@ -291,40 +274,48 @@
             <tr>
                 <td class="td-label">Jenis Kelamin</td>
                 <td class="td-sep">:</td>
+                <td class="td-value"><?= $pendaftar['jenis_kelamin'] === 'L' ? 'Laki-laki' : 'Perempuan' ?></td>
+            </tr>
+            <tr>
+                <td class="td-label">TTL (Usia)</td>
+                <td class="td-sep">:</td>
                 <td class="td-value">
-                    <?= $pendaftar['jenis_kelamin'] === 'L' ? 'Laki-laki' : 'Perempuan' ?>
+                    <?= esc($pendaftar['tempat_lahir']) ?>, <?= !empty($pendaftar['tanggal_lahir']) ? date('d F Y', strtotime($pendaftar['tanggal_lahir'])) : '-' ?>
+                    <?= !empty($pendaftar['tanggal_lahir']) ? '(Usia: ' . (date('Y') - date('Y', strtotime($pendaftar['tanggal_lahir']))) . ' Th)' : '' ?>
                 </td>
             </tr>
             <tr>
-                <td class="td-label">Tempat, Tanggal Lahir</td>
+                <td class="td-label">Status dalam Keluarga</td>
                 <td class="td-sep">:</td>
                 <td class="td-value">
-                    <?= esc($pendaftar['tempat_lahir']) ?>, <?= date('d F Y', strtotime($pendaftar['tanggal_lahir'])) ?>
-                    (Usia: <?= date('Y') - date('Y', strtotime($pendaftar['tanggal_lahir'])) ?> Th)
+                    <?= esc($pendaftar['status_keluarga'] ?? '-') ?>
+                    (Anak ke-<?= esc($pendaftar['anak_ke'] ?? '-') ?> dari <?= esc($pendaftar['jumlah_saudara'] ?? '-') ?> bersaudara)
                 </td>
             </tr>
             <tr>
-                <td class="td-label">Jalur Pendaftaran</td>
-                <td class="td-sep">:</td>
-                <td class="td-value text-bold"><?= strtoupper($pendaftar['jalur_pendaftaran']) ?></td>
-            </tr>
-            <tr>
-                <td class="td-label">Anak Ke / Jumlah Sdr</td>
-                <td class="td-sep">:</td>
-                <td class="td-value">
-                    <?= esc($pendaftar['anak_ke'] ?? '-') ?> dari <?= esc($pendaftar['jumlah_saudara'] ?? '-') ?> bersaudara
-                </td>
-            </tr>
-            <tr>
-                <td class="td-label">Nomor Handphone</td>
+                <td class="td-label">No. Handphone</td>
                 <td class="td-sep">:</td>
                 <td class="td-value"><?= esc($pendaftar['no_hp'] ?? '-') ?></td>
             </tr>
             <tr>
-                <td class="td-label">Minat/Hobi/Cita-cita</td>
+                <td class="td-label">Minat & Cita-cita</td>
+                <td class="td-sep">:</td>
+                <td class="td-value">Hobi: <?= esc($pendaftar['hobi'] ?? '-') ?> / Cita-cita: <?= esc($pendaftar['cita_cita'] ?? '-') ?></td>
+            </tr>
+            <tr>
+                <td class="td-label">Data Kesehatan</td>
                 <td class="td-sep">:</td>
                 <td class="td-value">
-                    <?= esc($pendaftar['hobi'] ?? '-') ?> / <?= esc($pendaftar['cita_cita'] ?? '-') ?>
+                    Disabilitas: <?= esc($pendaftar['kebutuhan_disabilitas'] ?: 'Tidak ada') ?> <br>
+                    Riwayat Imunisasi: <?= esc($pendaftar['imunisasi'] ?: '-') ?>
+                </td>
+            </tr>
+            <tr>
+                <td class="td-label">Lainnya</td>
+                <td class="td-sep">:</td>
+                <td class="td-value">
+                    Ukuran Baju: <strong><?= esc($pendaftar['ukuran_baju'] ?? '-') ?></strong> <br>
+                    Prestasi: <?= esc($pendaftar['prestasi'] ?: '-') ?>
                 </td>
             </tr>
         </table>
@@ -340,6 +331,11 @@
                     <td class="td-value"><?= esc($alamat['nomor_kk'] ?? '-') ?></td>
                 </tr>
                 <tr>
+                    <td class="td-label">Jenis Tempat Tinggal</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($alamat['jenis_tempat_tinggal'] ?? '-') ?></td>
+                </tr>
+                <tr>
                     <td class="td-label">Alamat Lengkap</td>
                     <td class="td-sep">:</td>
                     <td class="td-value">
@@ -350,93 +346,161 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="td-label">Jarak ke Sekolah</td>
+                    <td class="td-label">Jarak & Transportasi</td>
                     <td class="td-sep">:</td>
                     <td class="td-value">
-                        <?= esc($alamat['jarak_ke_sekolah'] ?? '-') ?> KM
-                        (Transportasi: <?= esc($alamat['transportasi'] ?? '-') ?>)
+                        <?= esc($alamat['jarak_ke_sekolah'] ?? '-') ?> (Waktu Tempuh: <?= esc($alamat['waktu_tempuh'] ?? '-') ?>)<br>
+                        Transportasi: <?= esc($alamat['transportasi'] ?? '-') ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-label">Kontak Digital</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value">
+                        Email: <?= esc($alamat['email'] ?: '-') ?> <br>
+                        Medsos: <?= esc($alamat['media_sosial'] ?: '-') ?>
                     </td>
                 </tr>
             </table>
         </div>
     <?php endif; ?>
 
-    <div class="section-container">
-        <div class="section-header">C. DATA ORANG TUA / WALI</div>
-
-        <?php if ($ayah): ?>
-            <div class="sub-header">DATA AYAH</div>
+    <?php if (isset($bansos) && (!empty($bansos['no_kks']) || !empty($bansos['no_pkh']) || !empty($bansos['no_kip']))): ?>
+        <div class="section-container">
+            <div class="section-header">C. DATA BANTUAN SOSIAL</div>
             <table class="table-data">
                 <tr>
-                    <td class="td-label">Nama Ayah</td>
+                    <td class="td-label">No. KKS (Kartu Keluarga Sejahtera)</td>
                     <td class="td-sep">:</td>
-                    <td class="td-value text-bold"><?= esc($ayah['nama_ayah'] ?? '-') ?></td>
+                    <td class="td-value"><?= esc($bansos['no_kks'] ?: '-') ?></td>
                 </tr>
                 <tr>
-                    <td class="td-label">NIK</td>
+                    <td class="td-label">No. PKH (Program Keluarga Harapan)</td>
                     <td class="td-sep">:</td>
-                    <td class="td-value"><?= esc($ayah['nik_ayah'] ?? '-') ?></td>
+                    <td class="td-value"><?= esc($bansos['no_pkh'] ?: '-') ?></td>
+                </tr>
+                <tr>
+                    <td class="td-label">No. KIP (Kartu Indonesia Pintar)</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($bansos['no_kip'] ?: '-') ?></td>
+                </tr>
+            </table>
+        </div>
+    <?php endif; ?>
+
+    <div class="section-container">
+        <div class="section-header">D. DATA ORANG TUA / WALI</div>
+
+        <?php if ($ayah): ?>
+            <div class="sub-header">1. DATA AYAH KANDUNG</div>
+            <table class="table-data">
+                <tr>
+                    <td class="td-label">Nama Lengkap & NIK</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value text-bold"><?= esc($ayah['nama_ayah'] ?? '-') ?> <span style="font-weight:normal">(NIK: <?= esc($ayah['nik_ayah'] ?? '-') ?>)</span></td>
+                </tr>
+                <tr>
+                    <td class="td-label">Tempat, Tanggal Lahir</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value">
+                        <?= esc($ayah['tempat_lahir_ayah'] ?? '-') ?>, <?= !empty($ayah['tanggal_lahir_ayah']) ? date('d-m-Y', strtotime($ayah['tanggal_lahir_ayah'])) : '-' ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-label">Status & Pendidikan</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value">
+                        <?= esc($ayah['status_ayah'] ?? '-') ?> / Pendidikan Terakhir: <?= esc($ayah['pendidikan_ayah'] ?? '-') ?>
+                    </td>
                 </tr>
                 <tr>
                     <td class="td-label">Pekerjaan & Penghasilan</td>
                     <td class="td-sep">:</td>
-                    <td class="td-value">
-                        <?= esc($ayah['pekerjaan_ayah'] ?? '-') ?> (<?= esc($ayah['penghasilan_ayah'] ?? '-') ?>)
-                    </td>
+                    <td class="td-value"><?= esc($ayah['pekerjaan_ayah'] ?? '-') ?> (Rp <?= esc($ayah['penghasilan_ayah'] ?? '-') ?>)</td>
                 </tr>
                 <tr>
                     <td class="td-label">No. Handphone</td>
                     <td class="td-sep">:</td>
                     <td class="td-value"><?= esc($ayah['hp_ayah'] ?? '-') ?></td>
                 </tr>
+                <?php if (!empty($ayah['alamat_ayah'])): ?>
+                    <tr>
+                        <td class="td-label">Alamat Khusus</td>
+                        <td class="td-sep">:</td>
+                        <td class="td-value"><?= esc($ayah['alamat_ayah']) ?></td>
+                    </tr>
+                <?php endif; ?>
             </table>
         <?php endif; ?>
 
         <?php if ($ibu): ?>
-            <div class="sub-header">DATA IBU</div>
+            <div class="sub-header">2. DATA IBU KANDUNG</div>
             <table class="table-data">
                 <tr>
-                    <td class="td-label">Nama Ibu</td>
+                    <td class="td-label">Nama Lengkap & NIK</td>
                     <td class="td-sep">:</td>
-                    <td class="td-value text-bold"><?= esc($ibu['nama_ibu'] ?? '-') ?></td>
+                    <td class="td-value text-bold"><?= esc($ibu['nama_ibu'] ?? '-') ?> <span style="font-weight:normal">(NIK: <?= esc($ibu['nik_ibu'] ?? '-') ?>)</span></td>
                 </tr>
                 <tr>
-                    <td class="td-label">NIK</td>
+                    <td class="td-label">Tempat, Tanggal Lahir</td>
                     <td class="td-sep">:</td>
-                    <td class="td-value"><?= esc($ibu['nik_ibu'] ?? '-') ?></td>
+                    <td class="td-value">
+                        <?= esc($ibu['tempat_lahir_ibu'] ?? '-') ?>, <?= !empty($ibu['tanggal_lahir_ibu']) ? date('d-m-Y', strtotime($ibu['tanggal_lahir_ibu'])) : '-' ?>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-label">Status & Pendidikan</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value">
+                        <?= esc($ibu['status_ibu'] ?? '-') ?> / Pendidikan Terakhir: <?= esc($ibu['pendidikan_ibu'] ?? '-') ?>
+                    </td>
                 </tr>
                 <tr>
                     <td class="td-label">Pekerjaan & Penghasilan</td>
                     <td class="td-sep">:</td>
-                    <td class="td-value">
-                        <?= esc($ibu['pekerjaan_ibu'] ?? '-') ?> (<?= esc($ibu['penghasilan_ibu'] ?? '-') ?>)
-                    </td>
+                    <td class="td-value"><?= esc($ibu['pekerjaan_ibu'] ?? '-') ?> (Rp <?= esc($ibu['penghasilan_ibu'] ?? '-') ?>)</td>
                 </tr>
                 <tr>
                     <td class="td-label">No. Handphone</td>
                     <td class="td-sep">:</td>
                     <td class="td-value"><?= esc($ibu['hp_ibu'] ?? '-') ?></td>
                 </tr>
+                <?php if (!empty($ibu['alamat_ibu'])): ?>
+                    <tr>
+                        <td class="td-label">Alamat Khusus</td>
+                        <td class="td-sep">:</td>
+                        <td class="td-value"><?= esc($ibu['alamat_ibu']) ?></td>
+                    </tr>
+                <?php endif; ?>
             </table>
         <?php endif; ?>
 
         <?php if ($wali && !empty($wali['nama_wali'])): ?>
-            <div class="sub-header">DATA WALI</div>
+            <div class="sub-header">3. DATA WALI</div>
             <table class="table-data">
                 <tr>
                     <td class="td-label">Nama Wali</td>
                     <td class="td-sep">:</td>
-                    <td class="td-value text-bold"><?= esc($wali['nama_wali']) ?></td>
+                    <td class="td-value text-bold"><?= esc($wali['nama_wali']) ?> (NIK: <?= esc($wali['nik_wali'] ?? '-') ?>)</td>
                 </tr>
                 <tr>
-                    <td class="td-label">Hubungan</td>
+                    <td class="td-label">Info Wali</td>
                     <td class="td-sep">:</td>
-                    <td class="td-value"><?= esc($wali['hubungan_wali'] ?? '-') ?></td>
+                    <td class="td-value">
+                        Lahir Th: <?= esc($wali['tahun_lahir_wali'] ?? '-') ?> / Pend: <?= esc($wali['pendidikan_wali'] ?? '-') ?>
+                    </td>
                 </tr>
                 <tr>
-                    <td class="td-label">No. Handphone</td>
+                    <td class="td-label">Pekerjaan & Penghasilan</td>
                     <td class="td-sep">:</td>
-                    <td class="td-value"><?= esc($wali['hp_wali'] ?? '-') ?></td>
+                    <td class="td-value">
+                        <?= esc($wali['pekerjaan_wali'] ?? '-') ?> (Rp <?= esc($wali['penghasilan_wali'] ?? '-') ?>)
+                    </td>
+                </tr>
+                <tr>
+                    <td class="td-label">No. HP & Hubungan</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($wali['hp_wali'] ?? '-') ?> (Hubungan: <?= esc($wali['hubungan_wali'] ?? '-') ?>)</td>
                 </tr>
             </table>
         <?php endif; ?>
@@ -444,7 +508,7 @@
 
     <?php if ($sekolah): ?>
         <div class="section-container">
-            <div class="section-header">D. DATA ASAL SEKOLAH</div>
+            <div class="section-header">E. DATA ASAL SEKOLAH</div>
             <table class="table-data">
                 <tr>
                     <td class="td-label">Nama Sekolah</td>
@@ -452,10 +516,12 @@
                     <td class="td-value text-bold"><?= esc($sekolah['nama_asal_sekolah'] ?? '-') ?></td>
                 </tr>
                 <tr>
-                    <td class="td-label">NPSN / Jenjang</td>
+                    <td class="td-label">Detail Sekolah</td>
                     <td class="td-sep">:</td>
                     <td class="td-value">
-                        <?= esc($sekolah['npsn'] ?? '-') ?> (<?= esc($sekolah['jenjang_sekolah'] ?? '-') ?>)
+                        Jenjang: <?= esc($sekolah['jenjang_sekolah'] ?? '-') ?> /
+                        Status: <?= esc($sekolah['status_sekolah'] ?? '-') ?> /
+                        NPSN: <?= esc($sekolah['npsn'] ?? '-') ?>
                     </td>
                 </tr>
                 <tr>
@@ -488,7 +554,7 @@
         <div class="valid-badge">
             &#10003; DOKUMEN SAH BUKTI PENDAFTARAN
         </div>
-        <br><br>
+        <br>
         Dicetak otomatis oleh Sistem Informasi PSB Pesantren Persis 31 Banjaran<br>
         pada tanggal <?= date('d F Y, H:i') ?> WIB
     </div>
