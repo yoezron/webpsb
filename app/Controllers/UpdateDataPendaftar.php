@@ -413,6 +413,13 @@ class UpdateDataPendaftar extends BaseController
      */
     private function preparePendaftarData(): array
     {
+        // Handle checkbox arrays
+        $kebutuhanDisabilitasArray = $this->request->getPost('kebutuhan_disabilitas');
+        $kebutuhanDisabilitas = is_array($kebutuhanDisabilitasArray) ? implode(', ', $kebutuhanDisabilitasArray) : '';
+
+        $imunisasiArray = $this->request->getPost('imunisasi');
+        $imunisasi = is_array($imunisasiArray) ? implode(', ', $imunisasiArray) : '';
+
         return [
             'nisn' => trim($this->request->getPost('nisn') ?? ''),
             'nik' => trim($this->request->getPost('nik') ?? ''),
@@ -428,9 +435,9 @@ class UpdateDataPendaftar extends BaseController
             'cita_cita' => trim($this->request->getPost('cita_cita') ?? ''),
             'pernah_paud' => $this->request->getPost('pernah_paud') ? 1 : 0,
             'pernah_tk' => $this->request->getPost('pernah_tk') ? 1 : 0,
-            'kebutuhan_disabilitas' => trim($this->request->getPost('kebutuhan_disabilitas') ?? ''),
+            'kebutuhan_disabilitas' => $kebutuhanDisabilitas,
             'kebutuhan_khusus' => trim($this->request->getPost('kebutuhan_khusus') ?? ''),  // Sprint 2 NEW
-            'imunisasi' => $this->request->getPost('imunisasi'),
+            'imunisasi' => $imunisasi,
             'no_hp' => trim($this->request->getPost('no_hp') ?? ''),
             'ukuran_baju' => $this->request->getPost('ukuran_baju'),
             'prestasi' => trim($this->request->getPost('prestasi') ?? ''),
@@ -579,23 +586,26 @@ class UpdateDataPendaftar extends BaseController
             'status_keluarga' => 'permit_empty|in_list[Anak Kandung,Anak Tiri,Anak Angkat]',
             'anak_ke' => 'permit_empty|numeric|greater_than[0]|less_than[20]',
             'jumlah_saudara' => 'permit_empty|numeric|greater_than_equal_to[0]|less_than[20]',
-            'hobi' => 'permit_empty|max_length[255]',
-            'cita_cita' => 'permit_empty|max_length[255]',
-            'kebutuhan_disabilitas' => 'permit_empty|max_length[255]',
-            'imunisasi' => 'permit_empty|in_list[Lengkap,Tidak Lengkap,Tidak Tahu]',
+            'hobi' => 'required|max_length[255]',
+            'cita_cita' => 'required|max_length[255]',
+            'yang_membiayai_sekolah' => 'required|max_length[100]',
+            'kebutuhan_khusus' => 'required|max_length[255]',
             'no_hp' => 'permit_empty|max_length[20]',
             'ukuran_baju' => 'permit_empty|in_list[XS,S,M,L,XL,XXL,XXXL]',
             'prestasi' => 'permit_empty|max_length[500]',
 
             // Data Alamat
             'nomor_kk' => 'permit_empty|numeric|exact_length[16]',
+            'nama_kepala_keluarga' => 'required|max_length[150]',
             'jenis_tempat_tinggal' => 'permit_empty|in_list[Milik Sendiri,Rumah Orang Tua,Rumah Saudara,Rumah Dinas,Sewa/Kontrak,Lainnya]',
             'alamat' => 'permit_empty|max_length[500]',
+            'rt_rw' => 'required|max_length[20]',
             'desa' => 'permit_empty|max_length[100]',
             'kecamatan' => 'permit_empty|max_length[100]',
             'kabupaten' => 'permit_empty|max_length[100]',
             'provinsi' => 'permit_empty|max_length[100]',
             'kode_pos' => 'permit_empty|numeric|exact_length[5]',
+            'tinggal_bersama' => 'required|max_length[100]',
             'jarak_ke_sekolah' => 'permit_empty|in_list[< 1 km,1-5 km,5-10 km,10-20 km,> 20 km]',
             'waktu_tempuh' => 'permit_empty|in_list[< 15 menit,15-30 menit,30-60 menit,> 60 menit]',
             'transportasi' => 'permit_empty|in_list[Jalan Kaki,Sepeda,Motor,Mobil,Angkutan Umum,Ojek Online,Lainnya]',
@@ -629,7 +639,8 @@ class UpdateDataPendaftar extends BaseController
             // Data Wali (Optional)
             'nama_wali' => 'permit_empty|max_length[150]',
             'nik_wali' => 'permit_empty|numeric|exact_length[16]',
-            'tahun_lahir_wali' => 'permit_empty|numeric|exact_length[4]',
+            'tempat_lahir_wali' => 'permit_empty|max_length[100]',
+            'tanggal_lahir_wali' => 'permit_empty|valid_date[Y-m-d]',
             'pendidikan_wali' => 'permit_empty|in_list[Tidak Sekolah,SD/MI,SMP/MTs,SMA/MA/SMK,D1,D2,D3,D4/S1,S2,S3]',
             'pekerjaan_wali' => 'permit_empty|max_length[100]',
             'penghasilan_wali' => 'permit_empty|in_list[< 1 juta,1-2 juta,2-3 juta,3-5 juta,5-10 juta,> 10 juta,Tidak Berpenghasilan]',
@@ -646,6 +657,11 @@ class UpdateDataPendaftar extends BaseController
             'status_sekolah' => 'permit_empty|in_list[Negeri,Swasta]',
             'npsn' => 'permit_empty|numeric|exact_length[8]',
             'lokasi_sekolah' => 'permit_empty|max_length[255]',
+            'alamat_sekolah' => 'permit_empty|max_length[500]',
+            'tahun_lulus' => 'permit_empty|numeric|exact_length[4]',
+            'rata_rata_rapor' => 'permit_empty|decimal|greater_than[0]|less_than_equal_to[100]',
+            'nilai_tka' => 'permit_empty|decimal|greater_than[0]|less_than_equal_to[100]',
+            'sekolah_md' => 'permit_empty|max_length[255]',
             'asal_jenjang' => 'permit_empty|max_length[200]',
 
             // Confirmation
@@ -696,6 +712,27 @@ class UpdateDataPendaftar extends BaseController
             ],
             'hp_ibu' => [
                 'required' => 'No. HP Ibu wajib diisi.',
+            ],
+            'nama_kepala_keluarga' => [
+                'required' => 'Nama Kepala Keluarga wajib diisi.',
+            ],
+            'rt_rw' => [
+                'required' => 'RT/RW wajib diisi.',
+            ],
+            'tinggal_bersama' => [
+                'required' => 'Calon siswa tinggal bersama wajib dipilih.',
+            ],
+            'hobi' => [
+                'required' => 'Hobi wajib dipilih.',
+            ],
+            'cita_cita' => [
+                'required' => 'Cita-cita wajib dipilih.',
+            ],
+            'yang_membiayai_sekolah' => [
+                'required' => 'Yang membiayai sekolah wajib dipilih.',
+            ],
+            'kebutuhan_khusus' => [
+                'required' => 'Kebutuhan khusus wajib dipilih.',
             ],
             'nama_asal_sekolah' => [
                 'required' => 'Nama asal sekolah wajib diisi.',

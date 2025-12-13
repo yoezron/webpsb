@@ -1,29 +1,29 @@
 <!-- Section 2: Data Alamat -->
 <div class="section-card hidden" id="section-2">
     <h2 class="section-title">
-        <i class="icofont-location-pin"></i> Data Alamat
+        <i class="icofont-location-pin"></i> Data Tempat Tinggal
     </h2>
 
     <div class="row">
         <!-- Nomor KK -->
         <div class="col-md-6 mb-3">
-            <label for="nomor_kk" class="form-label">Nomor Kartu Keluarga</label>
+            <label for="nomor_kk" class="form-label">Nomor Kartu Keluarga (KK)</label>
             <input type="text" class="form-control numeric-only" id="nomor_kk" name="nomor_kk"
-                value="<?= old('nomor_kk', $alamat['nomor_kk'] ?? '') ?>" placeholder="Masukkan No. KK" maxlength="16">
+                value="<?= old('nomor_kk', $alamat['nomor_kk'] ?? '') ?>" placeholder="Masukkan nomor KK" maxlength="20">
         </div>
 
-        <!-- Nama Kepala Keluarga (Sprint 2) -->
+        <!-- Nama Kepala Keluarga -->
         <div class="col-md-6 mb-3">
-            <label for="nama_kepala_keluarga" class="form-label">Nama Kepala Keluarga</label>
+            <label for="nama_kepala_keluarga" class="form-label required">Nama Kepala Keluarga</label>
             <input type="text" class="form-control" id="nama_kepala_keluarga" name="nama_kepala_keluarga"
-                value="<?= old('nama_kepala_keluarga', $alamat['nama_kepala_keluarga'] ?? '') ?>" placeholder="Sesuai Kartu Keluarga">
+                value="<?= old('nama_kepala_keluarga', $alamat['nama_kepala_keluarga'] ?? '') ?>" placeholder="Sesuai Kartu Keluarga" required>
         </div>
 
         <!-- Jenis Tempat Tinggal -->
         <div class="col-md-6 mb-3">
             <label for="jenis_tempat_tinggal" class="form-label">Jenis Tempat Tinggal</label>
             <select class="form-select" id="jenis_tempat_tinggal" name="jenis_tempat_tinggal">
-                <option value="">Pilih Jenis Tempat Tinggal</option>
+                <option value="">Pilih Jenis</option>
                 <option value="Milik Sendiri" <?= old('jenis_tempat_tinggal', $alamat['jenis_tempat_tinggal'] ?? '') === 'Milik Sendiri' ? 'selected' : '' ?>>Milik Sendiri</option>
                 <option value="Rumah Orang Tua" <?= old('jenis_tempat_tinggal', $alamat['jenis_tempat_tinggal'] ?? '') === 'Rumah Orang Tua' ? 'selected' : '' ?>>Rumah Orang Tua</option>
                 <option value="Rumah Saudara" <?= old('jenis_tempat_tinggal', $alamat['jenis_tempat_tinggal'] ?? '') === 'Rumah Saudara' ? 'selected' : '' ?>>Rumah Saudara</option>
@@ -33,21 +33,21 @@
             </select>
         </div>
 
-        <!-- Alamat Lengkap -->
+        <!-- Alamat -->
         <div class="col-md-12 mb-3">
             <label for="alamat" class="form-label">Alamat Lengkap</label>
             <textarea class="form-control" id="alamat" name="alamat" rows="3"
-                placeholder="Masukkan alamat lengkap (Jalan, No. Rumah)"><?= old('alamat', $alamat['alamat'] ?? '') ?></textarea>
+                placeholder="Masukkan alamat lengkap (Jalan, Nomor Rumah)"><?= old('alamat', $alamat['alamat'] ?? '') ?></textarea>
         </div>
 
-        <!-- RT/RW (Sprint 2) -->
+        <!-- RT/RW -->
         <div class="col-md-6 mb-3">
-            <label for="rt_rw" class="form-label">RT/RW</label>
+            <label for="rt_rw" class="form-label required">RT/RW</label>
             <input type="text" class="form-control" id="rt_rw" name="rt_rw"
-                value="<?= old('rt_rw', $alamat['rt_rw'] ?? '') ?>" placeholder="Contoh: 001/002">
+                value="<?= old('rt_rw', $alamat['rt_rw'] ?? '') ?>" placeholder="Contoh: 001/002" required>
         </div>
 
-        <!-- Desa/Kelurahan -->
+        <!-- Desa -->
         <div class="col-md-6 mb-3">
             <label for="desa" class="form-label">Desa/Kelurahan</label>
             <input type="text" class="form-control" id="desa" name="desa"
@@ -61,7 +61,7 @@
                 value="<?= old('kecamatan', $alamat['kecamatan'] ?? '') ?>" placeholder="Masukkan kecamatan">
         </div>
 
-        <!-- Kabupaten/Kota -->
+        <!-- Kabupaten -->
         <div class="col-md-6 mb-3">
             <label for="kabupaten" class="form-label">Kabupaten/Kota</label>
             <input type="text" class="form-control" id="kabupaten" name="kabupaten"
@@ -79,23 +79,7 @@
         <div class="col-md-6 mb-3">
             <label for="kode_pos" class="form-label">Kode Pos</label>
             <input type="text" class="form-control numeric-only" id="kode_pos" name="kode_pos"
-                value="<?= old('kode_pos', $alamat['kode_pos'] ?? '') ?>" placeholder="Masukkan kode pos" maxlength="5">
-        </div>
-
-        <!-- Tinggal Bersama (Sprint 2) -->
-        <div class="col-md-6 mb-3">
-            <label for="tinggal_bersama" class="form-label">Calon Siswa Tinggal Bersama</label>
-            <select class="form-select" id="tinggal_bersama" name="tinggal_bersama">
-                <option value="">Pilih</option>
-                <option value="Tinggal dengan ayah kandung" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Tinggal dengan ayah kandung' ? 'selected' : '' ?>>Tinggal dengan ayah kandung</option>
-                <option value="Tinggal dengan Ibu Kandung" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Tinggal dengan Ibu Kandung' ? 'selected' : '' ?>>Tinggal dengan Ibu Kandung</option>
-                <option value="Tinggal dengan Wali" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Tinggal dengan Wali' ? 'selected' : '' ?>>Tinggal dengan Wali</option>
-                <option value="Ikut Saudara/Kerabat" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Ikut Saudara/Kerabat' ? 'selected' : '' ?>>Ikut Saudara/Kerabat</option>
-                <option value="Kontrak/Kost" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Tinggal dengan Kontrak/Kost' ? 'selected' : '' ?>>Kontrak/Kost</option>
-                <option value="Panti Asuhan" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Panti Asuhan' ? 'selected' : '' ?>>Panti Asuhan</option>
-                <option value="Rumah Singgah" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Rumah Singgah' ? 'selected' : '' ?>>Rumah Singgah</option>
-                <option value="Lainnya" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
-            </select>
+                value="<?= old('kode_pos', $alamat['kode_pos'] ?? '') ?>" placeholder="Masukkan kode pos" maxlength="10">
         </div>
 
         <!-- Jarak ke Sekolah -->
@@ -103,7 +87,8 @@
             <label for="jarak_ke_sekolah" class="form-label">Jarak ke Sekolah</label>
             <select class="form-select" id="jarak_ke_sekolah" name="jarak_ke_sekolah">
                 <option value="">Pilih Jarak</option>
-                <option value="< 1 km" <?= old('jarak_ke_sekolah', $alamat['jarak_ke_sekolah'] ?? '') === '< 1 km' ? 'selected' : '' ?>>< 1 km</option>
+                <option value="< 1 km" <?= old('jarak_ke_sekolah', $alamat['jarak_ke_sekolah'] ?? '') === '< 1 km' ? 'selected' : '' ?>>
+                    < 1 km</option>
                 <option value="1-5 km" <?= old('jarak_ke_sekolah', $alamat['jarak_ke_sekolah'] ?? '') === '1-5 km' ? 'selected' : '' ?>>1-5 km</option>
                 <option value="5-10 km" <?= old('jarak_ke_sekolah', $alamat['jarak_ke_sekolah'] ?? '') === '5-10 km' ? 'selected' : '' ?>>5-10 km</option>
                 <option value="10-20 km" <?= old('jarak_ke_sekolah', $alamat['jarak_ke_sekolah'] ?? '') === '10-20 km' ? 'selected' : '' ?>>10-20 km</option>
@@ -113,10 +98,11 @@
 
         <!-- Waktu Tempuh -->
         <div class="col-md-6 mb-3">
-            <label for="waktu_tempuh" class="form-label">Waktu Tempuh</label>
+            <label for="waktu_tempuh" class="form-label">Waktu Tempuh ke Sekolah</label>
             <select class="form-select" id="waktu_tempuh" name="waktu_tempuh">
                 <option value="">Pilih Waktu Tempuh</option>
-                <option value="< 15 menit" <?= old('waktu_tempuh', $alamat['waktu_tempuh'] ?? '') === '< 15 menit' ? 'selected' : '' ?>>< 15 menit</option>
+                <option value="< 15 menit" <?= old('waktu_tempuh', $alamat['waktu_tempuh'] ?? '') === '< 15 menit' ? 'selected' : '' ?>>
+                    < 15 menit</option>
                 <option value="15-30 menit" <?= old('waktu_tempuh', $alamat['waktu_tempuh'] ?? '') === '15-30 menit' ? 'selected' : '' ?>>15-30 menit</option>
                 <option value="30-60 menit" <?= old('waktu_tempuh', $alamat['waktu_tempuh'] ?? '') === '30-60 menit' ? 'selected' : '' ?>>30-60 menit</option>
                 <option value="> 60 menit" <?= old('waktu_tempuh', $alamat['waktu_tempuh'] ?? '') === '> 60 menit' ? 'selected' : '' ?>>> 60 menit</option>
@@ -125,7 +111,7 @@
 
         <!-- Transportasi -->
         <div class="col-md-6 mb-3">
-            <label for="transportasi" class="form-label">Transportasi ke Sekolah</label>
+            <label for="transportasi" class="form-label">Moda Transportasi</label>
             <select class="form-select" id="transportasi" name="transportasi">
                 <option value="">Pilih Transportasi</option>
                 <option value="Jalan Kaki" <?= old('transportasi', $alamat['transportasi'] ?? '') === 'Jalan Kaki' ? 'selected' : '' ?>>Jalan Kaki</option>
@@ -149,7 +135,24 @@
         <div class="col-md-6 mb-3">
             <label for="media_sosial" class="form-label">Media Sosial</label>
             <input type="text" class="form-control" id="media_sosial" name="media_sosial"
-                value="<?= old('media_sosial', $alamat['media_sosial'] ?? '') ?>" placeholder="Instagram/Facebook/dll">
+                value="<?= old('media_sosial', $alamat['media_sosial'] ?? '') ?>" placeholder="Contoh: @username_instagram">
+        </div>
+
+        <!-- Calon Siswa Tinggal Bersama -->
+        <div class="col-md-6 mb-3">
+            <label for="tinggal_bersama" class="form-label required">Calon Siswa Tinggal Bersama</label>
+            <select class="form-select" id="tinggal_bersama" name="tinggal_bersama" required>
+                <option value="">Pilih</option>
+                <option value="Tinggal dengan kedua orang tua" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Tinggal dengan kedua orang tua' ? 'selected' : '' ?>>Tinggal dengan kedua orang tua</option>
+                <option value="Tinggal dengan ayah kandung" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Tinggal dengan ayah kandung' ? 'selected' : '' ?>>Tinggal dengan ayah kandung</option>
+                <option value="Tinggal dengan Ibu Kandung" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Tinggal dengan Ibu Kandung' ? 'selected' : '' ?>>Tinggal dengan Ibu Kandung</option>
+                <option value="Tinggal dengan Wali" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Tinggal dengan Wali' ? 'selected' : '' ?>>Tinggal dengan Wali</option>
+                <option value="Ikut Saudara/Kerabat" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Ikut Saudara/Kerabat' ? 'selected' : '' ?>>Ikut Saudara/Kerabat</option>
+                <option value="Kontrak/Kost" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Tinggal dengan Kontrak/Kost' ? 'selected' : '' ?>>Kontrak/Kost</option>
+                <option value="Panti Asuhan" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Panti Asuhan' ? 'selected' : '' ?>>Panti Asuhan</option>
+                <option value="Rumah Singgah" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Rumah Singgah' ? 'selected' : '' ?>>Rumah Singgah</option>
+                <option value="Lainnya" <?= old('tinggal_bersama', $alamat['tinggal_bersama'] ?? '') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
+            </select>
         </div>
     </div>
 </div>
