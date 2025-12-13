@@ -26,13 +26,16 @@ class PendaftarModel extends Model
         'jumlah_saudara',
         'hobi',
         'cita_cita',
+        'yang_membiayai_sekolah',  // Sprint 2 - NEW
         'pernah_paud',
         'pernah_tk',
         'kebutuhan_disabilitas',
+        'kebutuhan_khusus',  // Sprint 2 - NEW
         'imunisasi',
         'no_hp',
         'ukuran_baju',
         'prestasi',
+        'minat_bakat',  // Sprint 2 - NEW
     ];
 
     // Dates
@@ -103,8 +106,9 @@ class PendaftarModel extends Model
         // Prefix: T untuk Tsanawiyyah (MTs), M untuk Muallimin (MA)
         $prefix = ($jalur === 'TSANAWIYYAH') ? 'T' : 'M';
 
-        // Tahun PSB saat ini (2 digit terakhir)
-        $currentYear = date('y'); // 26 untuk tahun 2026
+        // Tahun PSB (tahun ajaran saat ini, 2 digit terakhir)
+        // Untuk PSB 2026/2027, currentYear = 26
+        $currentYear = str_pad((intval(date('y')) + 1) % 100, 2, '0', STR_PAD_LEFT); // 26 untuk tahun 2026
 
         // Tahun ajaran berikutnya (2 digit terakhir)
         $nextYear = str_pad((intval($currentYear) + 1) % 100, 2, '0', STR_PAD_LEFT); // 27 untuk tahun 2027

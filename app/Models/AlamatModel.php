@@ -15,13 +15,16 @@ class AlamatModel extends Model
     protected $allowedFields    = [
         'id_pendaftar',
         'nomor_kk',
+        'nama_kepala_keluarga',  // Sprint 2 - NEW
         'jenis_tempat_tinggal',
         'alamat',
+        'rt_rw',  // Sprint 2 - NEW
         'desa',
         'kecamatan',
         'kabupaten',
         'provinsi',
         'kode_pos',
+        'tinggal_bersama',  // Sprint 2 - NEW
         'jarak_ke_sekolah',
         'waktu_tempuh',
         'transportasi',

@@ -19,6 +19,11 @@ class SekolahModel extends Model
         'status_sekolah',
         'npsn',
         'lokasi_sekolah',
+        'alamat_sekolah',  // Sprint 2 - NEW
+        'tahun_lulus',  // Sprint 2 - NEW
+        'rata_rata_rapor',  // Sprint 2 - NEW
+        'nilai_tka',  // Sprint 2 - NEW
+        'sekolah_md',  // Sprint 2 - NEW
         'asal_jenjang',
     ];
 
