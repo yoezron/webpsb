@@ -57,6 +57,22 @@ $routes->group('api/pengumuman', function ($routes) {
     $routes->get('landing', 'PengumumanPublic::getForLanding');
 });
 
+// Public Statistics Routes
+$routes->get('statistik', 'StatisticsPublic::index');
+
+// API Statistics Routes (Public)
+$routes->group('api/statistik', function ($routes) {
+    $routes->get('jalur', 'StatisticsPublic::getByJalur');
+    $routes->get('tanggal', 'StatisticsPublic::getByTanggalDaftar');
+    $routes->get('usia', 'StatisticsPublic::getByUsia');
+    $routes->get('desa', 'StatisticsPublic::getByDesa');
+    $routes->get('jarak', 'StatisticsPublic::getByJarak');
+    $routes->get('waktu', 'StatisticsPublic::getByWaktuTempuh');
+    $routes->get('sekolah', 'StatisticsPublic::getByStatusSekolah');
+    $routes->get('penghasilan', 'StatisticsPublic::getByPenghasilan');
+    $routes->get('table', 'StatisticsPublic::getTableData');
+});
+
 // Pendaftaran Routes (Old - 2 Step Form)
 $routes->match(['GET', 'POST'], 'pendaftaran/tsanawiyyah', 'Pendaftaran::tsanawiyyah');
 $routes->match(['GET', 'POST'], 'pendaftaran/muallimin', 'Pendaftaran::muallimin');
