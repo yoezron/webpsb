@@ -467,13 +467,18 @@
                             </a>
                         </div>
 
-                        <!-- Update Data Link -->
+                        <!-- Update Data & Statistics Links -->
                         <div class="mt-4 animate__animated animate__fadeInUp">
-                            <a href="<?= base_url('update-data') ?>" class="btn btn-outline-light btn-lg" style="border-radius: 50px; padding: 12px 30px; font-weight: 600;">
-                                <i class="icofont-edit"></i> Perbarui Data Pendaftaran
-                            </a>
-                            <p class="mt-2" style="font-size: 0.9rem; opacity: 0.8;">
-                                Sudah mendaftar? Perbarui data Anda di sini
+                            <div class="d-flex gap-3 justify-content-center flex-wrap">
+                                <a href="<?= base_url('update-data') ?>" class="btn btn-outline-light btn-lg" style="border-radius: 50px; padding: 12px 30px; font-weight: 600;">
+                                    <i class="icofont-edit"></i> Perbarui Data Pendaftaran
+                                </a>
+                                <a href="<?= base_url('statistik') ?>" class="btn btn-outline-light btn-lg" style="border-radius: 50px; padding: 12px 30px; font-weight: 600;">
+                                    <i class="icofont-chart-bar-graph"></i> Lihat Statistik Pendaftar
+                                </a>
+                            </div>
+                            <p class="mt-3" style="font-size: 0.9rem; opacity: 0.8;">
+                                Sudah mendaftar? Perbarui data Anda atau lihat statistik pendaftar
                             </p>
                         </div>
                     </div>
@@ -659,6 +664,8 @@
             <p>
                 <a href="#">Tentang Kami</a> |
                 <a href="#">Kontak</a> |
+                <a href="<?= base_url('statistik') ?>">Statistik Pendaftar</a> |
+                <a href="<?= base_url('pengumuman') ?>">Pengumuman</a> |
                 <a href="#">Syarat & Ketentuan</a>
             </p>
         </div>
