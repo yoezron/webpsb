@@ -473,7 +473,7 @@ class Dashboard extends BaseController
                       data_ibu.nama_ibu, data_ibu.nik_ibu, data_ibu.pendidikan_ibu,
                       data_ibu.pekerjaan_ibu, data_ibu.penghasilan_ibu,
                       data_ibu.hp_ibu, data_ibu.status_ibu,
-                      data_wali.nama_wali, data_wali.nik_wali, data_wali.tempat_lahir_wali, data_wali.tanggal_lahir_wali,
+                      data_wali.nama_wali, data_wali.hubungan_wali, data_wali.nik_wali, data_wali.tempat_lahir_wali, data_wali.tanggal_lahir_wali,
                       data_wali.pendidikan_wali, data_wali.pekerjaan_wali, data_wali.penghasilan_wali,
                       data_wali.hp_wali,
                       bansos_pendaftar.no_kks, bansos_pendaftar.no_pkh, bansos_pendaftar.no_kip,
@@ -737,7 +737,7 @@ class Dashboard extends BaseController
                       data_ibu.nama_ibu, data_ibu.nik_ibu, data_ibu.pendidikan_ibu,
                       data_ibu.pekerjaan_ibu, data_ibu.penghasilan_ibu,
                       data_ibu.hp_ibu, data_ibu.status_ibu,
-                      data_wali.nama_wali, data_wali.nik_wali, data_wali.tempat_lahir_wali, data_wali.tanggal_lahir_wali,
+                      data_wali.nama_wali, data_wali.hubungan_wali, data_wali.nik_wali, data_wali.tempat_lahir_wali, data_wali.tanggal_lahir_wali,
                       data_wali.pendidikan_wali, data_wali.pekerjaan_wali, data_wali.penghasilan_wali,
                       data_wali.hp_wali,
                       bansos_pendaftar.no_kks, bansos_pendaftar.no_pkh, bansos_pendaftar.no_kip,
@@ -855,8 +855,8 @@ class Dashboard extends BaseController
         $tsnCount = 0;
         $muaCount = 0;
         foreach ($data as $d) {
-            if ($d['jalur_pendaftaran'] === 'tsanawiyyah') $tsnCount++;
-            if ($d['jalur_pendaftaran'] === 'muallimin') $muaCount++;
+            if (strtoupper($d['jalur_pendaftaran']) === 'TSANAWIYYAH') $tsnCount++;
+            if (strtoupper($d['jalur_pendaftaran']) === 'MUALLIMIN') $muaCount++;
         }
 
         $summarySheet->setCellValue('A' . $row, 'Tsanawiyyah:');
