@@ -175,7 +175,7 @@
     <nav class="navbar navbar-expand-lg navbar-custom">
         <div class="container">
             <a class="navbar-brand" href="<?= base_url('/') ?>">
-                <i class="icofont-education me-2"></i> PSB Persis 31
+                <i class="icofont-education me-2"></i> PSB Pesantren Persis 31 Banjaran
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
