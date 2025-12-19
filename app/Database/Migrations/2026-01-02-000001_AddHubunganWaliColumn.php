@@ -8,7 +8,7 @@ class AddHubunganWaliColumn extends Migration
 {
     public function up()
     {
-        if (! $this->db->fieldExists('hubungan_wali', 'data_wali')) {
+        if (!$this->db->fieldExists('hubungan_wali', 'data_wali')) {
             $fields = [
                 'hubungan_wali' => [
                     'type'       => 'VARCHAR',
