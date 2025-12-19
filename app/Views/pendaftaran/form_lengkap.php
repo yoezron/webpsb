@@ -661,9 +661,9 @@
                             // Format special values
                             if (value === '1' && $('[name="' + fieldName + '"]').attr('type') === 'checkbox') {
                                 value = 'Ya';
-                            } else if (value === 'L') {
+                            } else if (fieldName === 'jenis_kelamin' && value === 'L') {
                                 value = 'Laki-laki';
-                            } else if (value === 'P') {
+                            } else if (fieldName === 'jenis_kelamin' && value === 'P') {
                                 value = 'Perempuan';
                             }
 
