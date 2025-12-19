@@ -2,6 +2,17 @@
 
 ## ⚠️ MASALAH YANG TERJADI
 
+### 1) Error: "Unknown column 'yang_membiayai_sekolah' in 'field list'"
+
+Kolom Sprint 2 `yang_membiayai_sekolah` belum ada di tabel `pendaftar` pada beberapa database.
+
+**Solusi:**
+
+- Jalankan migration terbaru: `php spark migrate`
+- Atau jalankan SQL manual: `migration_add_yang_membiayai_sekolah.sql`
+
+### 2) Data tidak masuk karena kolom `hubungan_wali` belum ada
+
 Update data **berhasil dilakukan** tapi data **tidak masuk ke database** karena:
 
 1. ✅ **SUDAH DIPERBAIKI**: Field `hubungan_wali` tidak ada di `WaliModel::$allowedFields`
@@ -86,6 +97,9 @@ Jalankan query berikut untuk memastikan semua kolom Sprint 2 sudah ada:
 SHOW COLUMNS FROM data_wali LIKE 'hubungan_wali';
 SHOW COLUMNS FROM data_wali LIKE 'tempat_lahir_wali';
 SHOW COLUMNS FROM data_wali LIKE 'tanggal_lahir_wali';
+
+-- Cek pendaftar
+SHOW COLUMNS FROM pendaftar LIKE 'yang_membiayai_sekolah';
 
 -- Cek alamat_pendaftar
 SHOW COLUMNS FROM alamat_pendaftar LIKE 'nama_kepala_keluarga';

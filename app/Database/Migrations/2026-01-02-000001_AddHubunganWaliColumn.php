@@ -8,20 +8,24 @@ class AddHubunganWaliColumn extends Migration
 {
     public function up()
     {
-        $fields = [
-            'hubungan_wali' => [
-                'type'       => 'VARCHAR',
-                'constraint' => '50',
-                'null'       => true,
-                'after'      => 'nama_wali',
-            ],
-        ];
+        if (! $this->db->fieldExists('hubungan_wali', 'data_wali')) {
+            $fields = [
+                'hubungan_wali' => [
+                    'type'       => 'VARCHAR',
+                    'constraint' => '50',
+                    'null'       => true,
+                    'after'      => 'nama_wali',
+                ],
+            ];
 
-        $this->forge->addColumn('data_wali', $fields);
+            $this->forge->addColumn('data_wali', $fields);
+        }
     }
 
     public function down()
     {
-        $this->forge->dropColumn('data_wali', 'hubungan_wali');
+        if ($this->db->fieldExists('hubungan_wali', 'data_wali')) {
+            $this->forge->dropColumn('data_wali', 'hubungan_wali');
+        }
     }
 }
