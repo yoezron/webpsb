@@ -430,7 +430,6 @@ class UpdateDataPendaftar extends BaseController
             'status_keluarga' => $this->request->getPost('status_keluarga'),
             'anak_ke' => $this->request->getPost('anak_ke') ?: null,
             'jumlah_saudara' => $this->request->getPost('jumlah_saudara') ?: null,
-            'yang_membiayai_sekolah' => $this->request->getPost('yang_membiayai_sekolah'),  // Sprint 2 NEW
             'hobi' => trim($this->request->getPost('hobi') ?? ''),
             'cita_cita' => trim($this->request->getPost('cita_cita') ?? ''),
             'pernah_paud' => $this->request->getPost('pernah_paud') ? 1 : 0,
@@ -589,7 +588,6 @@ class UpdateDataPendaftar extends BaseController
             'jumlah_saudara' => 'permit_empty|numeric|greater_than_equal_to[0]|less_than[20]',
             'hobi' => 'required|max_length[255]',
             'cita_cita' => 'required|max_length[255]',
-            'yang_membiayai_sekolah' => 'required|max_length[100]',
             'kebutuhan_khusus' => 'required|max_length[255]',
             'no_hp' => 'permit_empty|max_length[20]',
             'ukuran_baju' => 'permit_empty|in_list[XS,S,M,L,XL,XXL,XXXL]',
@@ -729,9 +727,6 @@ class UpdateDataPendaftar extends BaseController
             ],
             'cita_cita' => [
                 'required' => 'Cita-cita wajib dipilih.',
-            ],
-            'yang_membiayai_sekolah' => [
-                'required' => 'Yang membiayai sekolah wajib dipilih.',
             ],
             'kebutuhan_khusus' => [
                 'required' => 'Kebutuhan khusus wajib dipilih.',

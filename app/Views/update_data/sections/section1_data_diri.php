@@ -109,7 +109,8 @@
             </select>
         </div>
 
-        <!-- Yang Membiayai Sekolah -->
+        <!-- Yang Membiayai Sekolah (dinonaktifkan sementara) -->
+        <?php /*
         <div class="col-md-6 mb-3">
             <label for="yang_membiayai_sekolah" class="form-label required">Yang Membiayai Sekolah</label>
             <select class="form-select" id="yang_membiayai_sekolah" name="yang_membiayai_sekolah" required>
@@ -120,6 +121,7 @@
                 <option value="Lainnya" <?= old('yang_membiayai_sekolah', $pendaftar['yang_membiayai_sekolah'] ?? '') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
             </select>
         </div>
+        */ ?>
 
         <!-- Pendidikan Sebelumnya -->
         <div class="col-md-12 mb-3">
