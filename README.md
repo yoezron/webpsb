@@ -2,7 +2,7 @@
 
 ## **1. Tujuan Pengembangan**
 
-Bangun sebuah **Sistem Informasi Pendaftaran Santri Baru** untuk Pesantren Persatuan Islam 31 Banjaran menggunakan **framework CodeIgniter 4** dengan basis arsitektur MVC.
+**Sistem Informasi Pendaftaran Santri Baru** Pesantren Persatuan Islam 31 Banjaran menggunakan **framework CodeIgniter 4** dengan basis arsitektur MVC.
 Sistem harus menyediakan fitur **pendaftaran daring**, **penyimpanan data ke database**, **dashboard panitia**, dan **download kartu pendaftaran** dalam format PDF.
 UI harus memanfaatkan **Hafsa Main HTML Template** dengan warna utama **hijau–kuning** menyesuaikan identitas lembaga.
 
