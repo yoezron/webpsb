@@ -124,3 +124,6 @@ _modules/*
 
 /results/
 /phpunit*.xml
+
+# Logo unggahan superadmin (menu Pengaturan > Logo & Warna)
+public/uploads/logo/*

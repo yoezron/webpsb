@@ -21,6 +21,8 @@ class AyahModel extends Model
         'status_ayah',
         'pendidikan_ayah',
         'pekerjaan_ayah',
+        'domisili_ayah',
+        'status_tempat_tinggal_ayah',
         'penghasilan_ayah',
         'hp_ayah',
         'alamat_ayah',

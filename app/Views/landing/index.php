@@ -10,7 +10,7 @@
     <title><?= esc($title) ?></title>
     <meta name="description" content="<?= esc($meta_description) ?>">
     <meta name="keywords" content="<?= esc($meta_keywords) ?>">
-    <meta name="author" content="Pesantren Persatuan Islam 31 Banjaran">
+    <meta name="author" content="<?= esc($set['nama_lembaga']) ?>">
     <meta name="robots" content="index, follow">
 
     <!-- Open Graph Meta Tags -->
@@ -18,13 +18,13 @@
     <meta property="og:description" content="<?= esc($meta_description) ?>">
     <meta property="og:type" content="website">
     <meta property="og:locale" content="id_ID">
-    <meta property="og:image" content="<?= base_url('assets/images/logo/01.png') ?>">
+    <meta property="og:image" content="<?= logo_aset('01.png') ?>">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/images/logo/favicon.ico') ?>">
-    <link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/images/logo/favicon-16x16.png') ?>">
-    <link rel="icon" type="image/png" sizes="32x32" href="<?= base_url('assets/images/logo/favicon-32x32.png') ?>">
-    <link rel="apple-touch-icon" href="<?= base_url('assets/images/logo/01.png') ?>">
+    <link rel="icon" type="image/x-icon" href="<?= logo_aset('favicon.ico') ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?= logo_aset('favicon-16x16.png') ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= logo_aset('favicon-32x32.png') ?>">
+    <link rel="apple-touch-icon" href="<?= logo_aset('01.png') ?>">
 
     <!-- Hafsa Template CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
@@ -402,6 +402,89 @@
             color: var(--dark-green);
         }
 
+        /* Pendaftaran ditutup */
+        .pendaftaran-tutup {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            max-width: 560px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 15px;
+            padding: 18px 24px;
+            text-align: left;
+            color: #fff;
+        }
+
+        .pendaftaran-tutup i {
+            font-size: 2.2rem;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            background: #fff;
+        }
+
+        .contact-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .contact-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 18px;
+            color: #444;
+        }
+
+        .contact-item i {
+            font-size: 1.5rem;
+            color: var(--primary-green);
+            width: 30px;
+            flex-shrink: 0;
+        }
+
+        .contact-item a {
+            color: var(--dark-green);
+            text-decoration: none;
+            word-break: break-word;
+        }
+
+        .contact-social {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .contact-social a {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary-green), var(--dark-green));
+            color: #fff;
+            font-size: 1.2rem;
+            text-decoration: none;
+        }
+
+        .contact-map {
+            min-height: 320px;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .contact-map iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 320px;
+            border: 0;
+        }
+
         /* Footer */
         .footer {
             background: #222;
@@ -431,56 +514,70 @@
                     <div class="hero-content text-center">
                         <!-- Logo -->
                         <div class="hero-logo">
-                            <img src="<?= base_url('assets/images/logo/01.png') ?>" alt="Logo Pesantren Persatuan Islam 31 Banjaran">
+                            <img src="<?= logo_aset('01.png') ?>" alt="Logo <?= esc($set['nama_lembaga']) ?>">
                         </div>
 
                         <!-- Info Badge -->
                         <div class="info-badge">
-                            <h3>Tahun Ajaran <?= esc($year) ?>/<?= esc($year + 1) ?></h3>
-                            <p>Pendaftaran Dibuka!</p>
+                            <h3>Tahun Ajaran <?= esc($tahun_ajaran) ?></h3>
+                            <p><?= esc($status_pendaftaran['dibuka'] ? $set['badge_dibuka'] : $set['badge_ditutup']) ?></p>
                         </div>
 
                         <!-- Hero Title -->
                         <h1 class="hero-title animate__animated animate__fadeInDown">
-                            Pendaftaran Santri Baru
+                            <?= esc($set['hero_judul']) ?>
                         </h1>
 
                         <!-- Hero Subtitle -->
                         <p class="hero-subtitle animate__animated animate__fadeInUp">
-                            Pesantren Persatuan Islam 31 Banjaran
+                            <?= esc($set['hero_subjudul']) ?>
                         </p>
 
                         <!-- Hero Text -->
                         <p class="hero-text mx-auto animate__animated animate__fadeIn">
-                            Selamat datang di sistem pendaftaran online Pesantren Persatuan Islam 31 Banjaran.
-                            Silakan pilih tingkat pendidikan yang Anda inginkan untuk memulai proses pendaftaran.
-                            Kami menawarkan pendidikan Islam yang berkualitas dengan metode pembelajaran modern.
+                            <?= nl2br(esc($set['hero_teks'])) ?>
                         </p>
 
                         <!-- CTA Buttons -->
+                        <?php if ($status_pendaftaran['dibuka']) : ?>
                         <div class="cta-buttons justify-content-center animate__animated animate__fadeInUp">
                             <a href="<?= base_url('daftar/tsanawiyyah') ?>" class="btn btn-primary-custom">
-                                <i class="icofont-book-alt"></i> Daftar Tingkat Tsanawiyyah
+                                <i class="icofont-book-alt"></i> <?= esc($set['label_tombol_tsn']) ?>
                             </a>
                             <a href="<?= base_url('daftar/muallimin') ?>" class="btn btn-secondary-custom">
-                                <i class="icofont-graduate-alt"></i> Daftar Tingkat Mu'allimin
+                                <i class="icofont-graduate-alt"></i> <?= esc($set['label_tombol_mua']) ?>
                             </a>
                         </div>
+                        <?php else : ?>
+                        <div class="pendaftaran-tutup mx-auto animate__animated animate__fadeInUp">
+                            <i class="icofont-lock"></i>
+                            <div>
+                                <strong><?= esc($set['badge_ditutup']) ?></strong><br>
+                                <span><?= esc($status_pendaftaran['alasan']) ?></span>
+                            </div>
+                        </div>
+                        <?php endif; ?>
 
                         <!-- Update Data & Statistics Links -->
+                        <?php if (!empty($set['tampil_tombol_update']) || !empty($set['tampil_tombol_statistik'])) : ?>
                         <div class="mt-4 animate__animated animate__fadeInUp">
                             <div class="d-flex gap-3 justify-content-center flex-wrap">
+                                <?php if (!empty($set['tampil_tombol_update'])) : ?>
                                 <a href="<?= base_url('update-data') ?>" class="btn btn-outline-light btn-lg" style="border-radius: 50px; padding: 12px 30px; font-weight: 600;">
                                     <i class="icofont-edit"></i> Perbarui Data Pendaftaran
                                 </a>
+                                <?php endif; ?>
+                                <?php if (!empty($set['tampil_tombol_statistik'])) : ?>
                                 <a href="<?= base_url('statistik') ?>" class="btn btn-outline-light btn-lg" style="border-radius: 50px; padding: 12px 30px; font-weight: 600;">
                                     <i class="icofont-chart-bar-graph"></i> Lihat Statistik Pendaftar
                                 </a>
+                                <?php endif; ?>
                             </div>
                             <p class="mt-3" style="font-size: 0.9rem; opacity: 0.8;">
                                 Sudah mendaftar? Perbarui data Anda atau lihat statistik pendaftar
                             </p>
                         </div>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -549,100 +646,38 @@
     <?php endif; ?>
 
     <!-- Features Section -->
-    <section class="features-section">
+    <?php if (!empty($set['tampil_keunggulan'])) : ?>
+    <section class="features-section" id="keunggulan">
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center mb-5">
-                    <h2 style="font-size: 2.5rem; font-weight: 700; color: #333;">Mengapa Memilih Kami?</h2>
-                    <p style="color: rgba(255, 255, 255, 0.95); font-size: 1.1rem;">Keunggulan Pesantren Persatuan Islam 31 Banjaran</p>
+                    <h2 style="font-size: 2.5rem; font-weight: 700; color: #333;"><?= esc($set['keunggulan_judul']) ?></h2>
+                    <p style="color: rgba(255, 255, 255, 0.95); font-size: 1.1rem;"><?= esc($set['keunggulan_subjudul']) ?></p>
                 </div>
             </div>
 
-            <div class="row">
-                <!-- Feature 1 -->
+            <div class="row justify-content-center">
+                <?php foreach ($keunggulan as $item) : ?>
                 <div class="col-lg-4 col-md-6">
                     <div class="feature-card">
                         <div class="feature-icon">
-                            <i class="icofont-book-alt"></i>
+                            <i class="<?= esc($item['ikon'] ?? 'icofont-star') ?>"></i>
                         </div>
-                        <h3 class="feature-title">Kurikulum Terpadu</h3>
+                        <h3 class="feature-title"><?= esc($item['judul'] ?? '') ?></h3>
                         <p class="feature-text">
-                            Menggabungkan kurikulum Kementerian Agama dengan kurikulum pesantren untuk pembelajaran yang komprehensif.
+                            <?= esc($item['teks'] ?? '') ?>
                         </p>
                     </div>
                 </div>
-
-                <!-- Feature 2 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="icofont-teacher"></i>
-                        </div>
-                        <h3 class="feature-title">Tenaga Pengajar Berkualitas</h3>
-                        <p class="feature-text">
-                            Didukung oleh ustadz dan ustadzah yang berpengalaman dan berkompeten di bidangnya.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Feature 3 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="icofont-home"></i>
-                        </div>
-                        <h3 class="feature-title">Fasilitas Lengkap</h3>
-                        <p class="feature-text">
-                            Ruang kelas nyaman, masjid luas, perpustakaan, laboratorium, dan fasilitas olahraga yang memadai.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Feature 4 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="icofont-award"></i>
-                        </div>
-                        <h3 class="feature-title">Prestasi Gemilang</h3>
-                        <p class="feature-text">
-                            Santri kami berprestasi dalam bidang akademik, tahfidz, dan kegiatan ekstrakurikuler.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Feature 5 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="icofont-ui-calendar"></i>
-                        </div>
-                        <h3 class="feature-title">Pendaftaran Online</h3>
-                        <p class="feature-text">
-                            Proses pendaftaran mudah dan cepat melalui sistem online yang user-friendly.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Feature 6 -->
-                <div class="col-lg-4 col-md-6">
-                    <div class="feature-card">
-                        <div class="feature-icon">
-                            <i class="icofont-heart"></i>
-                        </div>
-                        <h3 class="feature-title">Pembinaan Karakter</h3>
-                        <p class="feature-text">
-                            Fokus pada pembentukan akhlak mulia dan karakter Islami yang kuat.
-                        </p>
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
 
+            <?php if ($status_pendaftaran['dibuka']) : ?>
             <!-- Call to Action -->
             <div class="row mt-5">
                 <div class="col-lg-12 text-center">
                     <h3 style="font-size: 2rem; font-weight: 700; color: #333; margin-bottom: 30px;">
-                        Siap Bergabung Bersama Kami?
+                        <?= esc($set['cta_judul']) ?>
                     </h3>
                     <div class="cta-buttons justify-content-center">
                         <a href="<?= base_url('daftar/tsanawiyyah') ?>" class="btn btn-primary-custom">
@@ -654,16 +689,95 @@
                     </div>
                 </div>
             </div>
+            <?php endif; ?>
         </div>
     </section>
+    <?php endif; ?>
+
+    <!-- Contact Section -->
+    <?php
+    $sosmed = array_filter([
+        'icofont-instagram'    => url_aman($set['sosmed_instagram']),
+        'icofont-facebook'     => url_aman($set['sosmed_facebook']),
+        'icofont-youtube-play' => url_aman($set['sosmed_youtube']),
+        'icofont-music-note'   => url_aman($set['sosmed_tiktok']),
+    ]);
+    $website   = url_aman($set['kontak_website']);
+    $adaKontak = $set['kontak_alamat'] || $set['kontak_telepon'] || $set['kontak_whatsapp'] || $set['kontak_email'] || $website || $set['kontak_maps'] || $sosmed;
+    ?>
+    <?php if (!empty($set['tampil_kontak']) && $adaKontak) : ?>
+    <section class="contact-section py-5" id="kontak">
+        <div class="container">
+            <div class="text-center mb-4">
+                <h2 class="section-title"><i class="icofont-phone me-2"></i><?= esc($set['kontak_judul']) ?></h2>
+            </div>
+            <div class="row g-4 align-items-stretch">
+                <div class="<?= $set['kontak_maps'] ? 'col-lg-5' : 'col-lg-8 mx-auto' ?>">
+                    <div class="contact-card h-100">
+                        <?php if ($set['kontak_alamat']) : ?>
+                        <div class="contact-item">
+                            <i class="icofont-location-pin"></i>
+                            <div><strong>Alamat</strong><br><?= nl2br(esc($set['kontak_alamat'])) ?></div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($set['kontak_telepon']) : ?>
+                        <div class="contact-item">
+                            <i class="icofont-phone"></i>
+                            <div><strong>Telepon</strong><br><a href="tel:<?= esc(preg_replace('/[^0-9+]/', '', $set['kontak_telepon'])) ?>"><?= esc($set['kontak_telepon']) ?></a></div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($set['kontak_whatsapp']) : ?>
+                        <div class="contact-item">
+                            <i class="icofont-brand-whatsapp"></i>
+                            <div><strong>WhatsApp</strong><br><a href="<?= esc(link_whatsapp($set['kontak_whatsapp'])) ?>" target="_blank" rel="noopener"><?= esc($set['kontak_whatsapp']) ?></a></div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($set['kontak_email']) : ?>
+                        <div class="contact-item">
+                            <i class="icofont-email"></i>
+                            <div><strong>Email</strong><br><a href="mailto:<?= esc($set['kontak_email']) ?>"><?= esc($set['kontak_email']) ?></a></div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($website) : ?>
+                        <div class="contact-item">
+                            <i class="icofont-web"></i>
+                            <div><strong>Website</strong><br><a href="<?= esc($website) ?>" target="_blank" rel="noopener"><?= esc($set['kontak_website']) ?></a></div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($set['kontak_jam']) : ?>
+                        <div class="contact-item">
+                            <i class="icofont-clock-time"></i>
+                            <div><strong>Jam Layanan</strong><br><?= esc($set['kontak_jam']) ?></div>
+                        </div>
+                        <?php endif; ?>
+                        <?php if ($sosmed) : ?>
+                        <div class="contact-social">
+                            <?php foreach ($sosmed as $icon => $url) : ?>
+                                <a href="<?= esc($url) ?>" target="_blank" rel="noopener" aria-label="Media sosial"><i class="<?= $icon ?>"></i></a>
+                            <?php endforeach; ?>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+                <?php if ($set['kontak_maps']) : ?>
+                <div class="col-lg-7">
+                    <div class="contact-map h-100">
+                        <iframe src="<?= esc($set['kontak_maps']) ?>" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen title="Peta lokasi"></iframe>
+                    </div>
+                </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </section>
+    <?php endif; ?>
 
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; <?= esc($year) ?> Pesantren Persatuan Islam 31 Banjaran. All Rights Reserved.</p>
+            <p>&copy; <?= date('Y') ?> <?= esc($set['nama_lembaga']) ?>. <?= esc($set['footer_teks']) ?></p>
             <p>
-                <a href="#">Tentang Kami</a> |
-                <a href="#">Kontak</a> |
+                <?php if (!empty($set['tampil_keunggulan'])) : ?><a href="#keunggulan">Tentang Kami</a> |<?php endif; ?>
+                <?php if (!empty($set['tampil_kontak']) && $adaKontak) : ?><a href="#kontak">Kontak</a> |<?php endif; ?>
                 <a href="<?= base_url('statistik') ?>">Statistik Pendaftar</a> |
                 <a href="<?= base_url('pengumuman') ?>">Pengumuman</a> |
                 <a href="#">Syarat & Ketentuan</a>

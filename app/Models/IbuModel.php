@@ -21,6 +21,8 @@ class IbuModel extends Model
         'status_ibu',
         'pendidikan_ibu',
         'pekerjaan_ibu',
+        'domisili_ibu',
+        'status_tempat_tinggal_ibu',
         'penghasilan_ibu',
         'hp_ibu',
         'alamat_ibu',

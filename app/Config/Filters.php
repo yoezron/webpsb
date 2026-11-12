@@ -37,6 +37,7 @@ class Filters extends BaseFilters
         // Custom Authentication & Authorization Filters
         'auth'          => \App\Filters\AuthFilter::class,
         'role'          => \App\Filters\RoleFilter::class,
+        'theme'         => \App\Filters\ThemeFilter::class,
     ];
 
     /**
@@ -86,6 +87,7 @@ class Filters extends BaseFilters
         'after' => [
             // 'honeypot',
             // 'secureheaders',
+            'theme', // Terapkan warna tampilan dari menu Pengaturan
         ],
     ];
 

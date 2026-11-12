@@ -9,7 +9,7 @@
     <title><?= esc($title) ?> - PSB Persis 31 Banjaran</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/images/logo/favicon.ico') ?>">
+    <link rel="icon" type="image/x-icon" href="<?= logo_aset('favicon.ico') ?>">
 
     <!-- Hafsa Template CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
@@ -322,8 +322,12 @@
                         </span>
                     </div>
                     <div class="info-item">
+                        <span class="info-label">Agama</span>
+                        <span class="info-value"><?= esc($pendaftar['agama'] ?? '-') ?></span>
+                    </div>
+                    <div class="info-item">
                         <span class="info-label">Tempat, Tanggal Lahir</span>
-                        <span class="info-value"><?= esc($pendaftar['tempat_lahir']) ?>, <?= date('d F Y', strtotime($pendaftar['tanggal_lahir'])) ?></span>
+                        <span class="info-value"><?= esc($pendaftar['tempat_lahir'] ?? '-') ?>, <?= !empty($pendaftar['tanggal_lahir']) ? date('d F Y', strtotime($pendaftar['tanggal_lahir'])) : '-' ?></span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">No. HP</span>
@@ -437,12 +441,12 @@
                             <span class="info-value"><?= esc($alamat['kode_pos'] ?? '-') ?></span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">Tinggal Bersama</span>
+                            <span class="info-label">Status Tempat Tinggal Santri</span>
                             <span class="info-value"><?= esc($alamat['tinggal_bersama'] ?? '-') ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Jarak ke Pesantren</span>
-                            <span class="info-value"><?= esc($alamat['jarak_ke_sekolah'] ?? '-') ?> KM</span>
+                            <span class="info-value"><?= esc($alamat['jarak_ke_sekolah'] ?? '-') ?></span>
                         </div>
                         <div class="info-item">
                             <span class="info-label">Waktu Tempuh</span>
@@ -453,7 +457,7 @@
                             <span class="info-value"><?= esc($alamat['transportasi'] ?? '-') ?></span>
                         </div>
                         <div class="info-item">
-                            <span class="info-label">Email</span>
+                            <span class="info-label">Email Santri</span>
                             <span class="info-value"><?= esc($alamat['email'] ?? '-') ?></span>
                         </div>
                         <div class="info-item">
@@ -463,131 +467,82 @@
                     </div>
                 <?php endif; ?>
 
-                <!-- Data Ayah -->
-                <?php if ($ayah): ?>
-                    <h3 class="section-title">
-                        <i class="icofont-user-male"></i>
-                        Data Ayah Kandung
-                    </h3>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <span class="info-label">Nama Lengkap</span>
-                            <span class="info-value"><?= esc($ayah['nama_ayah'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">NIK</span>
-                            <span class="info-value"><?= esc($ayah['nik_ayah'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Tempat, Tanggal Lahir</span>
-                            <span class="info-value"><?= esc($ayah['tempat_lahir_ayah'] ?? '-') ?>, <?= $ayah['tanggal_lahir_ayah'] ? date('d F Y', strtotime($ayah['tanggal_lahir_ayah'])) : '-' ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Status</span>
-                            <span class="info-value"><?= esc($ayah['status_ayah'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Pendidikan Terakhir</span>
-                            <span class="info-value"><?= esc($ayah['pendidikan_ayah'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Pekerjaan</span>
-                            <span class="info-value"><?= esc($ayah['pekerjaan_ayah'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Penghasilan</span>
-                            <span class="info-value"><?= esc($ayah['penghasilan_ayah'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">No. HP</span>
-                            <span class="info-value"><?= esc($ayah['hp_ayah'] ?? '-') ?></span>
+                <!-- Kartu Keluarga -->
+                <h3 class="section-title">
+                    <i class="icofont-id-card"></i>
+                    Kartu Keluarga
+                </h3>
+                <?php if (\App\Libraries\FormPendaftaran::pathKk($pendaftar['file_kk'] ?? null)): ?>
+                    <div class="mb-4">
+                        <a href="<?= base_url('dashboard/kk/' . $pendaftar['id_pendaftar']) ?>" target="_blank" rel="noopener">
+                            <img src="<?= base_url('dashboard/kk/' . $pendaftar['id_pendaftar']) ?>" alt="Kartu Keluarga" style="max-width: 100%; max-height: 360px; border-radius: 10px; border: 1px solid #ddd;">
+                        </a>
+                        <div class="mt-2">
+                            <a href="<?= base_url('dashboard/kk/' . $pendaftar['id_pendaftar'] . '?unduh=1') ?>" class="btn btn-sm btn-success">
+                                <i class="icofont-download"></i> Unduh (<?= esc(\App\Libraries\FormPendaftaran::namaFileUnduhKk($pendaftar)) ?>)
+                            </a>
                         </div>
                     </div>
+                <?php else: ?>
+                    <p class="text-muted mb-4"><i class="icofont-warning"></i> Pendaftar belum mengunggah Kartu Keluarga.</p>
                 <?php endif; ?>
 
-                <!-- Data Ibu -->
-                <?php if ($ibu): ?>
+                <?php
+                $daftarOrang = [
+                    'ayah' => ['Data Ayah Kandung', 'icofont-user-male', $ayah ?? null],
+                    'ibu'  => ['Data Ibu Kandung', 'icofont-user-female', $ibu ?? null],
+                    'wali' => ['Data Wali', 'icofont-users', (!empty($wali) && !empty($wali['nama_wali'])) ? $wali : null],
+                ];
+                ?>
+                <?php foreach ($daftarOrang as $p => [$judul, $ikon, $o]): ?>
+                    <?php if (!$o) {
+                        if ($p === 'wali') {
+                            echo '<h3 class="section-title"><i class="icofont-users"></i> Data Wali</h3><p class="text-muted mb-4">Tidak ada wali.</p>';
+                        }
+                        continue;
+                    } ?>
                     <h3 class="section-title">
-                        <i class="icofont-user-female"></i>
-                        Data Ibu Kandung
+                        <i class="<?= $ikon ?>"></i>
+                        <?= $judul ?>
                     </h3>
                     <div class="info-grid">
-                        <div class="info-item">
-                            <span class="info-label">Nama Lengkap</span>
-                            <span class="info-value"><?= esc($ibu['nama_ibu'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">NIK</span>
-                            <span class="info-value"><?= esc($ibu['nik_ibu'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Tempat, Tanggal Lahir</span>
-                            <span class="info-value"><?= esc($ibu['tempat_lahir_ibu'] ?? '-') ?>, <?= $ibu['tanggal_lahir_ibu'] ? date('d F Y', strtotime($ibu['tanggal_lahir_ibu'])) : '-' ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Status</span>
-                            <span class="info-value"><?= esc($ibu['status_ibu'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Pendidikan Terakhir</span>
-                            <span class="info-value"><?= esc($ibu['pendidikan_ibu'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Pekerjaan</span>
-                            <span class="info-value"><?= esc($ibu['pekerjaan_ibu'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Penghasilan</span>
-                            <span class="info-value"><?= esc($ibu['penghasilan_ibu'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">No. HP</span>
-                            <span class="info-value"><?= esc($ibu['hp_ibu'] ?? '-') ?></span>
-                        </div>
+                        <?php
+                        $item = [
+                            $p === 'wali' ? 'Status / Hubungan Wali' : 'Status' => $p === 'wali' ? ($o['hubungan_wali'] ?? '') : ($o['status_' . $p] ?? ''),
+                            'NIK'                   => $o['nik_' . $p] ?? '',
+                            'Nama Lengkap'          => $o['nama_' . $p] ?? '',
+                            'Tempat, Tanggal Lahir' => trim(($o['tempat_lahir_' . $p] ?? '') . (!empty($o['tanggal_lahir_' . $p]) ? ', ' . date('d F Y', strtotime($o['tanggal_lahir_' . $p])) : ''), ', '),
+                            'Pendidikan Terakhir'   => $o['pendidikan_' . $p] ?? '',
+                            'Pekerjaan Utama'       => $o['pekerjaan_' . $p] ?? '',
+                            'Domisili'              => $o['domisili_' . $p] ?? '',
+                            'No. HP'                => $o['hp_' . $p] ?? '',
+                            'Penghasilan / Bulan'   => $o['penghasilan_' . $p] ?? '',
+                            'Status Tempat Tinggal' => $o['status_tempat_tinggal_' . $p] ?? '',
+                            'Alamat'                => $o['alamat_' . $p] ?? '',
+                        ];
+                        ?>
+                        <?php foreach ($item as $lbl => $nilai): ?>
+                            <div class="info-item"<?= $lbl === 'Alamat' ? ' style="grid-column: 1 / -1;"' : '' ?>>
+                                <span class="info-label"><?= esc($lbl) ?></span>
+                                <span class="info-value"><?= ($nilai !== '' && $nilai !== null) ? nl2br(esc($nilai)) : '-' ?></span>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
-                <?php endif; ?>
+                <?php endforeach; ?>
 
-                <!-- Data Wali -->
-                <?php if ($wali && !empty($wali['nama_wali'])): ?>
-                    <h3 class="section-title">
-                        <i class="icofont-users"></i>
-                        Data Wali
-                    </h3>
-                    <div class="info-grid">
+                <!-- Data Bansos -->
+                <h3 class="section-title">
+                    <i class="icofont-card"></i>
+                    Bantuan Sosial
+                </h3>
+                <div class="info-grid">
+                    <?php foreach (['no_kks' => 'No. KKS', 'no_pkh' => 'No. PKH', 'no_kip' => 'No. KIP'] as $k => $lbl): ?>
                         <div class="info-item">
-                            <span class="info-label">Nama Lengkap</span>
-                            <span class="info-value"><?= esc($wali['nama_wali'] ?? '-') ?></span>
+                            <span class="info-label"><?= $lbl ?></span>
+                            <span class="info-value"><?= esc(!empty($bansos[$k]) ? $bansos[$k] : '-') ?></span>
                         </div>
-                        <div class="info-item">
-                            <span class="info-label">Hubungan dengan Santri</span>
-                            <span class="info-value"><?= esc($wali['hubungan_wali'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">NIK</span>
-                            <span class="info-value"><?= esc($wali['nik_wali'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Tempat, Tanggal Lahir</span>
-                            <span class="info-value"><?= esc($wali['tempat_lahir_wali'] ?? '-') ?><?= !empty($wali['tanggal_lahir_wali']) ? ', ' . date('d F Y', strtotime($wali['tanggal_lahir_wali'])) : '' ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Pendidikan Terakhir</span>
-                            <span class="info-value"><?= esc($wali['pendidikan_wali'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Pekerjaan</span>
-                            <span class="info-value"><?= esc($wali['pekerjaan_wali'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Penghasilan</span>
-                            <span class="info-value"><?= esc($wali['penghasilan_wali'] ?? '-') ?></span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">No. HP</span>
-                            <span class="info-value"><?= esc($wali['hp_wali'] ?? '-') ?></span>
-                        </div>
-                    </div>
-                <?php endif; ?>
+                    <?php endforeach; ?>
+                </div>
 
                 <!-- Data Sekolah -->
                 <?php if ($sekolah): ?>
@@ -654,6 +609,15 @@
                     <button onclick="window.print()" class="btn-action btn-primary-custom">
                         <i class="icofont-print"></i> Cetak
                     </button>
+                    <a href="<?= base_url('dashboard/edit/' . $pendaftar['id_pendaftar']) ?>" class="btn-action btn-primary-custom" style="background: #f0ad4e;">
+                        <i class="icofont-edit"></i> Edit Data
+                    </a>
+                    <button type="button" class="btn-action btn-danger-custom btn-delete"
+                        data-id="<?= $pendaftar['id_pendaftar'] ?>"
+                        data-nama="<?= esc($pendaftar['nama_lengkap'], 'attr') ?>"
+                        data-nomor="<?= esc($pendaftar['nomor_pendaftaran'], 'attr') ?>">
+                        <i class="icofont-trash"></i> Hapus Pendaftar
+                    </button>
                 </div>
             </div>
         </div>
@@ -661,6 +625,8 @@
 
     <script src="<?= base_url('assets/js/jquery.js') ?>"></script>
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
+    <?php include APPPATH . 'Views/dashboard/_modal_hapus.php'; ?>
+    <?php include APPPATH . 'Views/components/toast.php'; ?>
 
 </body>
 

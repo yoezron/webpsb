@@ -34,13 +34,21 @@ class Landing extends BaseController
             $announcement['likes_count'] = $this->likeModel->countAnnouncementLikes($announcement['id_pengumuman']);
             $announcement['replies_count'] = $this->balasanModel->countReplies($announcement['id_pengumuman']);
         }
+        unset($announcement);
+
+        $set = pengaturan();
+        $statusPendaftaran = (new \App\Models\PeriodeModel())->statusPendaftaran();
 
         $data = [
-            'title' => 'Pendaftaran Santri Baru - Pesantren Persatuan Islam 31 Banjaran',
-            'meta_description' => 'Pendaftaran Santri Baru Pesantren Persatuan Islam 31 Banjaran untuk Tingkat Tsanawiyyah dan Mu\'allimin. Daftar sekarang!',
-            'meta_keywords' => 'pendaftaran santri, pesantren persis 31, banjaran, tsanawiyyah, muallimin, pendaftaran online',
-            'year' => 2026,
-            'announcements' => $announcements,
+            'title' => ($set['hero_judul'] ?: 'Pendaftaran Santri Baru') . ' - ' . $set['nama_lembaga'],
+            'meta_description' => $set['meta_deskripsi'],
+            'meta_keywords' => $set['meta_keywords'],
+            'year' => periode_tahun_mulai(),
+            'tahun_ajaran' => tahun_ajaran_aktif(),
+            'status_pendaftaran' => $statusPendaftaran,
+            'set' => $set,
+            'keunggulan' => json_decode($set['keunggulan_items'] ?? '[]', true) ?: [],
+            'announcements' => !empty($set['tampil_pengumuman']) ? $announcements : [],
         ];
 
         return view('landing/index', $data);

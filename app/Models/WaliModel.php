@@ -21,6 +21,9 @@ class WaliModel extends Model
         'tanggal_lahir_wali',  // Sprint 2 - NEW (replace tahun_lahir_wali)
         'pendidikan_wali',
         'pekerjaan_wali',
+        'domisili_wali',
+        'alamat_wali',
+        'status_tempat_tinggal_wali',
         'penghasilan_wali',
         'hp_wali',
     ];

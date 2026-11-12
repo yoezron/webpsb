@@ -11,10 +11,10 @@
     <meta name="description" content="Form Pendaftaran <?= esc($jalur_label) ?> - Pesantren Persatuan Islam 31 Banjaran">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/images/logo/favicon.ico') ?>">
-    <link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/images/logo/favicon-16x16.png') ?>">
-    <link rel="icon" type="image/png" sizes="32x32" href="<?= base_url('assets/images/logo/favicon-32x32.png') ?>">
-    <link rel="apple-touch-icon" href="<?= base_url('assets/images/logo/apple-touch-icon.png') ?>">
+    <link rel="icon" type="image/x-icon" href="<?= logo_aset('favicon.ico') ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?= logo_aset('favicon-16x16.png') ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= logo_aset('favicon-32x32.png') ?>">
+    <link rel="apple-touch-icon" href="<?= logo_aset('apple-touch-icon.png') ?>">
 
     <!-- CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
@@ -382,7 +382,7 @@
             <!-- Header -->
             <div class="form-header">
                 <div class="form-header-logo">
-                    <img src="<?= base_url('assets/images/logo/01.png') ?>" alt="Logo Pesantren Persatuan Islam 31 Banjaran">
+                    <img src="<?= logo_aset('01.png') ?>" alt="Logo Pesantren Persatuan Islam 31 Banjaran">
                 </div>
                 <h1>Form Pendaftaran <?= esc($jalur_label) ?></h1>
                 <p>Pesantren Persatuan Islam 31 Banjaran</p>
@@ -460,7 +460,7 @@
                 <?php endif; ?>
 
                 <!-- Main Form -->
-                <form id="main-form" method="post" action="<?= base_url('pendaftaran/submit/' . strtolower($jalur)) ?>">
+                <form id="main-form" method="post" enctype="multipart/form-data" action="<?= base_url('pendaftaran/submit/' . strtolower($jalur)) ?>">
                     <?= csrf_field() ?>
                     <input type="hidden" name="jalur" value="<?= esc($jalur) ?>">
 
@@ -497,6 +497,7 @@
     <!-- JS -->
     <script src="<?= base_url('assets/js/jquery.js') ?>"></script>
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
+    <?php include APPPATH . 'Views/pendaftaran/sections/_form_dinamis_js.php'; ?>
 
     <script>
         $(document).ready(function() {
@@ -583,29 +584,9 @@
                 setTimeout(() => document.body.removeChild(srAnnounce), 1000);
             }
 
-            // Validate step
+            // Validate step (aturan wajib dinamis ada di PSBForm)
             function validateStep(step) {
-                let isValid = true;
-                const section = $('#section-' + step);
-
-                // Clear previous errors
-                section.find('.is-invalid').removeClass('is-invalid');
-                section.find('.invalid-feedback').remove();
-
-                // Validate required fields
-                section.find('[required]').each(function() {
-                    if (!$(this).val()) {
-                        isValid = false;
-                        $(this).addClass('is-invalid');
-                        $(this).after('<div class="invalid-feedback">Field ini wajib diisi!</div>');
-                    }
-                });
-
-                if (!isValid) {
-                    showToast('Mohon lengkapi semua field yang wajib diisi!', 'warning', 5000);
-                }
-
-                return isValid;
+                return PSBForm.validasiSection($('#section-' + step));
             }
 
             // Save to localStorage
@@ -620,61 +601,22 @@
                 const saved = localStorage.getItem('pendaftaran_form');
                 if (saved) {
                     const formData = JSON.parse(saved);
+                    // Reset grup checkbox/radio dulu, lalu centang sesuai data tersimpan
+                    $('#main-form input[type=checkbox], #main-form input[type=radio]').not('.salin-alamat').prop('checked', false);
                     formData.forEach(item => {
                         const input = $('[name="' + item.name + '"]');
-                        if (input.attr('type') === 'checkbox') {
-                            input.prop('checked', item.value === '1');
-                        } else {
+                        if (input.attr('type') === 'checkbox' || input.attr('type') === 'radio') {
+                            input.filter(function () { return this.value === item.value; }).prop('checked', true);
+                        } else if (input.attr('type') !== 'file' && item.name !== 'csrf_test_name') {
                             input.val(item.value);
                         }
                     });
                 }
             }
 
-            // Populate review section
+            // Populate review section (dibangun otomatis dari semua field yang tampil)
             function populateReview() {
-                const formData = $('#main-form').serializeArray();
-                let reviewHtml = '';
-
-                // Group data by section
-                const sections = {
-                    'Data Diri': ['nisn', 'nik', 'nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'status_keluarga', 'anak_ke', 'jumlah_saudara', 'hobi', 'cita_cita', 'pernah_paud', 'pernah_tk', 'kebutuhan_disabilitas', 'kebutuhan_khusus', 'imunisasi', 'no_hp', 'ukuran_baju', 'prestasi', 'minat_bakat'],
-                    'Data Alamat': ['nomor_kk', 'nama_kepala_keluarga', 'jenis_tempat_tinggal', 'alamat', 'rt_rw', 'desa', 'kecamatan', 'kabupaten', 'provinsi', 'kode_pos', 'tinggal_bersama', 'jarak_ke_sekolah', 'waktu_tempuh', 'transportasi', 'email', 'media_sosial'],
-                    'Data Ayah': ['nama_ayah', 'nik_ayah', 'tempat_lahir_ayah', 'tanggal_lahir_ayah', 'status_ayah', 'pendidikan_ayah', 'pekerjaan_ayah', 'penghasilan_ayah', 'hp_ayah', 'alamat_ayah'],
-                    'Data Ibu': ['nama_ibu', 'nik_ibu', 'tempat_lahir_ibu', 'tanggal_lahir_ibu', 'status_ibu', 'pendidikan_ibu', 'pekerjaan_ibu', 'penghasilan_ibu', 'hp_ibu', 'alamat_ibu'],
-                    'Data Wali': ['nama_wali', 'hubungan_wali', 'nik_wali', 'tempat_lahir_wali', 'tanggal_lahir_wali', 'pendidikan_wali', 'pekerjaan_wali', 'penghasilan_wali', 'hp_wali'],
-                    'Data Bansos': ['no_kks', 'no_pkh', 'no_kip'],
-                    'Data Asal Sekolah': ['nama_asal_sekolah', 'jenjang_sekolah', 'status_sekolah', 'npsn', 'lokasi_sekolah', 'alamat_sekolah', 'tahun_lulus', 'rata_rata_rapor', 'nilai_tka', 'sekolah_md', 'asal_jenjang']
-                };
-
-                Object.keys(sections).forEach(sectionTitle => {
-                    reviewHtml += '<div class="review-section">';
-                    reviewHtml += '<div class="review-section-title">' + sectionTitle + '</div>';
-                    reviewHtml += '<table class="review-table"><tbody>';
-
-                    sections[sectionTitle].forEach(fieldName => {
-                        const field = formData.find(f => f.name === fieldName);
-                        if (field && field.value) {
-                            const label = $('[name="' + fieldName + '"]').closest('.mb-3').find('label').text().replace('*', '').trim();
-                            let value = field.value;
-
-                            // Format special values
-                            if (value === '1' && $('[name="' + fieldName + '"]').attr('type') === 'checkbox') {
-                                value = 'Ya';
-                            } else if (fieldName === 'jenis_kelamin' && value === 'L') {
-                                value = 'Laki-laki';
-                            } else if (fieldName === 'jenis_kelamin' && value === 'P') {
-                                value = 'Perempuan';
-                            }
-
-                            reviewHtml += '<tr><td style="width: 40%; font-weight: 600;">' + label + '</td><td>' + value + '</td></tr>';
-                        }
-                    });
-
-                    reviewHtml += '</tbody></table></div>';
-                });
-
-                $('#review-content').html(reviewHtml);
+                $('#review-content').html(PSBForm.ringkasan());
             }
 
             // Numeric validation
@@ -682,8 +624,11 @@
                 this.value = this.value.replace(/[^0-9]/g, '');
             });
 
-            // Load saved data on page load
+            // Load saved data on page load (tidak menimpa data yang dikembalikan server setelah validasi gagal)
+            <?php if (!session()->getFlashdata('validation_errors') && !session()->getFlashdata('error')): ?>
             loadFromLocalStorage();
+            <?php endif; ?>
+            PSBForm.init();
 
             // Clear localStorage on successful submit
             $('#main-form').on('submit', function(e) {

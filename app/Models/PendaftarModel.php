@@ -13,12 +13,15 @@ class PendaftarModel extends Model
     protected $useSoftDeletes   = true;
     protected $protectFields    = true;
     protected $allowedFields    = [
+        'id_periode',
         'nomor_pendaftaran',
         'jalur_pendaftaran',
         'nisn',
         'nik',
         'nama_lengkap',
         'jenis_kelamin',
+        'agama',
+        'file_kk',
         'tempat_lahir',
         'tanggal_lahir',
         'status_keluarga',
@@ -86,51 +89,60 @@ class PendaftarModel extends Model
     protected $afterDelete    = [];
 
     /**
-     * Generate nomor pendaftaran otomatis
-     * Format: T-26270001 (Tsanawiyyah/MTs) atau M-26270001 (Muallimin/MA)
+     * Generate nomor pendaftaran otomatis berdasarkan periode aktif.
      *
-     * Format breakdown:
-     * - T/M: Prefix (T = Tsanawiyyah/MTs, M = Muallimin/MA)
-     * - 26: Tahun sekarang (2 digit terakhir dari 2026)
-     * - 27: Tahun ajaran berikutnya (2 digit terakhir dari 2027)
-     * - 0001: Counter auto-increment (4 digit dengan leading zeros)
+     * Format diatur di menu Pengaturan > Periode (kolom format_nomor), default:
+     *   {PREFIX}-{YY1}{YY2}{NOMOR}  ->  T-26270001 / M-26270001
+     *
+     * Juga mengisi id_periode dengan periode aktif agar data bisa diarsipkan per periode.
      */
     protected function generateNomorPendaftaran(array $data)
     {
+        $periodeModel = new PeriodeModel();
+        $periode      = $periodeModel->getAktif();
+
+        if ($periode && empty($data['data']['id_periode'])) {
+            $data['data']['id_periode'] = $periode['id_periode'];
+        }
+
         if (isset($data['data']['nomor_pendaftaran']) && !empty($data['data']['nomor_pendaftaran'])) {
             return $data;
         }
 
-        $jalur = $data['data']['jalur_pendaftaran'] ?? '';
+        $jalur = strtoupper($data['data']['jalur_pendaftaran'] ?? '');
 
-        // Prefix: T untuk Tsanawiyyah (MTs), M untuk Muallimin (MA)
-        $prefix = ($jalur === 'TSANAWIYYAH') ? 'T' : 'M';
-
-        // Tahun PSB (tahun ajaran saat ini, 2 digit terakhir)
-        // Untuk PSB 2026/2027, currentYear = 26
-        $currentYear = str_pad((intval(date('y')) + 1) % 100, 2, '0', STR_PAD_LEFT); // 26 untuk tahun 2026
-
-        // Tahun ajaran berikutnya (2 digit terakhir)
-        $nextYear = str_pad((intval($currentYear) + 1) % 100, 2, '0', STR_PAD_LEFT); // 27 untuk tahun 2027
-
-        // Kombinasi tahun untuk pattern matching
-        $yearPattern = $currentYear . $nextYear; // 2627 untuk tahun ajaran 2026/2027
-
-        // Get last number for this jalur and year pattern
-        $lastPendaftar = $this->like('nomor_pendaftaran', $prefix . '-' . $yearPattern, 'after')
-            ->orderBy('id_pendaftar', 'DESC')
-            ->first();
-
-        // Extract counter dari format T-26270001 atau M-26270001
-        if ($lastPendaftar && preg_match('/\d{4}$/', $lastPendaftar['nomor_pendaftaran'], $matches)) {
-            $counter = intval($matches[0]) + 1;
-        } else {
-            $counter = 1;
+        // Fallback bila tabel periode belum dimigrasi: perilaku lama (T-26270001)
+        if (!$periode) {
+            $ta1     = (int) date('Y') + 1;
+            $periode = [
+                'tahun_ajaran' => $ta1 . '/' . ($ta1 + 1),
+                'format_nomor' => PeriodeModel::DEFAULT_FORMAT,
+                'digit_nomor'  => 4,
+                'nomor_mulai'  => 1,
+            ];
         }
 
-        // Format: T-26270001 atau M-26270001
-        // Menggunakan 4 digit counter dengan leading zeros
-        $data['data']['nomor_pendaftaran'] = sprintf('%s-%s%s%04d', $prefix, $currentYear, $nextYear, $counter);
+        // Nomor urut = nomor_mulai + jumlah pendaftar jalur ini pada periode ini (termasuk soft-deleted)
+        $builder = $this->db->table($this->table)->where('jalur_pendaftaran', $jalur);
+        if (!empty($periode['id_periode'])) {
+            $builder->where('id_periode', $periode['id_periode']);
+        } else {
+            // Format default diakhiri {NOMOR}: cocokkan berdasarkan awalan nomor
+            $awalan = substr(PeriodeModel::formatNomor($periode, $jalur, 0), 0, -4);
+            $builder->like('nomor_pendaftaran', $awalan, 'after');
+        }
+        $urut = max(1, (int) ($periode['nomor_mulai'] ?? 1)) + $builder->countAllResults();
+
+        // Pastikan unik (mis. ada data yang dihapus permanen / format sama dengan periode lain)
+        $nomor = PeriodeModel::formatNomor($periode, $jalur, $urut);
+        $guard = 0;
+        while ($this->db->table($this->table)->where('nomor_pendaftaran', $nomor)->countAllResults() > 0 && $guard < 10000) {
+            $urut++;
+            $guard++;
+            $nomor = PeriodeModel::formatNomor($periode, $jalur, $urut);
+        }
+
+        $data['data']['nomor_pendaftaran'] = $nomor;
 
         return $data;
     }
@@ -172,12 +184,21 @@ class PendaftarModel extends Model
     {
         $db = \Config\Database::connect();
 
+        $idPeriode = periode_aktif_id();
+        $count = function (array $where = []) use ($idPeriode) {
+            $b = $this->where($where);
+            if ($idPeriode) {
+                $b->where('id_periode', $idPeriode);
+            }
+            return $b->countAllResults();
+        };
+
         return [
-            'total' => $this->countAll(),
-            'tsanawiyyah' => $this->where('jalur_pendaftaran', 'TSANAWIYYAH')->countAllResults(),
-            'muallimin' => $this->where('jalur_pendaftaran', 'MUALLIMIN')->countAllResults(),
-            'laki_laki' => $this->where('jenis_kelamin', 'L')->countAllResults(),
-            'perempuan' => $this->where('jenis_kelamin', 'P')->countAllResults(),
+            'total' => $count(),
+            'tsanawiyyah' => $count(['jalur_pendaftaran' => 'TSANAWIYYAH']),
+            'muallimin' => $count(['jalur_pendaftaran' => 'MUALLIMIN']),
+            'laki_laki' => $count(['jenis_kelamin' => 'L']),
+            'perempuan' => $count(['jenis_kelamin' => 'P']),
         ];
     }
 

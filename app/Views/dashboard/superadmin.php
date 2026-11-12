@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($title) ?></title>
-    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/images/logo/favicon.ico') ?>">
+    <link rel="icon" type="image/x-icon" href="<?= logo_aset('favicon.ico') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/all.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/icofont.min.css') ?>">
@@ -168,6 +168,11 @@
 </head>
 
 <body>
+<?php
+    $periodeTerpilih = $periodeTerpilih ?? null;
+    $periodeAktifId = periode_aktif_id();
+    $pq = (!empty($periodeTerpilih) && (int) $periodeTerpilih['id_periode'] !== (int) $periodeAktifId) ? '&periode=' . (int) $periodeTerpilih['id_periode'] : '';
+?>
 
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-custom">
@@ -200,13 +205,21 @@
                             <i class="icofont-megaphone me-1"></i> Pengumuman
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?= base_url('/admin/pengaturan') ?>">
+                            <i class="icofont-gear me-1"></i> Pengaturan
+                        </a>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="icofont-user-alt-4 me-1"></i> <?= esc($user['nama_lengkap']) ?>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item" href="#">
+                            <li><a class="dropdown-item" href="<?= base_url('/admin/pengaturan') ?>">
                                 <i class="icofont-ui-settings me-2"></i> Pengaturan
+                            </a></li>
+                            <li><a class="dropdown-item" href="<?= base_url('/admin/users') ?>">
+                                <i class="icofont-users-alt-3 me-2"></i> User Panitia
                             </a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item text-danger" href="<?= base_url('/logout') ?>">
@@ -226,6 +239,20 @@
         <div class="welcome-banner">
             <h2><i class="icofont-crown me-2"></i> Selamat Datang, <?= esc($user['nama_lengkap']) ?>!</h2>
             <p class="mb-0">Role: <strong>Superadmin</strong> - Anda memiliki akses penuh ke seluruh sistem</p>
+            <form method="get" class="d-flex flex-wrap align-items-center gap-2 mt-3">
+                <label for="periodeSelect" class="fw-semibold mb-0"><i class="icofont-calendar me-1"></i> Periode:</label>
+                <select id="periodeSelect" name="periode" class="form-select form-select-sm" style="width:auto;min-width:240px" onchange="this.form.submit()">
+                    <?php foreach (($periodeList ?? []) as $p): ?>
+                        <option value="<?= (int) $p['id_periode'] ?>" <?= (!empty($periodeTerpilih) && (int) $periodeTerpilih['id_periode'] === (int) $p['id_periode']) ? 'selected' : '' ?>>
+                            TA <?= esc($p['tahun_ajaran']) ?> <?= $p['status'] === 'aktif' ? '(Aktif)' : '(Arsip)' ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+                <?php if ($pq !== ''): ?>
+                    <span class="badge bg-warning text-dark"><i class="icofont-archive me-1"></i> Menampilkan data arsip</span>
+                    <a href="<?= base_url('/dashboard') ?>" class="btn btn-sm btn-light">Kembali ke periode aktif</a>
+                <?php endif; ?>
+            </form>
         </div>
 
         <!-- Statistics Cards -->
@@ -274,6 +301,9 @@
                         </h5>
                         <div class="d-flex gap-2 align-items-center flex-wrap">
                             <form method="get" class="d-flex gap-2 flex-wrap">
+                                <?php if ($pq !== ''): ?>
+                                    <input type="hidden" name="periode" value="<?= (int) $periodeTerpilih['id_periode'] ?>">
+                                <?php endif; ?>
                                 <input type="text" name="search" class="form-control" placeholder="Cari nama, NISN, NIK..."
                                        value="<?= esc($search) ?>" style="width: 250px;">
                                 <input type="date" name="start_date" class="form-control" placeholder="Dari Tanggal"
@@ -284,7 +314,7 @@
                                     <i class="icofont-search me-1"></i> Filter
                                 </button>
                                 <?php if (!empty($search) || !empty($startDate) || !empty($endDate)): ?>
-                                    <a href="<?= current_url() ?>" class="btn btn-secondary">
+                                    <a href="<?= current_url() . ($pq !== '' ? '?' . ltrim($pq, '&') : '') ?>" class="btn btn-secondary">
                                         <i class="icofont-close me-1"></i> Reset
                                     </a>
                                 <?php endif; ?>
@@ -295,25 +325,36 @@
                                 </button>
                                 <ul class="dropdown-menu">
                                     <li><h6 class="dropdown-header">CSV Format</h6></li>
-                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-csv?jalur=all' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-csv?jalur=all' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . $pq . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
                                         <i class="icofont-file-text me-1"></i> Export Semua (CSV)
                                     </a></li>
-                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-csv?jalur=tsanawiyyah' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-csv?jalur=tsanawiyyah' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . $pq . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
                                         <i class="icofont-file-text me-1"></i> Tsanawiyyah (CSV)
                                     </a></li>
-                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-csv?jalur=muallimin' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-csv?jalur=muallimin' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . $pq . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
                                         <i class="icofont-file-text me-1"></i> Mu'allimin (CSV)
                                     </a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><h6 class="dropdown-header">Excel Format</h6></li>
-                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-excel?jalur=all' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-excel?jalur=all' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . $pq . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
                                         <i class="icofont-file-excel me-1"></i> Export Semua (Excel)
                                     </a></li>
-                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-excel?jalur=tsanawiyyah' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-excel?jalur=tsanawiyyah' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . $pq . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
                                         <i class="icofont-file-excel me-1"></i> Tsanawiyyah (Excel)
                                     </a></li>
-                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-excel?jalur=muallimin' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-excel?jalur=muallimin' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . $pq . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
                                         <i class="icofont-file-excel me-1"></i> Mu'allimin (Excel)
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><h6 class="dropdown-header">Kartu Keluarga (ZIP)</h6></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/kk-zip?jalur=all' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . $pq) ?>">
+                                        <i class="icofont-file-zip me-1"></i> Semua Jalur (ZIP)
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/kk-zip?jalur=tsanawiyyah' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . $pq) ?>">
+                                        <i class="icofont-file-zip me-1"></i> Tsanawiyyah (ZIP)
+                                    </a></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/kk-zip?jalur=muallimin' . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . $pq) ?>">
+                                        <i class="icofont-file-zip me-1"></i> Mu'allimin (ZIP)
                                     </a></li>
                                 </ul>
                             </div>
@@ -327,7 +368,7 @@
                                     <th>Nomor Peserta</th>
                                     <th>NISN</th>
                                     <th>
-                                        <a href="?sort=nama_lengkap&dir=<?= $sortBy === 'nama_lengkap' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?>"
+                                        <a href="?sort=nama_lengkap&dir=<?= $sortBy === 'nama_lengkap' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?><?= $pq ?>"
                                            class="text-white text-decoration-none">
                                             Nama Lengkap
                                             <?php if ($sortBy === 'nama_lengkap'): ?>
@@ -336,7 +377,7 @@
                                         </a>
                                     </th>
                                     <th>
-                                        <a href="?sort=jalur_pendaftaran&dir=<?= $sortBy === 'jalur_pendaftaran' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?>"
+                                        <a href="?sort=jalur_pendaftaran&dir=<?= $sortBy === 'jalur_pendaftaran' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?><?= $pq ?>"
                                            class="text-white text-decoration-none">
                                             Jalur
                                             <?php if ($sortBy === 'jalur_pendaftaran'): ?>
@@ -345,7 +386,7 @@
                                         </a>
                                     </th>
                                     <th>
-                                        <a href="?sort=jenis_kelamin&dir=<?= $sortBy === 'jenis_kelamin' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?>"
+                                        <a href="?sort=jenis_kelamin&dir=<?= $sortBy === 'jenis_kelamin' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?><?= $pq ?>"
                                            class="text-white text-decoration-none">
                                             Jenis Kelamin
                                             <?php if ($sortBy === 'jenis_kelamin'): ?>
@@ -355,7 +396,7 @@
                                     </th>
                                     <th>Asal Sekolah</th>
                                     <th>
-                                        <a href="?sort=kecamatan&dir=<?= $sortBy === 'kecamatan' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?>"
+                                        <a href="?sort=kecamatan&dir=<?= $sortBy === 'kecamatan' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?><?= $pq ?>"
                                            class="text-white text-decoration-none">
                                             Lokasi
                                             <?php if ($sortBy === 'kecamatan'): ?>
@@ -364,7 +405,7 @@
                                         </a>
                                     </th>
                                     <th>
-                                        <a href="?sort=tanggal_daftar&dir=<?= $sortBy === 'tanggal_daftar' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?>"
+                                        <a href="?sort=tanggal_daftar&dir=<?= $sortBy === 'tanggal_daftar' && $sortDir === 'ASC' ? 'DESC' : 'ASC' ?><?= !empty($search) ? '&search=' . urlencode($search) : '' ?><?= !empty($startDate) ? '&start_date=' . $startDate : '' ?><?= !empty($endDate) ? '&end_date=' . $endDate : '' ?><?= $pq ?>"
                                            class="text-white text-decoration-none">
                                             Tanggal Daftar
                                             <?php if ($sortBy === 'tanggal_daftar'): ?>
@@ -399,6 +440,10 @@
                                                 <a href="<?= base_url('dashboard/detail/' . $reg['id_pendaftar']) ?>"
                                                    class="btn btn-sm btn-primary me-1" title="Lihat Detail">
                                                     <i class="icofont-eye"></i>
+                                                </a>
+                                                <a href="<?= base_url('dashboard/edit/' . $reg['id_pendaftar']) ?>"
+                                                   class="btn btn-sm btn-warning me-1" title="Edit Data">
+                                                    <i class="icofont-edit"></i>
                                                 </a>
                                                 <a href="<?= base_url('pendaftaran/download-kartu/' . $reg['nomor_pendaftaran']) ?>"
                                                    class="btn btn-sm btn-success me-1" title="Download Kartu">

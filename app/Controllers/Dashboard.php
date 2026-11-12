@@ -9,11 +9,16 @@ use App\Models\IbuModel;
 use App\Models\WaliModel;
 use App\Models\BansosModel;
 use App\Models\SekolahModel;
+use App\Models\PeriodeModel;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
+use App\Libraries\FormPendaftaran;
+use App\Libraries\PerbaruiPendaftar;
 
 class Dashboard extends BaseController
 {
@@ -58,6 +63,7 @@ class Dashboard extends BaseController
         $sortDir = $this->request->getGet('dir') ?? 'DESC';
         $startDate = $this->request->getGet('start_date') ?? '';
         $endDate = $this->request->getGet('end_date') ?? '';
+        $idPeriode = $this->resolvePeriodeId();
         $perPage = 20;
 
         // Get statistics for both programs (with date filter if applicable)
@@ -65,7 +71,7 @@ class Dashboard extends BaseController
         $db = \Config\Database::connect();
 
         // Tsanawiyyah count
-        $tsnBuilder = $db->table('pendaftar')->where('jalur_pendaftaran', 'tsanawiyyah');
+        $tsnBuilder = $this->scopePeriode($db->table('pendaftar'), $idPeriode)->where('jalur_pendaftaran', 'tsanawiyyah');
         if (!empty($startDate)) {
             $tsnBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
         }
@@ -75,7 +81,7 @@ class Dashboard extends BaseController
         $totalTsn = $tsnBuilder->countAllResults();
 
         // Muallimin count
-        $muaBuilder = $db->table('pendaftar')->where('jalur_pendaftaran', 'muallimin');
+        $muaBuilder = $this->scopePeriode($db->table('pendaftar'), $idPeriode)->where('jalur_pendaftaran', 'muallimin');
         if (!empty($startDate)) {
             $muaBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
         }
@@ -85,7 +91,7 @@ class Dashboard extends BaseController
         $totalMua = $muaBuilder->countAllResults();
 
         // All count
-        $allBuilder = $db->table('pendaftar');
+        $allBuilder = $this->scopePeriode($db->table('pendaftar'), $idPeriode);
         if (!empty($startDate)) {
             $allBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
         }
@@ -99,6 +105,9 @@ class Dashboard extends BaseController
             ->select('pendaftar.*, alamat_pendaftar.desa, alamat_pendaftar.kecamatan, asal_sekolah.nama_asal_sekolah')
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('asal_sekolah', 'asal_sekolah.id_pendaftar = pendaftar.id_pendaftar', 'left');
+
+        // Batasi ke periode yang dipilih (default: periode aktif)
+        $this->scopePeriode($builder, $idPeriode, 'pendaftar.id_periode');
 
         // Apply search filter
         if (!empty($search)) {
@@ -138,21 +147,21 @@ class Dashboard extends BaseController
 
         // Additional statistics
         // Gender statistics
-        $maleCount = $db->table('pendaftar')->where('jenis_kelamin', 'L')->countAllResults();
-        $femaleCount = $db->table('pendaftar')->where('jenis_kelamin', 'P')->countAllResults();
+        $maleCount = $this->scopePeriode($db->table('pendaftar'), $idPeriode)->where('jenis_kelamin', 'L')->countAllResults();
+        $femaleCount = $this->scopePeriode($db->table('pendaftar'), $idPeriode)->where('jenis_kelamin', 'P')->countAllResults();
 
         // Registration time statistics
         $today = date('Y-m-d');
         $weekStart = date('Y-m-d', strtotime('monday this week'));
         $monthStart = date('Y-m-01');
 
-        $todayCount = $db->table('pendaftar')
+        $todayCount = $this->scopePeriode($db->table('pendaftar'), $idPeriode)
             ->where('DATE(tanggal_daftar)', $today)
             ->countAllResults();
-        $weekCount = $db->table('pendaftar')
+        $weekCount = $this->scopePeriode($db->table('pendaftar'), $idPeriode)
             ->where('tanggal_daftar >=', $weekStart . ' 00:00:00')
             ->countAllResults();
-        $monthCount = $db->table('pendaftar')
+        $monthCount = $this->scopePeriode($db->table('pendaftar'), $idPeriode)
             ->where('tanggal_daftar >=', $monthStart . ' 00:00:00')
             ->countAllResults();
 
@@ -164,8 +173,12 @@ class Dashboard extends BaseController
             'above_5m' => 0
         ];
 
-        $incomeData = $db->table('data_ayah')
-            ->select('penghasilan_ayah')
+        $incomeData = $this->scopePeriode(
+                $db->table('data_ayah')->join('pendaftar', 'pendaftar.id_pendaftar = data_ayah.id_pendaftar', 'inner'),
+                $idPeriode,
+                'pendaftar.id_periode'
+            )
+            ->select('data_ayah.penghasilan_ayah AS penghasilan_ayah')
             ->get()
             ->getResultArray();
 
@@ -182,29 +195,20 @@ class Dashboard extends BaseController
             }
         }
 
-        // Distance statistics (from alamat_pendaftar table)
-        $distanceRanges = [
-            'below_5km' => 0,
-            '5km_10km' => 0,
-            '10km_20km' => 0,
-            'above_20km' => 0
-        ];
-
-        $distanceData = $db->table('alamat_pendaftar')
-            ->select('jarak_ke_sekolah')
+        // Distance statistics (kategori sesuai pilihan EMIS)
+        $distanceRanges = array_fill_keys(FormPendaftaran::JARAK, 0);
+        $distanceData = $this->scopePeriode(
+                $db->table('alamat_pendaftar')->join('pendaftar', 'pendaftar.id_pendaftar = alamat_pendaftar.id_pendaftar', 'inner'),
+                $idPeriode,
+                'pendaftar.id_periode'
+            )
+            ->select('alamat_pendaftar.jarak_ke_sekolah AS jarak, COUNT(*) AS total')
+            ->groupBy('alamat_pendaftar.jarak_ke_sekolah')
             ->get()
             ->getResultArray();
-
         foreach ($distanceData as $row) {
-            $distance = (float)$row['jarak_ke_sekolah'];
-            if ($distance < 5) {
-                $distanceRanges['below_5km']++;
-            } elseif ($distance >= 5 && $distance < 10) {
-                $distanceRanges['5km_10km']++;
-            } elseif ($distance >= 10 && $distance < 20) {
-                $distanceRanges['10km_20km']++;
-            } else {
-                $distanceRanges['above_20km']++;
+            if (isset($distanceRanges[$row['jarak']])) {
+                $distanceRanges[$row['jarak']] = (int) $row['total'];
             }
         }
 
@@ -229,7 +233,9 @@ class Dashboard extends BaseController
             'sortBy' => $sortBy,
             'sortDir' => $sortDir,
             'startDate' => $startDate,
-            'endDate' => $endDate
+            'endDate' => $endDate,
+            'periodeList' => (new PeriodeModel())->orderBy('id_periode', 'DESC')->findAll(),
+            'periodeTerpilih' => $idPeriode ? (new PeriodeModel())->find($idPeriode) : null,
         ];
 
         return view('dashboard/superadmin', $data);
@@ -246,11 +252,12 @@ class Dashboard extends BaseController
         $sortDir = $this->request->getGet('dir') ?? 'DESC';
         $startDate = $this->request->getGet('start_date') ?? '';
         $endDate = $this->request->getGet('end_date') ?? '';
+        $idPeriode = $this->resolvePeriodeId();
         $perPage = 20;
 
         // Get total for statistics (with date filter)
         $db = \Config\Database::connect();
-        $totalBuilder = $db->table('pendaftar')->where('jalur_pendaftaran', 'tsanawiyyah');
+        $totalBuilder = $this->scopePeriode($db->table('pendaftar'), $idPeriode)->where('jalur_pendaftaran', 'tsanawiyyah');
         if (!empty($startDate)) {
             $totalBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
         }
@@ -265,6 +272,9 @@ class Dashboard extends BaseController
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('asal_sekolah', 'asal_sekolah.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->where('pendaftar.jalur_pendaftaran', 'tsanawiyyah');
+
+        // Batasi ke periode yang dipilih (default: periode aktif)
+        $this->scopePeriode($builder, $idPeriode, 'pendaftar.id_periode');
 
         // Apply search filter
         if (!empty($search)) {
@@ -313,7 +323,8 @@ class Dashboard extends BaseController
             'sortBy' => $sortBy,
             'sortDir' => $sortDir,
             'startDate' => $startDate,
-            'endDate' => $endDate
+            'endDate' => $endDate,
+            'periodeTerpilih' => $idPeriode ? (new PeriodeModel())->find($idPeriode) : null,
         ];
 
         return view('dashboard/jalur_dashboard', $data);
@@ -330,11 +341,12 @@ class Dashboard extends BaseController
         $sortDir = $this->request->getGet('dir') ?? 'DESC';
         $startDate = $this->request->getGet('start_date') ?? '';
         $endDate = $this->request->getGet('end_date') ?? '';
+        $idPeriode = $this->resolvePeriodeId();
         $perPage = 20;
 
         // Get total for statistics (with date filter)
         $db = \Config\Database::connect();
-        $totalBuilder = $db->table('pendaftar')->where('jalur_pendaftaran', 'muallimin');
+        $totalBuilder = $this->scopePeriode($db->table('pendaftar'), $idPeriode)->where('jalur_pendaftaran', 'muallimin');
         if (!empty($startDate)) {
             $totalBuilder->where('tanggal_daftar >=', $startDate . ' 00:00:00');
         }
@@ -349,6 +361,9 @@ class Dashboard extends BaseController
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('asal_sekolah', 'asal_sekolah.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->where('pendaftar.jalur_pendaftaran', 'muallimin');
+
+        // Batasi ke periode yang dipilih (default: periode aktif)
+        $this->scopePeriode($builder, $idPeriode, 'pendaftar.id_periode');
 
         // Apply search filter
         if (!empty($search)) {
@@ -397,7 +412,8 @@ class Dashboard extends BaseController
             'sortBy' => $sortBy,
             'sortDir' => $sortDir,
             'startDate' => $startDate,
-            'endDate' => $endDate
+            'endDate' => $endDate,
+            'periodeTerpilih' => $idPeriode ? (new PeriodeModel())->find($idPeriode) : null,
         ];
 
         return view('dashboard/jalur_dashboard', $data);
@@ -421,6 +437,9 @@ class Dashboard extends BaseController
 
         if (!$pendaftar) {
             return redirect()->to('/dashboard')->with('error', 'Data pendaftar tidak ditemukan');
+        }
+        if (!$this->bolehAksesJalur($pendaftar['jalur_pendaftaran'])) {
+            return redirect()->to('/dashboard')->with('error', 'Anda hanya dapat mengakses pendaftar jalur Anda sendiri.');
         }
 
         // Get related data
@@ -447,53 +466,57 @@ class Dashboard extends BaseController
     }
 
     /**
-     * Export data to CSV
+     * Query lengkap (7 tabel) untuk export & unduh ZIP, dengan filter yang sama seperti dashboard.
      */
-    public function exportCsv()
+    private function queryExport(): array
     {
-        // Get jalur from query parameter
-        $jalur = $this->request->getGet('jalur') ?? 'all';
-        $search = $this->request->getGet('search') ?? '';
-        $sortBy = $this->request->getGet('sort') ?? 'tanggal_daftar';
-        $sortDir = $this->request->getGet('dir') ?? 'DESC';
+        $jalur     = strtolower($this->request->getGet('jalur') ?? 'all');
+        $search    = $this->request->getGet('search') ?? '';
+        $sortBy    = $this->request->getGet('sort') ?? 'tanggal_daftar';
+        $sortDir   = $this->request->getGet('dir') ?? 'DESC';
         $startDate = $this->request->getGet('start_date') ?? '';
-        $endDate = $this->request->getGet('end_date') ?? '';
+        $endDate   = $this->request->getGet('end_date') ?? '';
+        $idPeriode = $this->resolvePeriodeId();
 
-        // Build query with ALL related tables
+        // Panitia jalur hanya boleh mengambil data jalurnya sendiri
+        $role = $this->session->get('role_panitia');
+        if (in_array($role, ['tsanawiyyah', 'muallimin'], true)) {
+            $jalur = $role;
+        }
+        if (!in_array($jalur, ['all', 'tsanawiyyah', 'muallimin'], true)) {
+            $jalur = 'all';
+        }
+
+        // Ambil semua kolom tabel relasi (tanpa id & timestamp) agar tidak ada data yang terlewat
+        $db     = \Config\Database::connect();
+        $select = ['pendaftar.*'];
+        foreach (['alamat_pendaftar', 'data_ayah', 'data_ibu', 'data_wali', 'bansos_pendaftar', 'asal_sekolah'] as $tabel) {
+            foreach ($db->getFieldNames($tabel) as $kolom) {
+                if ($kolom === 'id_pendaftar' || str_starts_with($kolom, 'id_') || in_array($kolom, ['created_at', 'updated_at', 'deleted_at'], true)) {
+                    continue;
+                }
+                $select[] = $tabel . '.' . $kolom;
+            }
+        }
+        $select[] = 'data_wali.id_wali AS ada_wali_id';
+        $select[] = 'periode_pendaftaran.tahun_ajaran AS tahun_ajaran_periode';
+
         $builder = $this->pendaftarModel
-            ->select('pendaftar.*,
-                      alamat_pendaftar.nomor_kk, alamat_pendaftar.nama_kepala_keluarga, alamat_pendaftar.jenis_tempat_tinggal,
-                      alamat_pendaftar.alamat, alamat_pendaftar.rt_rw, alamat_pendaftar.desa, alamat_pendaftar.kecamatan,
-                      alamat_pendaftar.kabupaten, alamat_pendaftar.provinsi, alamat_pendaftar.kode_pos,
-                      alamat_pendaftar.tinggal_bersama, alamat_pendaftar.jarak_ke_sekolah, alamat_pendaftar.waktu_tempuh,
-                      alamat_pendaftar.transportasi, alamat_pendaftar.email, alamat_pendaftar.media_sosial,
-                      data_ayah.nama_ayah, data_ayah.nik_ayah, data_ayah.pendidikan_ayah,
-                      data_ayah.pekerjaan_ayah, data_ayah.penghasilan_ayah,
-                      data_ayah.hp_ayah, data_ayah.status_ayah,
-                      data_ibu.nama_ibu, data_ibu.nik_ibu, data_ibu.pendidikan_ibu,
-                      data_ibu.pekerjaan_ibu, data_ibu.penghasilan_ibu,
-                      data_ibu.hp_ibu, data_ibu.status_ibu,
-                      data_wali.nama_wali, data_wali.hubungan_wali, data_wali.nik_wali, data_wali.tempat_lahir_wali, data_wali.tanggal_lahir_wali,
-                      data_wali.pendidikan_wali, data_wali.pekerjaan_wali, data_wali.penghasilan_wali,
-                      data_wali.hp_wali,
-                      bansos_pendaftar.no_kks, bansos_pendaftar.no_pkh, bansos_pendaftar.no_kip,
-                      asal_sekolah.npsn, asal_sekolah.nama_asal_sekolah, asal_sekolah.jenjang_sekolah,
-                      asal_sekolah.status_sekolah, asal_sekolah.lokasi_sekolah, asal_sekolah.alamat_sekolah,
-                      asal_sekolah.tahun_lulus, asal_sekolah.rata_rata_rapor, asal_sekolah.nilai_tka,
-                      asal_sekolah.sekolah_md, asal_sekolah.asal_jenjang')
+            ->select(implode(', ', $select), false)
             ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('data_ayah', 'data_ayah.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('data_ibu', 'data_ibu.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('data_wali', 'data_wali.id_pendaftar = pendaftar.id_pendaftar', 'left')
             ->join('bansos_pendaftar', 'bansos_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
-            ->join('asal_sekolah', 'asal_sekolah.id_pendaftar = pendaftar.id_pendaftar', 'left');
+            ->join('asal_sekolah', 'asal_sekolah.id_pendaftar = pendaftar.id_pendaftar', 'left')
+            ->join('periode_pendaftaran', 'periode_pendaftaran.id_periode = pendaftar.id_periode', 'left');
 
-        // Filter by jalur if not 'all'
+        $this->scopePeriode($builder, $idPeriode, 'pendaftar.id_periode');
+
         if ($jalur !== 'all') {
-            $builder->where('pendaftar.jalur_pendaftaran', $jalur);
+            $builder->where('pendaftar.jalur_pendaftaran', strtoupper($jalur));
         }
 
-        // Apply search filter
         if (!empty($search)) {
             $builder->groupStart()
                 ->like('pendaftar.nama_lengkap', $search)
@@ -504,7 +527,6 @@ class Dashboard extends BaseController
                 ->groupEnd();
         }
 
-        // Apply date range filter
         if (!empty($startDate)) {
             $builder->where('pendaftar.tanggal_daftar >=', $startDate . ' 00:00:00');
         }
@@ -512,198 +534,162 @@ class Dashboard extends BaseController
             $builder->where('pendaftar.tanggal_daftar <=', $endDate . ' 23:59:59');
         }
 
-        // Validate sort column
         $allowedSorts = ['nama_lengkap', 'tanggal_daftar', 'jenis_kelamin', 'tempat_lahir', 'kecamatan', 'jalur_pendaftaran'];
-        if (!in_array($sortBy, $allowedSorts)) {
+        if (!in_array($sortBy, $allowedSorts, true)) {
             $sortBy = 'tanggal_daftar';
         }
-
-        // Validate sort direction
         $sortDir = strtoupper($sortDir) === 'ASC' ? 'ASC' : 'DESC';
+        $kolomSort = $sortBy === 'kecamatan' ? 'alamat_pendaftar.kecamatan' : 'pendaftar.' . $sortBy;
 
-        // Get all data (no pagination for export)
-        $data = $builder
-            ->orderBy('pendaftar.' . $sortBy, $sortDir)
-            ->findAll();
+        $rows = $builder->orderBy($kolomSort, $sortDir)->findAll();
 
-        // Generate CSV filename
-        $filename = 'pendaftar_' . ($jalur !== 'all' ? $jalur . '_' : '') . date('Y-m-d_His') . '.csv';
+        return [
+            'rows'      => $rows,
+            'jalur'     => $jalur,
+            'idPeriode' => $idPeriode,
+            'startDate' => $startDate,
+            'endDate'   => $endDate,
+        ];
+    }
 
-        // Set headers for CSV download
+    /**
+     * Definisi kolom export: [Judul Kolom => fungsi(row)].
+     * Satu sumber untuk CSV & Excel sehingga keduanya selalu memuat seluruh isian formulir.
+     */
+    private function kolomExport(): array
+    {
+        $v   = fn (string $k) => fn (array $r) => (isset($r[$k]) && $r[$k] !== '') ? (string) $r[$k] : '-';
+        $tgl = fn (string $k) => fn (array $r) => !empty($r[$k]) ? date('d/m/Y', strtotime($r[$k])) : '-';
+        $ya  = fn (string $k) => fn (array $r) => !empty($r[$k]) ? 'Ya' : 'Tidak';
+
+        $kolom = [
+            // ---------------- Pendaftaran ----------------
+            'Tahun Ajaran'           => $v('tahun_ajaran_periode'),
+            'Nomor Pendaftaran'      => $v('nomor_pendaftaran'),
+            'Jalur Pendaftaran'      => fn ($r) => ucfirst(strtolower($r['jalur_pendaftaran'] ?? '-')),
+            'Tanggal Daftar'         => fn ($r) => !empty($r['tanggal_daftar']) ? date('d/m/Y H:i', strtotime($r['tanggal_daftar'])) : '-',
+
+            // ---------------- Data Diri ----------------
+            'NISN'                   => $v('nisn'),
+            'NIK'                    => $v('nik'),
+            'Nama Lengkap'           => $v('nama_lengkap'),
+            'Jenis Kelamin'          => fn ($r) => ['L' => 'Laki-laki', 'P' => 'Perempuan'][$r['jenis_kelamin'] ?? ''] ?? '-',
+            'Agama'                  => $v('agama'),
+            'Tempat Lahir'           => $v('tempat_lahir'),
+            'Tanggal Lahir'          => $tgl('tanggal_lahir'),
+            'Status dalam Keluarga'  => $v('status_keluarga'),
+            'Anak Ke'                => $v('anak_ke'),
+            'Jumlah Saudara'         => $v('jumlah_saudara'),
+            'Hobi'                   => $v('hobi'),
+            'Cita-cita'              => $v('cita_cita'),
+            'No HP Santri'           => $v('no_hp'),
+            'Email Santri'           => $v('email'),
+            'Yang Membiayai Sekolah' => $v('yang_membiayai_sekolah'),
+            'Pernah PAUD'            => $ya('pernah_paud'),
+            'Pernah TK'              => $ya('pernah_tk'),
+            'Kebutuhan Disabilitas'  => $v('kebutuhan_disabilitas'),
+            'Kebutuhan Khusus'       => $v('kebutuhan_khusus'),
+            'Riwayat Imunisasi'      => $v('imunisasi'),
+            'Ukuran Baju'            => $v('ukuran_baju'),
+            'Prestasi'               => $v('prestasi'),
+            'Minat & Bakat'          => $v('minat_bakat'),
+            'File Kartu Keluarga'    => fn ($r) => FormPendaftaran::pathKk($r['file_kk'] ?? null) ? FormPendaftaran::namaFileUnduhKk($r) : 'Belum diunggah',
+
+            // ---------------- Tempat Tinggal ----------------
+            'Nomor KK'               => $v('nomor_kk'),
+            'Nama Kepala Keluarga'   => $v('nama_kepala_keluarga'),
+            'Jenis Tempat Tinggal'   => $v('jenis_tempat_tinggal'),
+            'Alamat'                 => $v('alamat'),
+            'RT/RW'                  => $v('rt_rw'),
+            'Desa/Kelurahan'         => $v('desa'),
+            'Kecamatan'              => $v('kecamatan'),
+            'Kabupaten/Kota'         => $v('kabupaten'),
+            'Provinsi'               => $v('provinsi'),
+            'Kode Pos'               => $v('kode_pos'),
+            'Status Tempat Tinggal Santri' => $v('tinggal_bersama'),
+            'Jarak ke Sekolah'       => $v('jarak_ke_sekolah'),
+            'Waktu Tempuh'           => $v('waktu_tempuh'),
+            'Transportasi'           => $v('transportasi'),
+            'Media Sosial'           => $v('media_sosial'),
+        ];
+
+        foreach (['ayah' => 'Ayah', 'ibu' => 'Ibu', 'wali' => 'Wali'] as $p => $L) {
+            if ($p === 'wali') {
+                $kolom['Ada Wali']          = fn ($r) => !empty($r['ada_wali_id']) ? 'Ya' : 'Tidak';
+                $kolom['Status/Hubungan Wali'] = $v('hubungan_wali');
+            } else {
+                $kolom['Status ' . $L] = $v('status_' . $p);
+            }
+            $kolom += [
+                'NIK ' . $L                   => $v('nik_' . $p),
+                'Nama ' . $L                  => $v('nama_' . $p),
+                'Tempat Lahir ' . $L          => $v('tempat_lahir_' . $p),
+                'Tanggal Lahir ' . $L         => $tgl('tanggal_lahir_' . $p),
+                'Pendidikan ' . $L            => $v('pendidikan_' . $p),
+                'Pekerjaan ' . $L             => $v('pekerjaan_' . $p),
+                'Domisili ' . $L              => $v('domisili_' . $p),
+                'No HP ' . $L                 => $v('hp_' . $p),
+                'Penghasilan ' . $L           => $v('penghasilan_' . $p),
+                'Alamat ' . $L                => $v('alamat_' . $p),
+                'Status Tempat Tinggal ' . $L => $v('status_tempat_tinggal_' . $p),
+            ];
+        }
+
+        $kolom += [
+            // ---------------- Bansos ----------------
+            'No. KKS'          => $v('no_kks'),
+            'No. PKH'          => $v('no_pkh'),
+            'No. KIP'          => $v('no_kip'),
+
+            // ---------------- Asal Sekolah ----------------
+            'NPSN'             => $v('npsn'),
+            'Nama Asal Sekolah' => $v('nama_asal_sekolah'),
+            'Jenjang Sekolah'  => $v('jenjang_sekolah'),
+            'Status Sekolah'   => $v('status_sekolah'),
+            'Lokasi Sekolah'   => $v('lokasi_sekolah'),
+            'Alamat Sekolah'   => $v('alamat_sekolah'),
+            'Tahun Lulus'      => $v('tahun_lulus'),
+            'Rata-rata Rapor'  => $v('rata_rata_rapor'),
+            'Nilai TKA'        => $v('nilai_tka'),
+            'Sekolah MD'       => $v('sekolah_md'),
+            'Asal Jenjang'     => $v('asal_jenjang'),
+        ];
+
+        return $kolom;
+    }
+
+    private function namaFileExport(array $q, string $ext): string
+    {
+        return 'pendaftar_' . $this->slugPeriode($q['idPeriode']) . ($q['jalur'] !== 'all' ? $q['jalur'] . '_' : '') . date('Y-m-d_His') . '.' . $ext;
+    }
+
+    /**
+     * Export data to CSV (seluruh isian formulir)
+     */
+    public function exportCsv()
+    {
+        $q     = $this->queryExport();
+        $kolom = $this->kolomExport();
+
+        $filename = $this->namaFileExport($q, 'csv');
+
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Pragma: no-cache');
         header('Expires: 0');
 
-        // Create output stream
         $output = fopen('php://output', 'w');
+        fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF)); // BOM agar UTF-8 terbaca di Excel
 
-        // Add BOM for Excel UTF-8 compatibility
-        fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+        fputcsv($output, array_merge(['No'], array_keys($kolom)), ',', '"', '\\');
 
-        // Comprehensive CSV Headers - All fields from 7 tables
-        fputcsv($output, [
-            // Pendaftar Data
-            'No',
-            'Nomor Pendaftaran',
-            'NISN',
-            'NIK',
-            'Nama Lengkap',
-            'Jenis Kelamin',
-            'Tempat Lahir',
-            'Tanggal Lahir',
-            'Jalur Pendaftaran',
-            'Status Keluarga',
-            'Anak Ke',
-            'Jumlah Saudara',
-            'Yang Membiayai Sekolah',
-            'Kebutuhan Khusus',
-            'Minat & Bakat',
-            'No HP',
-            'Tanggal Daftar',
-            // Alamat Data
-            'Nomor KK',
-            'Nama Kepala Keluarga',
-            'Jenis Tempat Tinggal',
-            'Alamat Lengkap',
-            'RT/RW',
-            'Desa/Kelurahan',
-            'Kecamatan',
-            'Kabupaten',
-            'Provinsi',
-            'Kode Pos',
-            'Tinggal Bersama',
-            'Jarak ke Sekolah (KM)',
-            'Waktu Tempuh',
-            'Transportasi',
-            'Email',
-            'Media Sosial',
-            // Data Ayah
-            'Nama Ayah',
-            'NIK Ayah',
-            'Pendidikan Ayah',
-            'Pekerjaan Ayah',
-            'Penghasilan Ayah',
-            'No HP Ayah',
-            'Status Ayah',
-            // Data Ibu
-            'Nama Ibu',
-            'NIK Ibu',
-            'Pendidikan Ibu',
-            'Pekerjaan Ibu',
-            'Penghasilan Ibu',
-            'No HP Ibu',
-            'Status Ibu',
-            // Data Wali
-            'Nama Wali',
-            'Hubungan Wali',
-            'NIK Wali',
-            'Tempat Lahir Wali',
-            'Tanggal Lahir Wali',
-            'Pendidikan Wali',
-            'Pekerjaan Wali',
-            'Penghasilan Wali',
-            'No HP Wali',
-            // Bansos
-            'No. KKS',
-            'No. PKH',
-            'No. KIP',
-            // Asal Sekolah
-            'NPSN',
-            'Nama Asal Sekolah',
-            'Jenjang Sekolah',
-            'Status Sekolah',
-            'Lokasi Sekolah',
-            'Alamat Sekolah',
-            'Tahun Lulus',
-            'Rata-rata Rapor',
-            'Nilai TKA',
-            'Sekolah MD',
-            'Asal Jenjang'
-        ], ',', '"', '\\');
-
-        // Comprehensive CSV Data
         $no = 1;
-        foreach ($data as $row) {
-            fputcsv($output, [
-                // Pendaftar Data
-                $no++,
-                $row['nomor_pendaftaran'] ?? '-',
-                $row['nisn'] ?? '-',
-                $row['nik'] ?? '-',
-                $row['nama_lengkap'] ?? '-',
-                ($row['jenis_kelamin'] ?? '') === 'L' ? 'Laki-laki' : 'Perempuan',
-                $row['tempat_lahir'] ?? '-',
-                !empty($row['tanggal_lahir']) ? date('d/m/Y', strtotime($row['tanggal_lahir'])) : '-',
-                ucfirst($row['jalur_pendaftaran'] ?? '-'),
-                $row['status_keluarga'] ?? '-',
-                $row['anak_ke'] ?? '-',
-                $row['jumlah_saudara'] ?? '-',
-                $row['yang_membiayai_sekolah'] ?? '-',
-                $row['kebutuhan_khusus'] ?? '-',
-                $row['minat_bakat'] ?? '-',
-                $row['no_hp'] ?? '-',
-                !empty($row['tanggal_daftar']) ? date('d/m/Y H:i', strtotime($row['tanggal_daftar'])) : '-',
-                // Alamat Data
-                $row['nomor_kk'] ?? '-',
-                $row['nama_kepala_keluarga'] ?? '-',
-                $row['jenis_tempat_tinggal'] ?? '-',
-                $row['alamat'] ?? '-',
-                $row['rt_rw'] ?? '-',
-                $row['desa'] ?? '-',
-                $row['kecamatan'] ?? '-',
-                $row['kabupaten'] ?? '-',
-                $row['provinsi'] ?? '-',
-                $row['kode_pos'] ?? '-',
-                $row['tinggal_bersama'] ?? '-',
-                $row['jarak_ke_sekolah'] ?? '-',
-                $row['waktu_tempuh'] ?? '-',
-                $row['transportasi'] ?? '-',
-                $row['email'] ?? '-',
-                $row['media_sosial'] ?? '-',
-                // Data Ayah
-                $row['nama_ayah'] ?? '-',
-                $row['nik_ayah'] ?? '-',
-                $row['pendidikan_ayah'] ?? '-',
-                $row['pekerjaan_ayah'] ?? '-',
-                $row['penghasilan_ayah'] ?? '-',
-                $row['hp_ayah'] ?? '-',
-                $row['status_ayah'] ?? '-',
-                // Data Ibu
-                $row['nama_ibu'] ?? '-',
-                $row['nik_ibu'] ?? '-',
-                $row['pendidikan_ibu'] ?? '-',
-                $row['pekerjaan_ibu'] ?? '-',
-                $row['penghasilan_ibu'] ?? '-',
-                $row['hp_ibu'] ?? '-',
-                $row['status_ibu'] ?? '-',
-                // Data Wali
-                $row['nama_wali'] ?? '-',
-                $row['hubungan_wali'] ?? '-',
-                $row['nik_wali'] ?? '-',
-                $row['tempat_lahir_wali'] ?? '-',
-                !empty($row['tanggal_lahir_wali']) ? date('d/m/Y', strtotime($row['tanggal_lahir_wali'])) : '-',
-                $row['pendidikan_wali'] ?? '-',
-                $row['pekerjaan_wali'] ?? '-',
-                $row['penghasilan_wali'] ?? '-',
-                $row['hp_wali'] ?? '-',
-                // Bansos
-                $row['no_kks'] ?? '-',
-                $row['no_pkh'] ?? '-',
-                $row['no_kip'] ?? '-',
-                // Asal Sekolah
-                $row['npsn'] ?? '-',
-                $row['nama_asal_sekolah'] ?? '-',
-                $row['jenjang_sekolah'] ?? '-',
-                $row['status_sekolah'] ?? '-',
-                $row['lokasi_sekolah'] ?? '-',
-                $row['alamat_sekolah'] ?? '-',
-                $row['tahun_lulus'] ?? '-',
-                $row['rata_rata_rapor'] ?? '-',
-                $row['nilai_tka'] ?? '-',
-                $row['sekolah_md'] ?? '-',
-                $row['asal_jenjang'] ?? '-'
-            ], ',', '"', '\\');
+        foreach ($q['rows'] as $row) {
+            $baris = [$no++];
+            foreach ($kolom as $fn) {
+                $baris[] = $fn($row);
+            }
+            fputcsv($output, $baris, ',', '"', '\\');
         }
 
         fclose($output);
@@ -711,399 +697,112 @@ class Dashboard extends BaseController
     }
 
     /**
-     * Export data to Excel with advanced formatting
+     * Export data to Excel (seluruh isian formulir, angka panjang disimpan sebagai teks)
      */
     public function exportExcel()
     {
-        // Get parameters
-        $jalur = $this->request->getGet('jalur') ?? 'all';
-        $search = $this->request->getGet('search') ?? '';
-        $sortBy = $this->request->getGet('sort') ?? 'tanggal_daftar';
-        $sortDir = $this->request->getGet('dir') ?? 'DESC';
-        $startDate = $this->request->getGet('start_date') ?? '';
-        $endDate = $this->request->getGet('end_date') ?? '';
+        $q     = $this->queryExport();
+        $kolom = $this->kolomExport();
+        $data  = $q['rows'];
+        $jalur = $q['jalur'];
 
-        // Build query with ALL related tables (same as CSV export)
-        $builder = $this->pendaftarModel
-            ->select('pendaftar.*,
-                      alamat_pendaftar.nomor_kk, alamat_pendaftar.nama_kepala_keluarga, alamat_pendaftar.jenis_tempat_tinggal,
-                      alamat_pendaftar.alamat, alamat_pendaftar.rt_rw, alamat_pendaftar.desa, alamat_pendaftar.kecamatan,
-                      alamat_pendaftar.kabupaten, alamat_pendaftar.provinsi, alamat_pendaftar.kode_pos,
-                      alamat_pendaftar.tinggal_bersama, alamat_pendaftar.jarak_ke_sekolah, alamat_pendaftar.waktu_tempuh,
-                      alamat_pendaftar.transportasi, alamat_pendaftar.email, alamat_pendaftar.media_sosial,
-                      data_ayah.nama_ayah, data_ayah.nik_ayah, data_ayah.pendidikan_ayah,
-                      data_ayah.pekerjaan_ayah, data_ayah.penghasilan_ayah,
-                      data_ayah.hp_ayah, data_ayah.status_ayah,
-                      data_ibu.nama_ibu, data_ibu.nik_ibu, data_ibu.pendidikan_ibu,
-                      data_ibu.pekerjaan_ibu, data_ibu.penghasilan_ibu,
-                      data_ibu.hp_ibu, data_ibu.status_ibu,
-                      data_wali.nama_wali, data_wali.hubungan_wali, data_wali.nik_wali, data_wali.tempat_lahir_wali, data_wali.tanggal_lahir_wali,
-                      data_wali.pendidikan_wali, data_wali.pekerjaan_wali, data_wali.penghasilan_wali,
-                      data_wali.hp_wali,
-                      bansos_pendaftar.no_kks, bansos_pendaftar.no_pkh, bansos_pendaftar.no_kip,
-                      asal_sekolah.npsn, asal_sekolah.nama_asal_sekolah, asal_sekolah.jenjang_sekolah,
-                      asal_sekolah.status_sekolah, asal_sekolah.lokasi_sekolah, asal_sekolah.alamat_sekolah,
-                      asal_sekolah.tahun_lulus, asal_sekolah.rata_rata_rapor, asal_sekolah.nilai_tka,
-                      asal_sekolah.sekolah_md, asal_sekolah.asal_jenjang')
-            ->join('alamat_pendaftar', 'alamat_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
-            ->join('data_ayah', 'data_ayah.id_pendaftar = pendaftar.id_pendaftar', 'left')
-            ->join('data_ibu', 'data_ibu.id_pendaftar = pendaftar.id_pendaftar', 'left')
-            ->join('data_wali', 'data_wali.id_pendaftar = pendaftar.id_pendaftar', 'left')
-            ->join('bansos_pendaftar', 'bansos_pendaftar.id_pendaftar = pendaftar.id_pendaftar', 'left')
-            ->join('asal_sekolah', 'asal_sekolah.id_pendaftar = pendaftar.id_pendaftar', 'left');
-
-        // Filter by jalur if not 'all'
-        if ($jalur !== 'all') {
-            $builder->where('pendaftar.jalur_pendaftaran', $jalur);
-        }
-
-        // Apply search filter
-        if (!empty($search)) {
-            $builder->groupStart()
-                ->like('pendaftar.nama_lengkap', $search)
-                ->orLike('pendaftar.nisn', $search)
-                ->orLike('pendaftar.nik', $search)
-                ->orLike('pendaftar.tempat_lahir', $search)
-                ->orLike('alamat_pendaftar.kecamatan', $search)
-                ->groupEnd();
-        }
-
-        // Apply date range filter
-        if (!empty($startDate)) {
-            $builder->where('pendaftar.tanggal_daftar >=', $startDate . ' 00:00:00');
-        }
-        if (!empty($endDate)) {
-            $builder->where('pendaftar.tanggal_daftar <=', $endDate . ' 23:59:59');
-        }
-
-        // Validate sort column
-        $allowedSorts = ['nama_lengkap', 'tanggal_daftar', 'jenis_kelamin', 'tempat_lahir', 'kecamatan', 'jalur_pendaftaran'];
-        if (!in_array($sortBy, $allowedSorts)) {
-            $sortBy = 'tanggal_daftar';
-        }
-
-        // Validate sort direction
-        $sortDir = strtoupper($sortDir) === 'ASC' ? 'ASC' : 'DESC';
-
-        // Get all data (no pagination for export)
-        $data = $builder
-            ->orderBy('pendaftar.' . $sortBy, $sortDir)
-            ->findAll();
-
-        // Create new Spreadsheet
         $spreadsheet = new Spreadsheet();
-
-        // Set document properties
         $spreadsheet->getProperties()
-            ->setCreator('PSB Persis 31')
+            ->setCreator(pengaturan('nama_singkat', 'PSB'))
             ->setTitle('Data Pendaftar')
             ->setSubject('Laporan Pendaftaran Santri')
-            ->setDescription('Laporan data pendaftaran santri PSB Persis 31');
+            ->setDescription('Laporan data pendaftaran santri ' . nama_lembaga());
 
-        // Create Summary Sheet
+        // ---------------- Sheet Ringkasan ----------------
         $summarySheet = $spreadsheet->getActiveSheet();
         $summarySheet->setTitle('Ringkasan');
-
-        // Summary header
         $summarySheet->setCellValue('A1', 'LAPORAN DATA PENDAFTAR');
-        $summarySheet->setCellValue('A2', 'PSB PERSIS 31 BANJARAN');
+        $summarySheet->setCellValue('A2', strtoupper('PSB ' . nama_lembaga()));
         $summarySheet->mergeCells('A1:D1');
         $summarySheet->mergeCells('A2:D2');
-
-        // Style summary header
         $summarySheet->getStyle('A1:D2')->applyFromArray([
-            'font' => ['bold' => true, 'size' => 14],
-            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
+            'font'      => ['bold' => true, 'size' => 14],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
         ]);
 
-        // Summary statistics
+        $periodeExport = $q['idPeriode'] ? (new PeriodeModel())->find($q['idPeriode']) : null;
         $row = 4;
-        $summarySheet->setCellValue('A' . $row, 'Jalur:');
-        $summarySheet->setCellValue('B' . $row, $jalur === 'all' ? 'Semua Jalur' : ucfirst($jalur));
-        $row++;
-
-        $summarySheet->setCellValue('A' . $row, 'Total Pendaftar:');
-        $summarySheet->setCellValue('B' . $row, count($data));
-        $row++;
-
-        if (!empty($startDate) || !empty($endDate)) {
-            $summarySheet->setCellValue('A' . $row, 'Periode:');
-            $period = '';
-            if (!empty($startDate)) $period .= date('d/m/Y', strtotime($startDate));
-            if (!empty($startDate) && !empty($endDate)) $period .= ' - ';
-            if (!empty($endDate)) $period .= date('d/m/Y', strtotime($endDate));
-            $summarySheet->setCellValue('B' . $row, $period);
+        $info = [
+            'Tahun Ajaran:'    => $periodeExport['tahun_ajaran'] ?? 'Semua Periode',
+            'Jalur:'           => $jalur === 'all' ? 'Semua Jalur' : ucfirst($jalur),
+            'Total Pendaftar:' => count($data),
+        ];
+        if (!empty($q['startDate']) || !empty($q['endDate'])) {
+            $info['Periode Tanggal:'] = trim((!empty($q['startDate']) ? date('d/m/Y', strtotime($q['startDate'])) : '') . ' - ' . (!empty($q['endDate']) ? date('d/m/Y', strtotime($q['endDate'])) : ''), ' -');
+        }
+        $info['Tanggal Export:'] = date('d/m/Y H:i:s');
+        foreach ($info as $label => $nilai) {
+            $summarySheet->setCellValue('A' . $row, $label);
+            $summarySheet->setCellValue('B' . $row, $nilai);
             $row++;
         }
+        $summarySheet->getStyle('A4:A' . ($row - 1))->applyFromArray(['font' => ['bold' => true]]);
 
-        $summarySheet->setCellValue('A' . $row, 'Tanggal Export:');
-        $summarySheet->setCellValue('B' . $row, date('d/m/Y H:i:s'));
-
-        // Style summary content
-        $summarySheet->getStyle('A4:A' . $row)->applyFromArray([
-            'font' => ['bold' => true]
-        ]);
-
-        // Statistics by jalur
-        $row += 2;
-        $summarySheet->setCellValue('A' . $row, 'Statistik Per Jalur');
-        $summarySheet->getStyle('A' . $row)->applyFromArray([
-            'font' => ['bold' => true, 'size' => 12]
-        ]);
         $row++;
-
-        $tsnCount = 0;
-        $muaCount = 0;
-        foreach ($data as $d) {
-            if (strtoupper($d['jalur_pendaftaran']) === 'TSANAWIYYAH') $tsnCount++;
-            if (strtoupper($d['jalur_pendaftaran']) === 'MUALLIMIN') $muaCount++;
-        }
-
+        $summarySheet->setCellValue('A' . $row, 'Statistik Per Jalur');
+        $summarySheet->getStyle('A' . $row)->applyFromArray(['font' => ['bold' => true, 'size' => 12]]);
+        $row++;
+        $tsnCount = count(array_filter($data, fn ($d) => strtoupper($d['jalur_pendaftaran']) === 'TSANAWIYYAH'));
         $summarySheet->setCellValue('A' . $row, 'Tsanawiyyah:');
         $summarySheet->setCellValue('B' . $row, $tsnCount);
         $row++;
         $summarySheet->setCellValue('A' . $row, 'Mu\'allimin:');
-        $summarySheet->setCellValue('B' . $row, $muaCount);
-
-        // Auto-width for summary
+        $summarySheet->setCellValue('B' . $row, count($data) - $tsnCount);
         $summarySheet->getColumnDimension('A')->setWidth(20);
         $summarySheet->getColumnDimension('B')->setWidth(30);
 
-        // Create Data Sheet
+        // ---------------- Sheet Data ----------------
         $dataSheet = $spreadsheet->createSheet();
         $dataSheet->setTitle('Data Pendaftar');
 
-        // Comprehensive Headers - All fields from 7 tables
-        $headers = [
-            // Pendaftar Data
-            'No',
-            'Nomor Pendaftaran',
-            'NISN',
-            'NIK',
-            'Nama Lengkap',
-            'Jenis Kelamin',
-            'Tempat Lahir',
-            'Tanggal Lahir',
-            'Jalur Pendaftaran',
-            'Status Keluarga',
-            'Anak Ke',
-            'Jumlah Saudara',
-            'Yang Membiayai Sekolah',
-            'Kebutuhan Khusus',
-            'Minat & Bakat',
-            'No HP',
-            'Tanggal Daftar',
-            // Alamat Data
-            'Nomor KK',
-            'Nama Kepala Keluarga',
-            'Jenis Tempat Tinggal',
-            'Alamat Lengkap',
-            'RT/RW',
-            'Desa/Kelurahan',
-            'Kecamatan',
-            'Kabupaten',
-            'Provinsi',
-            'Kode Pos',
-            'Tinggal Bersama',
-            'Jarak ke Sekolah (KM)',
-            'Waktu Tempuh',
-            'Transportasi',
-            'Email',
-            'Media Sosial',
-            // Data Ayah
-            'Nama Ayah',
-            'NIK Ayah',
-            'Pendidikan Ayah',
-            'Pekerjaan Ayah',
-            'Penghasilan Ayah',
-            'No HP Ayah',
-            'Status Ayah',
-            // Data Ibu
-            'Nama Ibu',
-            'NIK Ibu',
-            'Pendidikan Ibu',
-            'Pekerjaan Ibu',
-            'Penghasilan Ibu',
-            'No HP Ibu',
-            'Status Ibu',
-            // Data Wali
-            'Nama Wali',
-            'Hubungan Wali',
-            'NIK Wali',
-            'Tempat Lahir Wali',
-            'Tanggal Lahir Wali',
-            'Pendidikan Wali',
-            'Pekerjaan Wali',
-            'Penghasilan Wali',
-            'No HP Wali',
-            // Bansos
-            'No. KKS',
-            'No. PKH',
-            'No. KIP',
-            // Asal Sekolah
-            'NPSN',
-            'Nama Asal Sekolah',
-            'Jenjang Sekolah',
-            'Status Sekolah',
-            'Lokasi Sekolah',
-            'Alamat Sekolah',
-            'Tahun Lulus',
-            'Rata-rata Rapor',
-            'Nilai TKA',
-            'Sekolah MD',
-            'Asal Jenjang'
-        ];
+        $headers  = array_merge(['No'], array_keys($kolom));
+        $lastCol  = Coordinate::stringFromColumnIndex(count($headers));
 
-        $col = 'A';
-        foreach ($headers as $header) {
-            $dataSheet->setCellValue($col . '1', $header);
-            $col++;
+        foreach ($headers as $i => $header) {
+            $dataSheet->setCellValue(Coordinate::stringFromColumnIndex($i + 1) . '1', $header);
         }
-
-        // Style header row (56 columns = A to BR)
-        $dataSheet->getStyle('A1:BR1')->applyFromArray([
-            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
-            'fill' => [
-                'fillType' => Fill::FILL_SOLID,
-                'startColor' => ['rgb' => '1AB34A']
-            ],
-            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
-            'borders' => [
-                'allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => '000000']]
-            ]
+        $dataSheet->getStyle('A1:' . $lastCol . '1')->applyFromArray([
+            'font'      => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '1AB34A']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER, 'wrapText' => true],
+            'borders'   => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => '000000']]],
         ]);
 
-        // Comprehensive Data rows - All fields from 7 tables
         $rowNum = 2;
         $no = 1;
-        foreach ($data as $row) {
-            $rowData = [
-                // Pendaftar Data
-                $no++,
-                $row['nomor_pendaftaran'] ?? '-',
-                $row['nisn'] ?? '-',
-                $row['nik'] ?? '-',
-                $row['nama_lengkap'] ?? '-',
-                ($row['jenis_kelamin'] ?? '') === 'L' ? 'Laki-laki' : 'Perempuan',
-                $row['tempat_lahir'] ?? '-',
-                !empty($row['tanggal_lahir']) ? date('d/m/Y', strtotime($row['tanggal_lahir'])) : '-',
-                ucfirst($row['jalur_pendaftaran'] ?? '-'),
-                $row['status_keluarga'] ?? '-',
-                $row['anak_ke'] ?? '-',
-                $row['jumlah_saudara'] ?? '-',
-                $row['yang_membiayai_sekolah'] ?? '-',
-                $row['kebutuhan_khusus'] ?? '-',
-                $row['minat_bakat'] ?? '-',
-                $row['no_hp'] ?? '-',
-                !empty($row['tanggal_daftar']) ? date('d/m/Y H:i', strtotime($row['tanggal_daftar'])) : '-',
-                // Alamat Data
-                $row['nomor_kk'] ?? '-',
-                $row['nama_kepala_keluarga'] ?? '-',
-                $row['jenis_tempat_tinggal'] ?? '-',
-                $row['alamat'] ?? '-',
-                $row['rt_rw'] ?? '-',
-                $row['desa'] ?? '-',
-                $row['kecamatan'] ?? '-',
-                $row['kabupaten'] ?? '-',
-                $row['provinsi'] ?? '-',
-                $row['kode_pos'] ?? '-',
-                $row['tinggal_bersama'] ?? '-',
-                $row['jarak_ke_sekolah'] ?? '-',
-                $row['waktu_tempuh'] ?? '-',
-                $row['transportasi'] ?? '-',
-                $row['email'] ?? '-',
-                $row['media_sosial'] ?? '-',
-                // Data Ayah
-                $row['nama_ayah'] ?? '-',
-                $row['nik_ayah'] ?? '-',
-                $row['pendidikan_ayah'] ?? '-',
-                $row['pekerjaan_ayah'] ?? '-',
-                $row['penghasilan_ayah'] ?? '-',
-                $row['hp_ayah'] ?? '-',
-                $row['status_ayah'] ?? '-',
-                // Data Ibu
-                $row['nama_ibu'] ?? '-',
-                $row['nik_ibu'] ?? '-',
-                $row['pendidikan_ibu'] ?? '-',
-                $row['pekerjaan_ibu'] ?? '-',
-                $row['penghasilan_ibu'] ?? '-',
-                $row['hp_ibu'] ?? '-',
-                $row['status_ibu'] ?? '-',
-                // Data Wali
-                $row['nama_wali'] ?? '-',
-                $row['hubungan_wali'] ?? '-',
-                $row['nik_wali'] ?? '-',
-                $row['tempat_lahir_wali'] ?? '-',
-                !empty($row['tanggal_lahir_wali']) ? date('d/m/Y', strtotime($row['tanggal_lahir_wali'])) : '-',
-                $row['pendidikan_wali'] ?? '-',
-                $row['pekerjaan_wali'] ?? '-',
-                $row['penghasilan_wali'] ?? '-',
-                $row['hp_wali'] ?? '-',
-                // Bansos
-                $row['no_kks'] ?? '-',
-                $row['no_pkh'] ?? '-',
-                $row['no_kip'] ?? '-',
-                // Asal Sekolah
-                $row['npsn'] ?? '-',
-                $row['nama_asal_sekolah'] ?? '-',
-                $row['jenjang_sekolah'] ?? '-',
-                $row['status_sekolah'] ?? '-',
-                $row['lokasi_sekolah'] ?? '-',
-                $row['alamat_sekolah'] ?? '-',
-                $row['tahun_lulus'] ?? '-',
-                $row['rata_rata_rapor'] ?? '-',
-                $row['nilai_tka'] ?? '-',
-                $row['sekolah_md'] ?? '-',
-                $row['asal_jenjang'] ?? '-'
-            ];
-
-            // Write row data
-            $dataSheet->fromArray($rowData, null, 'A' . $rowNum);
-
-            // Zebra striping
+        foreach ($data as $r) {
+            $dataSheet->setCellValue('A' . $rowNum, $no++);
+            $c = 2;
+            foreach ($kolom as $fn) {
+                // Simpan sebagai teks agar NIK/NISN/No HP tidak kehilangan angka 0 di depan
+                $dataSheet->setCellValueExplicit(Coordinate::stringFromColumnIndex($c) . $rowNum, $fn($r), DataType::TYPE_STRING);
+                $c++;
+            }
             if ($rowNum % 2 == 0) {
-                $dataSheet->getStyle('A' . $rowNum . ':BR' . $rowNum)->applyFromArray([
-                    'fill' => [
-                        'fillType' => Fill::FILL_SOLID,
-                        'startColor' => ['rgb' => 'F8F9FA']
-                    ]
+                $dataSheet->getStyle('A' . $rowNum . ':' . $lastCol . $rowNum)->applyFromArray([
+                    'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'F8F9FA']],
                 ]);
             }
-
             $rowNum++;
         }
 
-        // Apply borders to all data
-        $dataSheet->getStyle('A1:BR' . ($rowNum - 1))->applyFromArray([
-            'borders' => [
-                'allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'CCCCCC']]
-            ]
+        $dataSheet->getStyle('A1:' . $lastCol . max(1, $rowNum - 1))->applyFromArray([
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN, 'color' => ['rgb' => 'CCCCCC']]],
         ]);
-
-        // Auto-width for all columns (A to BR = 56 columns)
-        foreach (range('A', 'Z') as $col) {
-            $dataSheet->getColumnDimension($col)->setAutoSize(true);
+        for ($i = 1; $i <= count($headers); $i++) {
+            $dataSheet->getColumnDimension(Coordinate::stringFromColumnIndex($i))->setAutoSize(true);
         }
-        foreach (range('A', 'D') as $col) {
-            $dataSheet->getColumnDimension('A' . $col)->setAutoSize(true);
-        }
-        foreach (range('A', 'D') as $col) {
-            $dataSheet->getColumnDimension('B' . $col)->setAutoSize(true);
-        }
+        $dataSheet->freezePane('C2');
 
-        // Freeze header row
-        $dataSheet->freezePane('A2');
-
-        // Generate filename
-        $filename = 'pendaftar_' . ($jalur !== 'all' ? $jalur . '_' : '') . date('Y-m-d_His') . '.xlsx';
-
-        // Set active sheet back to summary
+        $filename = $this->namaFileExport($q, 'xlsx');
         $spreadsheet->setActiveSheetIndex(0);
-
-        // Create writer and output
         $writer = new Xlsx($spreadsheet);
 
-        // Set headers for download
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment; filename="' . $filename . '"');
         header('Cache-Control: max-age=0');
@@ -1114,45 +813,255 @@ class Dashboard extends BaseController
     }
 
     /**
-     * Delete Pendaftar - Hard delete from database (Superadmin only)
-     *
-     * @param int $id ID pendaftar
-     * @return \CodeIgniter\HTTP\RedirectResponse
+     * Lihat / unduh file Kartu Keluarga satu pendaftar.
+     * ?unduh=1 untuk mengunduh dengan nama "Nama Siswa_NISN.jpg".
+     */
+    public function fileKk($id)
+    {
+        $pendaftar = $this->pendaftarModel->find((int) $id);
+        if (!$pendaftar || !$this->bolehAksesJalur($pendaftar['jalur_pendaftaran'])) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound();
+        }
+
+        $path = FormPendaftaran::pathKk($pendaftar['file_kk'] ?? null);
+        if (!$path) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('File Kartu Keluarga belum diunggah.');
+        }
+
+        $nama = FormPendaftaran::namaFileUnduhKk($pendaftar);
+
+        if ($this->request->getGet('unduh')) {
+            return $this->response->download($path, null)->setFileName($nama);
+        }
+
+        return $this->response
+            ->setHeader('Content-Type', 'image/jpeg')
+            ->setHeader('Content-Disposition', 'inline; filename="' . str_replace('"', '', $nama) . '"')
+            ->setHeader('Cache-Control', 'private, max-age=300')
+            ->setHeader('X-Content-Type-Options', 'nosniff')
+            ->setBody(file_get_contents($path));
+    }
+
+    /**
+     * Unduh ZIP berisi file Kartu Keluarga sesuai filter (jalur/periode/pencarian/tanggal).
+     * Nama tiap file: "Nama Siswa_NISN.jpg".
+     */
+    public function downloadKkZip()
+    {
+        if (!class_exists(\ZipArchive::class)) {
+            return redirect()->to(base_url('dashboard'))->with('error', 'Ekstensi PHP zip tidak tersedia di server.');
+        }
+
+        $q = $this->queryExport();
+
+        $tmp = tempnam(WRITEPATH . 'cache', 'kkzip_');
+        $zip = new \ZipArchive();
+        if ($zip->open($tmp, \ZipArchive::OVERWRITE) !== true) {
+            return redirect()->to(base_url('dashboard'))->with('error', 'Gagal membuat file ZIP.');
+        }
+
+        $dipakai = [];
+        $jumlah  = 0;
+        $tanpaKk = [];
+        foreach ($q['rows'] as $r) {
+            $path = FormPendaftaran::pathKk($r['file_kk'] ?? null);
+            if (!$path) {
+                $tanpaKk[] = ($r['nomor_pendaftaran'] ?? '-') . ' - ' . ($r['nama_lengkap'] ?? '-');
+                continue;
+            }
+            $nama = FormPendaftaran::namaFileUnduhKk($r);
+            $dasar = substr($nama, 0, -4);
+            $i = 2;
+            while (isset($dipakai[strtolower($nama)])) {
+                $nama = $dasar . ' (' . $i++ . ').jpg';
+            }
+            $dipakai[strtolower($nama)] = true;
+            $zip->addFile($path, $nama);
+            $jumlah++;
+        }
+
+        if ($tanpaKk !== []) {
+            $zip->addFromString('_BELUM_UPLOAD_KK.txt', "Pendaftar yang belum mengunggah Kartu Keluarga:\r\n" . implode("\r\n", $tanpaKk) . "\r\n");
+        }
+        $zip->close();
+
+        if ($jumlah === 0) {
+            @unlink($tmp);
+            return redirect()->to(base_url('dashboard'))->with('error', 'Belum ada file Kartu Keluarga yang diunggah pada data yang dipilih.');
+        }
+
+        register_shutdown_function(static function () use ($tmp) {
+            @unlink($tmp);
+        });
+
+        $namaZip = 'Kartu_Keluarga_' . $this->slugPeriode($q['idPeriode']) . ($q['jalur'] !== 'all' ? $q['jalur'] . '_' : '') . date('Y-m-d_His') . '.zip';
+
+        return $this->response->download($tmp, null)->setFileName($namaZip);
+    }
+
+    /**
+     * Panitia jalur hanya boleh mengakses pendaftar jalurnya sendiri.
+     */
+    private function bolehAksesJalur(?string $jalur): bool
+    {
+        $role = $this->session->get('role_panitia');
+        if ($role === 'superadmin') {
+            return true;
+        }
+
+        return strtolower((string) $jalur) === $role;
+    }
+
+    /**
+     * Form edit data pendaftar oleh panitia/superadmin
+     * (membantu memperbaiki data yang salah isi).
+     */
+    public function edit($id)
+    {
+        $pendaftar = $this->pendaftarModel->find((int) $id);
+        if (!$pendaftar) {
+            return redirect()->to('/dashboard')->with('error', 'Data pendaftar tidak ditemukan.');
+        }
+        if (!$this->bolehAksesJalur($pendaftar['jalur_pendaftaran'])) {
+            return redirect()->to('/dashboard')->with('error', 'Anda hanya dapat mengubah pendaftar jalur Anda sendiri.');
+        }
+
+        $id = (int) $pendaftar['id_pendaftar'];
+
+        return view('update_data/form_edit', [
+            'title'       => 'Edit Data ' . $pendaftar['nama_lengkap'] . ' - Panitia',
+            'jalur'       => $pendaftar['jalur_pendaftaran'],
+            'jalur_label' => $pendaftar['jalur_pendaftaran'] === 'TSANAWIYYAH' ? 'Tsanawiyyah' : "Mu'allimin",
+            'year'        => \App\Models\PeriodeModel::tahunMulai(tahun_ajaran_pendaftar($pendaftar)),
+            'pendaftar'   => $pendaftar,
+            'alamat'      => (new AlamatModel())->where('id_pendaftar', $id)->first(),
+            'ayah'        => (new AyahModel())->where('id_pendaftar', $id)->first(),
+            'ibu'         => (new IbuModel())->where('id_pendaftar', $id)->first(),
+            'wali'        => (new WaliModel())->where('id_pendaftar', $id)->first(),
+            'bansos'      => (new BansosModel())->where('id_pendaftar', $id)->first(),
+            'sekolah'     => (new SekolahModel())->where('id_pendaftar', $id)->first(),
+            'modeAdmin'   => true,
+            'formAction'  => base_url('dashboard/update/' . $id),
+            'batalUrl'    => base_url('dashboard/detail/' . $id),
+        ]);
+    }
+
+    /**
+     * Simpan perubahan data pendaftar oleh panitia/superadmin.
+     */
+    public function update($id)
+    {
+        $pendaftarLama = $this->pendaftarModel->find((int) $id);
+        if (!$pendaftarLama) {
+            return redirect()->to('/dashboard')->with('error', 'Data pendaftar tidak ditemukan.');
+        }
+        if (!$this->bolehAksesJalur($pendaftarLama['jalur_pendaftaran'])) {
+            return redirect()->to('/dashboard')->with('error', 'Anda hanya dapat mengubah pendaftar jalur Anda sendiri.');
+        }
+
+        $id       = (int) $pendaftarLama['id_pendaftar'];
+        $perbarui = new PerbaruiPendaftar($this->request);
+        [$rules, $messages] = $perbarui->aturan($pendaftarLama);
+
+        if (!$this->validate($rules, $messages)) {
+            return redirect()->to(base_url('dashboard/edit/' . $id))->withInput()
+                ->with('error', 'Data tidak valid! Mohon periksa kembali formulir.')
+                ->with('validation_errors', $this->validator->getErrors());
+        }
+
+        $duplikat = $perbarui->cekDuplikat($pendaftarLama);
+        if ($duplikat !== []) {
+            return redirect()->to(base_url('dashboard/edit/' . $id))->withInput()
+                ->with('error', 'NISN/NIK sudah dipakai pendaftar lain pada periode ini.')
+                ->with('validation_errors', $duplikat);
+        }
+
+        try {
+            $perbarui->simpan($id, $pendaftarLama);
+        } catch (\Exception $e) {
+            log_message('error', '[PSB-ADMIN] Gagal edit pendaftar ID ' . $id . ': ' . $e->getMessage());
+
+            return redirect()->to(base_url('dashboard/edit/' . $id))->withInput()
+                ->with('error', 'Gagal menyimpan perubahan: ' . $e->getMessage());
+        }
+
+        log_message('info', '[PSB-ADMIN] Data pendaftar ' . $pendaftarLama['nomor_pendaftaran'] . ' (ID ' . $id . ') diubah oleh ' . $this->session->get('username'));
+
+        return redirect()->to(base_url('dashboard/detail/' . $id))
+            ->with('success', 'Data pendaftar ' . $pendaftarLama['nomor_pendaftaran'] . ' berhasil diperbarui.');
+    }
+
+    /**
+     * Hapus pendaftar (permanen, 7 tabel + file KK).
+     * Superadmin: semua jalur. Panitia: hanya jalurnya sendiri.
      */
     public function delete($id)
     {
-        // Check if user is superadmin
-        $role = $this->session->get('role_panitia');
-        if ($role !== 'superadmin') {
-            return redirect()->to('/dashboard')
-                ->with('error', 'Anda tidak memiliki akses untuk menghapus data');
-        }
-
-        // Get pendaftar data first for logging
-        $pendaftar = $this->pendaftarModel->find($id);
+        $pendaftar = $this->pendaftarModel->find((int) $id);
 
         if (!$pendaftar) {
-            return redirect()->to('/dashboard')
-                ->with('error', 'Data pendaftar tidak ditemukan');
+            return redirect()->to('/dashboard')->with('error', 'Data pendaftar tidak ditemukan');
+        }
+        if (!$this->bolehAksesJalur($pendaftar['jalur_pendaftaran'])) {
+            return redirect()->to('/dashboard')->with('error', 'Anda hanya dapat menghapus pendaftar jalur Anda sendiri.');
         }
 
-        // Store pendaftar info for flash message
-        $namaPendaftar = $pendaftar['nama_lengkap'];
+        $namaPendaftar    = $pendaftar['nama_lengkap'];
         $nomorPendaftaran = $pendaftar['nomor_pendaftaran'];
 
-        // Perform hard delete
-        $result = $this->pendaftarModel->hardDeletePendaftar($id);
-
-        if ($result) {
-            // Log the deletion
-            log_message('info', "Pendaftar deleted by superadmin: {$namaPendaftar} ({$nomorPendaftaran}) - ID: {$id} - By: " . $this->session->get('username'));
-
-            return redirect()->to('/dashboard')
-                ->with('success', "Data pendaftar {$namaPendaftar} ({$nomorPendaftaran}) berhasil dihapus permanen");
-        } else {
-            return redirect()->to('/dashboard')
-                ->with('error', 'Gagal menghapus data pendaftar. Silakan coba lagi.');
+        if (!$this->pendaftarModel->hardDeletePendaftar((int) $pendaftar['id_pendaftar'])) {
+            return redirect()->to('/dashboard')->with('error', 'Gagal menghapus data pendaftar. Silakan coba lagi.');
         }
+
+        FormPendaftaran::hapusFileKk($pendaftar['file_kk'] ?? null);
+
+        log_message('info', "Pendaftar dihapus: {$namaPendaftar} ({$nomorPendaftaran}) - ID: {$pendaftar['id_pendaftar']} - Oleh: "
+            . $this->session->get('username') . ' (' . $this->session->get('role_panitia') . ')');
+
+        return redirect()->to('/dashboard')
+            ->with('success', "Data pendaftar {$namaPendaftar} ({$nomorPendaftaran}) berhasil dihapus permanen");
+    }
+
+    /**
+     * Periode yang ditampilkan.
+     * - Superadmin dapat memilih periode lain (termasuk arsip) via ?periode=ID
+     * - Panitia lain selalu melihat periode aktif
+     */
+    private function resolvePeriodeId(): ?int
+    {
+        $periodeModel = new PeriodeModel();
+        $aktif        = $periodeModel->getAktif();
+        $diminta      = (int) ($this->request->getGet('periode') ?? 0);
+
+        if ($diminta > 0 && $this->session->get('role_panitia') === 'superadmin') {
+            if ($periodeModel->find($diminta)) {
+                return $diminta;
+            }
+        }
+
+        return $aktif ? (int) $aktif['id_periode'] : null;
+    }
+
+    /**
+     * Tambahkan filter periode ke query builder.
+     */
+    private function scopePeriode($builder, ?int $idPeriode, string $column = 'id_periode')
+    {
+        if ($idPeriode) {
+            $builder->where($column, $idPeriode);
+        }
+
+        return $builder;
+    }
+
+    private function slugPeriode(?int $idPeriode): string
+    {
+        if (!$idPeriode) {
+            return '';
+        }
+        $periode = (new PeriodeModel())->find($idPeriode);
+
+        return $periode ? preg_replace('/[^0-9A-Za-z]+/', '-', $periode['tahun_ajaran']) . '_' : '';
     }
 
     /**
