@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\FormPendaftaran;
 use App\Models\PendaftarModel;
 use App\Models\AlamatModel;
 use App\Models\AyahModel;
@@ -39,11 +40,15 @@ class PendaftaranLengkap extends BaseController
      */
     public function tsanawiyyah()
     {
+        if ($tutup = $this->cekPendaftaranDibuka('TSANAWIYYAH')) {
+            return $tutup;
+        }
+
         $data = [
             'title' => 'Pendaftaran Tsanawiyyah - Pesantren Persatuan Islam 31 Banjaran',
             'jalur' => 'TSANAWIYYAH',
             'jalur_label' => 'Tsanawiyyah',
-            'year' => 2026,
+            'year' => periode_tahun_mulai(),
         ];
 
         return view('pendaftaran/form_lengkap', $data);
@@ -54,11 +59,15 @@ class PendaftaranLengkap extends BaseController
      */
     public function muallimin()
     {
+        if ($tutup = $this->cekPendaftaranDibuka('MUALLIMIN')) {
+            return $tutup;
+        }
+
         $data = [
             'title' => 'Pendaftaran Mu\'allimin - Pesantren Persatuan Islam 31 Banjaran',
             'jalur' => 'MUALLIMIN',
             'jalur_label' => 'Mu\'allimin',
-            'year' => 2026,
+            'year' => periode_tahun_mulai(),
         ];
 
         return view('pendaftaran/form_lengkap', $data);
@@ -96,9 +105,14 @@ class PendaftaranLengkap extends BaseController
 
         $jalurUpper = strtoupper($jalur);
 
-        // Comprehensive validation
-        $validationRules = $this->getValidationRules();
-        $validationMessages = $this->getValidationMessages();
+        if ($tutup = $this->cekPendaftaranDibuka($jalurUpper)) {
+            return $tutup;
+        }
+
+        // Comprehensive validation (aturan Ayah/Ibu/Wali dinamis sesuai status)
+        $form = new FormPendaftaran($this->request);
+        $validationRules = array_merge($form->rules(), $form->rulesFileKk(true), $this->getValidationRules());
+        $validationMessages = array_merge($form->messages(), $this->getValidationMessages());
 
         if (!$this->validate($validationRules, $validationMessages)) {
             $errors = $this->validator->getErrors();
@@ -111,6 +125,21 @@ class PendaftaranLengkap extends BaseController
                 ->with('validation_errors', $errors);
         }
 
+        // Tolak NISN/NIK yang sudah terdaftar pada periode aktif
+        $duplikat = $form->cekDuplikat(periode_aktif_id());
+        if ($duplikat !== []) {
+            $this->logPendaftaran('warning', 'Pendaftaran ganda ditolak', [
+                'jalur' => $jalurUpper,
+                'errors' => $duplikat,
+            ]);
+            return redirect()->back()->withInput()
+                ->with('error', 'Calon santri ini sudah terdaftar pada periode ini.')
+                ->with('validation_errors', $duplikat);
+        }
+
+        // Simpan file Kartu Keluarga (dihapus lagi bila penyimpanan data gagal)
+        $fileKk = null;
+
         // Start database transaction
         $this->db->transStart();
 
@@ -118,10 +147,16 @@ class PendaftaranLengkap extends BaseController
             // Track inserted tables for rollback logging
             $insertedTables = [];
 
+            $fileKk = $form->simpanFileKk((string) $this->request->getPost('nisn'));
+            if (!$fileKk) {
+                throw new \Exception('File Kartu Keluarga gagal diunggah. Silakan pilih ulang file JPG/JPEG maksimal 1 MB.');
+            }
+
             // =====================================================
             // TABLE 1: pendaftar (Data Diri)
             // =====================================================
-            $pendaftarData = $this->preparePendaftarData($jalurUpper);
+            $pendaftarData = $this->preparePendaftarData($jalurUpper, $form);
+            $pendaftarData['file_kk'] = $fileKk;
 
             $idPendaftar = $this->pendaftarModel->insert($pendaftarData);
             if (!$idPendaftar) {
@@ -142,7 +177,7 @@ class PendaftaranLengkap extends BaseController
             // =====================================================
             // TABLE 2: alamat_pendaftar (Data Alamat)
             // =====================================================
-            $alamatData = $this->prepareAlamatData($idPendaftar);
+            $alamatData = ['id_pendaftar' => $idPendaftar] + $form->dataAlamat();
 
             if (!$this->alamatModel->insert($alamatData)) {
                 $modelErrors = $this->alamatModel->errors();
@@ -157,7 +192,7 @@ class PendaftaranLengkap extends BaseController
             // =====================================================
             // TABLE 3: data_ayah (Data Ayah)
             // =====================================================
-            $ayahData = $this->prepareAyahData($idPendaftar);
+            $ayahData = ['id_pendaftar' => $idPendaftar] + $form->dataOrang('ayah');
 
             if (!$this->ayahModel->insert($ayahData)) {
                 $modelErrors = $this->ayahModel->errors();
@@ -172,7 +207,7 @@ class PendaftaranLengkap extends BaseController
             // =====================================================
             // TABLE 4: data_ibu (Data Ibu)
             // =====================================================
-            $ibuData = $this->prepareIbuData($idPendaftar);
+            $ibuData = ['id_pendaftar' => $idPendaftar] + $form->dataOrang('ibu');
 
             if (!$this->ibuModel->insert($ibuData)) {
                 $modelErrors = $this->ibuModel->errors();
@@ -187,9 +222,8 @@ class PendaftaranLengkap extends BaseController
             // =====================================================
             // TABLE 5: data_wali (Data Wali - Optional)
             // =====================================================
-            $namaWali = trim($this->request->getPost('nama_wali') ?? '');
-            if (!empty($namaWali)) {
-                $waliData = $this->prepareWaliData($idPendaftar);
+            if ($form->adaWali()) {
+                $waliData = ['id_pendaftar' => $idPendaftar] + $form->dataOrang('wali');
 
                 if (!$this->waliModel->insert($waliData)) {
                     $modelErrors = $this->waliModel->errors();
@@ -205,12 +239,8 @@ class PendaftaranLengkap extends BaseController
             // =====================================================
             // TABLE 6: bansos_pendaftar (Data Bansos - Optional)
             // =====================================================
-            $noKks = trim($this->request->getPost('no_kks') ?? '');
-            $noPkh = trim($this->request->getPost('no_pkh') ?? '');
-            $noKip = trim($this->request->getPost('no_kip') ?? '');
-
-            if (!empty($noKks) || !empty($noPkh) || !empty($noKip)) {
-                $bansosData = $this->prepareBansosData($idPendaftar);
+            if ($form->adaBansos()) {
+                $bansosData = ['id_pendaftar' => $idPendaftar] + $form->dataBansos();
 
                 if (!$this->bansosModel->insert($bansosData)) {
                     $modelErrors = $this->bansosModel->errors();
@@ -262,6 +292,7 @@ class PendaftaranLengkap extends BaseController
         } catch (DatabaseException $e) {
             // Database-specific error
             $this->db->transRollback();
+            FormPendaftaran::hapusFileKk($fileKk);
 
             $this->logPendaftaran('error', 'Database error during registration', [
                 'jalur' => $jalurUpper,
@@ -275,6 +306,7 @@ class PendaftaranLengkap extends BaseController
         } catch (\Exception $e) {
             // General error
             $this->db->transRollback();
+            FormPendaftaran::hapusFileKk($fileKk);
 
             $this->logPendaftaran('error', 'Error during registration', [
                 'jalur' => $jalurUpper,
@@ -292,129 +324,9 @@ class PendaftaranLengkap extends BaseController
     /**
      * Prepare pendaftar (data diri) data array
      */
-    private function preparePendaftarData(string $jalur): array
+    private function preparePendaftarData(string $jalur, FormPendaftaran $form): array
     {
-        return [
-            'jalur_pendaftaran' => $jalur,
-            'nisn' => trim($this->request->getPost('nisn') ?? ''),
-            'nik' => trim($this->request->getPost('nik') ?? ''),
-            'nama_lengkap' => trim($this->request->getPost('nama_lengkap')),
-            'jenis_kelamin' => $this->request->getPost('jenis_kelamin'),
-            'tempat_lahir' => trim($this->request->getPost('tempat_lahir') ?? ''),
-            'tanggal_lahir' => $this->request->getPost('tanggal_lahir') ?: null,
-            'status_keluarga' => $this->request->getPost('status_keluarga'),
-            'anak_ke' => $this->request->getPost('anak_ke') ?: null,
-            'jumlah_saudara' => $this->request->getPost('jumlah_saudara') ?: null,
-            'hobi' => trim($this->request->getPost('hobi') ?? ''),
-            'cita_cita' => trim($this->request->getPost('cita_cita') ?? ''),
-            'pernah_paud' => $this->request->getPost('pernah_paud') ? 1 : 0,
-            'pernah_tk' => $this->request->getPost('pernah_tk') ? 1 : 0,
-            'kebutuhan_disabilitas' => $this->request->getPost('kebutuhan_disabilitas') ? implode(', ', $this->request->getPost('kebutuhan_disabilitas')) : null,
-            'kebutuhan_khusus' => $this->request->getPost('kebutuhan_khusus'),  // Sprint 2 NEW
-            'imunisasi' => $this->request->getPost('imunisasi') ? implode(', ', $this->request->getPost('imunisasi')) : null,
-            'no_hp' => trim($this->request->getPost('no_hp') ?? ''),
-            'ukuran_baju' => $this->request->getPost('ukuran_baju'),
-            'prestasi' => trim($this->request->getPost('prestasi') ?? ''),
-            'minat_bakat' => trim($this->request->getPost('minat_bakat') ?? ''),  // Sprint 2 NEW
-        ];
-    }
-
-    /**
-     * Prepare alamat data array
-     */
-    private function prepareAlamatData(int $idPendaftar): array
-    {
-        return [
-            'id_pendaftar' => $idPendaftar,
-            'nomor_kk' => trim($this->request->getPost('nomor_kk') ?? ''),
-            'nama_kepala_keluarga' => trim($this->request->getPost('nama_kepala_keluarga') ?? ''),  // Sprint 2 NEW
-            'jenis_tempat_tinggal' => $this->request->getPost('jenis_tempat_tinggal'),
-            'alamat' => trim($this->request->getPost('alamat') ?? ''),
-            'rt_rw' => trim($this->request->getPost('rt_rw') ?? ''),  // Sprint 2 NEW
-            'desa' => trim($this->request->getPost('desa') ?? ''),
-            'kecamatan' => trim($this->request->getPost('kecamatan') ?? ''),
-            'kabupaten' => trim($this->request->getPost('kabupaten') ?? ''),
-            'provinsi' => trim($this->request->getPost('provinsi') ?? ''),
-            'kode_pos' => trim($this->request->getPost('kode_pos') ?? ''),
-            'tinggal_bersama' => $this->request->getPost('tinggal_bersama'),  // Sprint 2 NEW
-            'jarak_ke_sekolah' => $this->request->getPost('jarak_ke_sekolah'),
-            'waktu_tempuh' => $this->request->getPost('waktu_tempuh'),
-            'transportasi' => $this->request->getPost('transportasi'),
-            'email' => trim($this->request->getPost('email') ?? ''),
-            'media_sosial' => trim($this->request->getPost('media_sosial') ?? ''),
-        ];
-    }
-
-    /**
-     * Prepare data ayah array
-     */
-    private function prepareAyahData(int $idPendaftar): array
-    {
-        return [
-            'id_pendaftar' => $idPendaftar,
-            'nama_ayah' => trim($this->request->getPost('nama_ayah') ?? ''),
-            'nik_ayah' => trim($this->request->getPost('nik_ayah') ?? ''),
-            'tempat_lahir_ayah' => trim($this->request->getPost('tempat_lahir_ayah') ?? ''),
-            'tanggal_lahir_ayah' => $this->request->getPost('tanggal_lahir_ayah') ?: null,
-            'status_ayah' => $this->request->getPost('status_ayah'),
-            'pendidikan_ayah' => $this->request->getPost('pendidikan_ayah'),
-            'pekerjaan_ayah' => $this->request->getPost('pekerjaan_ayah'),
-            'penghasilan_ayah' => $this->request->getPost('penghasilan_ayah'),
-            'hp_ayah' => trim($this->request->getPost('hp_ayah') ?? ''),
-            'alamat_ayah' => trim($this->request->getPost('alamat_ayah') ?? ''),
-        ];
-    }
-
-    /**
-     * Prepare data ibu array
-     */
-    private function prepareIbuData(int $idPendaftar): array
-    {
-        return [
-            'id_pendaftar' => $idPendaftar,
-            'nama_ibu' => trim($this->request->getPost('nama_ibu') ?? ''),
-            'nik_ibu' => trim($this->request->getPost('nik_ibu') ?? ''),
-            'tempat_lahir_ibu' => trim($this->request->getPost('tempat_lahir_ibu') ?? ''),
-            'tanggal_lahir_ibu' => $this->request->getPost('tanggal_lahir_ibu') ?: null,
-            'status_ibu' => $this->request->getPost('status_ibu'),
-            'pendidikan_ibu' => $this->request->getPost('pendidikan_ibu'),
-            'pekerjaan_ibu' => $this->request->getPost('pekerjaan_ibu'),
-            'penghasilan_ibu' => $this->request->getPost('penghasilan_ibu'),
-            'hp_ibu' => trim($this->request->getPost('hp_ibu') ?? ''),
-            'alamat_ibu' => trim($this->request->getPost('alamat_ibu') ?? ''),
-        ];
-    }
-
-    /**
-     * Prepare data wali array
-     */
-    private function prepareWaliData(int $idPendaftar): array
-    {
-        return [
-            'id_pendaftar' => $idPendaftar,
-            'nama_wali' => trim($this->request->getPost('nama_wali')),
-            'hubungan_wali' => $this->request->getPost('hubungan_wali'),  // NEW: Hubungan wali dengan santri
-            'nik_wali' => trim($this->request->getPost('nik_wali') ?? ''),
-            'tempat_lahir_wali' => trim($this->request->getPost('tempat_lahir_wali') ?? ''),  // Sprint 2 NEW
-            'tanggal_lahir_wali' => $this->request->getPost('tanggal_lahir_wali') ?: null,  // Sprint 2 NEW
-            'pendidikan_wali' => $this->request->getPost('pendidikan_wali'),
-            'pekerjaan_wali' => $this->request->getPost('pekerjaan_wali'),
-            'penghasilan_wali' => $this->request->getPost('penghasilan_wali'),
-            'hp_wali' => trim($this->request->getPost('hp_wali') ?? ''),
-        ];
-    }
-
-    /**
-     * Prepare bansos data array
-     */
-    private function prepareBansosData(int $idPendaftar): array
-    {
-        return [
-            'id_pendaftar' => $idPendaftar,
-            'no_kks' => trim($this->request->getPost('no_kks') ?? ''),
-            'no_pkh' => trim($this->request->getPost('no_pkh') ?? ''),
-            'no_kip' => trim($this->request->getPost('no_kip') ?? ''),
-        ];
+        return ['jalur_pendaftaran' => $jalur] + $form->dataPendaftar();
     }
 
     /**
@@ -495,7 +407,7 @@ class PendaftaranLengkap extends BaseController
             'wali' => $wali,
             'bansos' => $bansos,
             'sekolah' => $sekolah,
-            'year' => 2026,
+            'year' => periode_tahun_mulai(),
         ];
 
         return view('pendaftaran/sukses_lengkap', $data);
@@ -573,10 +485,8 @@ class PendaftaranLengkap extends BaseController
 
         // Stream PDF to browser for download
         $filename = 'Data_Lengkap_' . $nomorPendaftaran . '.pdf';
-        $dompdf->stream($filename, [
-            'Attachment' => true,
-            'compress' => true,
-        ]);
+
+        return $this->pdfResponse($dompdf->output(['compress' => 1]), $filename);
     }
 
     /**
@@ -644,10 +554,25 @@ class PendaftaranLengkap extends BaseController
 
         // Stream PDF to browser for download
         $filename = 'Kartu_Pendaftaran_' . $nomorPendaftaran . '.pdf';
-        $dompdf->stream($filename, [
-            'Attachment' => true,
-            'compress' => true,
-        ]);
+
+        return $this->pdfResponse($dompdf->output(['compress' => 1]), $filename);
+    }
+
+    /**
+     * Kirim PDF lewat Response CodeIgniter.
+     * (Dompdf::stream() mengirim header & output sendiri sehingga bentrok dengan
+     * cookie CSRF yang dikirim CodeIgniter -> "headers already sent".)
+     */
+    private function pdfResponse(string $pdf, string $filename)
+    {
+        $filename = preg_replace('/[^A-Za-z0-9_\-.]/', '_', $filename);
+
+        return $this->response
+            ->setHeader('Content-Type', 'application/pdf')
+            ->setHeader('Content-Disposition', 'attachment; filename="' . $filename . '"')
+            ->setHeader('Content-Length', (string) strlen($pdf))
+            ->setHeader('Cache-Control', 'private, no-store')
+            ->setBody($pdf);
     }
 
     /**
@@ -741,7 +666,7 @@ class PendaftaranLengkap extends BaseController
     {
         try {
             // Define logo path - relative to FCPATH (public directory)
-            $logoPath = FCPATH . 'assets/images/logo/01.png';
+            $logoPath = logo_path(); // logo unggahan superadmin, atau logo bawaan
 
             // Check if logo file exists
             if (!file_exists($logoPath)) {
@@ -782,89 +707,7 @@ class PendaftaranLengkap extends BaseController
     private function getValidationRules(): array
     {
         return [
-            // =====================================================
-            // Section 1: Data Diri (pendaftar table)
-            // =====================================================
-            'nama_lengkap' => 'required|min_length[3]|max_length[150]',
-            'jenis_kelamin' => 'required|in_list[L,P]',
-            'nisn' => 'required|numeric|exact_length[10]',
-            'nik' => 'required|numeric|exact_length[16]',
-            'tempat_lahir' => 'permit_empty|max_length[100]',
-            'tanggal_lahir' => 'permit_empty|valid_date[Y-m-d]',
-            'status_keluarga' => 'permit_empty|in_list[Anak Kandung,Anak Tiri,Anak Angkat]',
-            'anak_ke' => 'permit_empty|numeric|greater_than[0]|less_than[20]',
-            'jumlah_saudara' => 'permit_empty|numeric|greater_than_equal_to[0]|less_than[20]',
-            'hobi' => 'required|in_list[Olah Raga,Kesenian,Membaca,Menulis,Jalan-jalan,Lainnya]',
-            'cita_cita' => 'required|in_list[PNS,TNI/Polri,Guru/Dosen,Dokter,Politikus,Wiraswasta,Seniman/Artis,Ilmuwan,Agamawan,Lainnya]',
-            'kebutuhan_disabilitas' => 'permit_empty',
-            'imunisasi' => 'permit_empty',
-            'no_hp' => 'permit_empty|max_length[20]',
-            'ukuran_baju' => 'permit_empty|in_list[XS,S,M,L,XL,XXL,XXXL]',
-            'prestasi' => 'permit_empty|max_length[500]',
-
-            // =====================================================
-            // Section 2: Data Alamat (alamat_pendaftar table)
-            // =====================================================
-            'nomor_kk' => 'permit_empty|numeric|exact_length[16]',
-            'jenis_tempat_tinggal' => 'permit_empty|in_list[Milik Sendiri,Rumah Orang Tua,Rumah Saudara,Rumah Dinas,Sewa/Kontrak,Lainnya]',
-            'alamat' => 'permit_empty|max_length[500]',
-            'desa' => 'permit_empty|max_length[100]',
-            'kecamatan' => 'permit_empty|max_length[100]',
-            'kabupaten' => 'permit_empty|max_length[100]',
-            'provinsi' => 'permit_empty|max_length[100]',
-            'kode_pos' => 'permit_empty|numeric|exact_length[5]',
-            'jarak_ke_sekolah' => 'permit_empty|in_list[< 1 km,1-5 km,5-10 km,10-20 km,> 20 km]',
-            'waktu_tempuh' => 'permit_empty|in_list[< 15 menit,15-30 menit,30-60 menit,> 60 menit]',
-            'transportasi' => 'permit_empty|in_list[Jalan Kaki,Sepeda,Motor,Mobil,Angkutan Umum,Ojek Online,Lainnya]',
-            'email' => 'permit_empty|valid_email|max_length[100]',
-            'media_sosial' => 'permit_empty|max_length[255]',
-
-            // =====================================================
-            // Section 3: Data Ayah (data_ayah table)
-            // =====================================================
-            'nama_ayah' => 'permit_empty|max_length[150]',
-            'nik_ayah' => 'permit_empty|numeric|exact_length[16]',
-            'tempat_lahir_ayah' => 'permit_empty|max_length[100]',
-            'tanggal_lahir_ayah' => 'permit_empty|valid_date[Y-m-d]',
-            'status_ayah' => 'permit_empty|in_list[Masih Hidup,Sudah Meninggal,Tidak Diketahui]',
-            'pendidikan_ayah' => 'permit_empty|in_list[Tidak Sekolah,SD/MI,SMP/MTs,SMA/MA/SMK,D1,D2,D3,D4/S1,S2,S3]',
-            'pekerjaan_ayah' => 'required|in_list[Tidak Bekerja,Pensiun,PNS,TNI/Polri,Guru/Dosen,Pegawai Swasta,Wiraswasta,Pengacara/Jaksa/Hakim/Notaris,Seniman/Pelukis/Artis/Sejenis,Dokter/Bidan/Perawat,Pilot/Pramugara,Pedagang,Petani/Peternak,Nelayan,Buruh (Tani/Pabrik/Bangunan),Sopir/Masinis/Kondektur,Politikus,Lainnya]',
-            'penghasilan_ayah' => 'required|in_list[Dibawah 800.000,800.001-1.200.000,1.200.001-1.800.000,1.800.001-2.500.000,2.500.001-3.500.000,3.500.001-4.800.000,4.800.001-6.500.000,6.500.001-10.000.000,10.000.001-20.000.000,Diatas 20.000.000]',
-            'hp_ayah' => 'required|max_length[20]',
-            'alamat_ayah' => 'permit_empty|max_length[500]',
-
-            // =====================================================
-            // Section 4: Data Ibu (data_ibu table)
-            // =====================================================
-            'nama_ibu' => 'permit_empty|max_length[150]',
-            'nik_ibu' => 'permit_empty|numeric|exact_length[16]',
-            'tempat_lahir_ibu' => 'permit_empty|max_length[100]',
-            'tanggal_lahir_ibu' => 'permit_empty|valid_date[Y-m-d]',
-            'status_ibu' => 'permit_empty|in_list[Masih Hidup,Sudah Meninggal,Tidak Diketahui]',
-            'pendidikan_ibu' => 'permit_empty|in_list[Tidak Sekolah,SD/MI,SMP/MTs,SMA/MA/SMK,D1,D2,D3,D4/S1,S2,S3]',
-            'pekerjaan_ibu' => 'required|in_list[Tidak Bekerja,Pensiun,PNS,TNI/Polri,Guru/Dosen,Pegawai Swasta,Wiraswasta,Pengacara/Jaksa/Hakim/Notaris,Seniman/Pelukis/Artis/Sejenis,Dokter/Bidan/Perawat,Pilot/Pramugara,Pedagang,Petani/Peternak,Nelayan,Buruh (Tani/Pabrik/Bangunan),Sopir/Masinis/Kondektur,Politikus,Lainnya]',
-            'penghasilan_ibu' => 'required|in_list[Dibawah 800.000,800.001-1.200.000,1.200.001-1.800.000,1.800.001-2.500.000,2.500.001-3.500.000,3.500.001-4.800.000,4.800.001-6.500.000,6.500.001-10.000.000,10.000.001-20.000.000,Diatas 20.000.000]',
-            'hp_ibu' => 'required|max_length[20]',
-            'alamat_ibu' => 'permit_empty|max_length[500]',
-
-            // =====================================================
-            // Section 5: Data Wali (data_wali table - Optional)
-            // =====================================================
-            'nama_wali' => 'permit_empty|max_length[150]',
-            'hubungan_wali' => 'permit_empty|in_list[Kakek,Nenek,Paman,Bibi,Kakak,Ayah/Ibu Tiri,Lainnya]',
-            'nik_wali' => 'permit_empty|numeric|exact_length[16]',
-            'tahun_lahir_wali' => 'permit_empty|numeric|exact_length[4]',
-            'pendidikan_wali' => 'permit_empty|in_list[Tidak Sekolah,SD/MI,SMP/MTs,SMA/MA/SMK,D1,D2,D3,D4/S1,S2,S3]',
-            'pekerjaan_wali' => 'permit_empty|in_list[Tidak Bekerja,Pensiun,PNS,TNI/Polri,Guru/Dosen,Pegawai Swasta,Wiraswasta,Pengacara/Jaksa/Hakim/Notaris,Seniman/Pelukis/Artis/Sejenis,Dokter/Bidan/Perawat,Pilot/Pramugara,Pedagang,Petani/Peternak,Nelayan,Buruh (Tani/Pabrik/Bangunan),Sopir/Masinis/Kondektur,Politikus,Lainnya]',
-            'penghasilan_wali' => 'permit_empty|in_list[Dibawah 800.000,800.001-1.200.000,1.200.001-1.800.000,1.800.001-2.500.000,2.500.001-3.500.000,3.500.001-4.800.000,4.800.001-6.500.000,6.500.001-10.000.000,10.000.001-20.000.000,Diatas 20.000.000]',
-            'hp_wali' => 'permit_empty|max_length[20]',
-
-            // =====================================================
-            // Section 6: Data Bansos (bansos_pendaftar table - Optional)
-            // =====================================================
-            'no_kks' => 'permit_empty|max_length[50]',
-            'no_pkh' => 'permit_empty|max_length[50]',
-            'no_kip' => 'permit_empty|max_length[50]',
+            // Section 1-6 (Data Diri, Alamat, Ayah, Ibu, Wali, Bansos) ada di App\Libraries\FormPendaftaran
 
             // =====================================================
             // Section 7: Data Asal Sekolah (asal_sekolah table)
@@ -889,86 +732,6 @@ class PendaftaranLengkap extends BaseController
     private function getValidationMessages(): array
     {
         return [
-            // Data Diri
-            'nama_lengkap' => [
-                'required' => 'Nama lengkap wajib diisi.',
-                'min_length' => 'Nama lengkap minimal 3 karakter.',
-                'max_length' => 'Nama lengkap maksimal 150 karakter.',
-            ],
-            'jenis_kelamin' => [
-                'required' => 'Jenis kelamin wajib dipilih.',
-                'in_list' => 'Jenis kelamin tidak valid.',
-            ],
-            'nisn' => [
-                'required' => 'NISN wajib diisi.',
-                'numeric' => 'NISN harus berupa angka.',
-                'exact_length' => 'NISN harus 10 digit.',
-            ],
-            'nik' => [
-                'required' => 'NIK wajib diisi.',
-                'numeric' => 'NIK harus berupa angka.',
-                'exact_length' => 'NIK harus 16 digit.',
-            ],
-            'tanggal_lahir' => [
-                'valid_date' => 'Format tanggal lahir tidak valid.',
-            ],
-            'anak_ke' => [
-                'numeric' => 'Anak ke harus berupa angka.',
-                'greater_than' => 'Anak ke harus lebih dari 0.',
-            ],
-            'jumlah_saudara' => [
-                'numeric' => 'Jumlah saudara harus berupa angka.',
-            ],
-
-            // Data Alamat
-            'nomor_kk' => [
-                'numeric' => 'Nomor KK harus berupa angka.',
-                'exact_length' => 'Nomor KK harus 16 digit.',
-            ],
-            'kode_pos' => [
-                'numeric' => 'Kode pos harus berupa angka.',
-                'exact_length' => 'Kode pos harus 5 digit.',
-            ],
-            'email' => [
-                'valid_email' => 'Format email tidak valid.',
-            ],
-
-            // Data Ayah
-            'nik_ayah' => [
-                'numeric' => 'NIK Ayah harus berupa angka.',
-                'exact_length' => 'NIK Ayah harus 16 digit.',
-            ],
-            'tanggal_lahir_ayah' => [
-                'valid_date' => 'Format tanggal lahir ayah tidak valid.',
-            ],
-            'hp_ayah' => [
-                'required' => 'No. HP Ayah wajib diisi.',
-                'max_length' => 'No. HP Ayah maksimal 20 karakter.',
-            ],
-
-            // Data Ibu
-            'nik_ibu' => [
-                'numeric' => 'NIK Ibu harus berupa angka.',
-                'exact_length' => 'NIK Ibu harus 16 digit.',
-            ],
-            'tanggal_lahir_ibu' => [
-                'valid_date' => 'Format tanggal lahir ibu tidak valid.',
-            ],
-            'hp_ibu' => [
-                'required' => 'No. HP Ibu wajib diisi.',
-                'max_length' => 'No. HP Ibu maksimal 20 karakter.',
-            ],
-
-            // Data Wali
-            'nik_wali' => [
-                'numeric' => 'NIK Wali harus berupa angka.',
-                'exact_length' => 'NIK Wali harus 16 digit.',
-            ],
-            'tahun_lahir_wali' => [
-                'numeric' => 'Tahun lahir wali harus berupa angka.',
-                'exact_length' => 'Tahun lahir wali harus 4 digit.',
-            ],
-
             // Data Sekolah
             'nama_asal_sekolah' => [
                 'required' => 'Nama asal sekolah wajib diisi.',
@@ -984,5 +747,18 @@ class PendaftaranLengkap extends BaseController
                 'required' => 'Anda harus menyetujui kebenaran data yang diisi.',
             ],
         ];
+    }
+
+    /**
+     * Tolak akses form bila pendaftaran periode aktif ditutup / kuota penuh.
+     */
+    private function cekPendaftaranDibuka(string $jalur)
+    {
+        $status = (new \App\Models\PeriodeModel())->statusPendaftaran($jalur);
+        if (!$status['dibuka']) {
+            return redirect()->to(base_url('/'))->with('error', $status['alasan']);
+        }
+
+        return null;
     }
 }

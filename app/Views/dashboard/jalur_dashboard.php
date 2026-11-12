@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($title) ?></title>
-    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/images/logo/favicon.ico') ?>">
+    <link rel="icon" type="image/x-icon" href="<?= logo_aset('favicon.ico') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/all.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/icofont.min.css') ?>">
@@ -204,6 +204,7 @@
                 Dashboard <?= esc($jalur) ?>
             </h2>
             <p class="mb-0">Selamat datang, <strong><?= esc($user['nama_lengkap']) ?></strong> - Role: <?= ucfirst(esc($user['role_panitia'])) ?></p>
+            <p class="mb-0 mt-2"><span class="badge bg-light text-dark"><i class="icofont-calendar me-1"></i> Tahun Ajaran <?= esc($periodeTerpilih['tahun_ajaran'] ?? tahun_ajaran_aktif()) ?></span></p>
         </div>
 
         <!-- Statistics Card -->
@@ -250,11 +251,15 @@
                                     <i class="icofont-file-excel me-1"></i> Export
                                 </button>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-csv?jalur=' . strtolower($jalur) . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-csv?jalur=' . str_replace("'", '', strtolower($jalur)) . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
                                         <i class="icofont-file-text me-1"></i> CSV Format
                                     </a></li>
-                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-excel?jalur=' . strtolower($jalur) . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/export-excel?jalur=' . str_replace("'", '', strtolower($jalur)) . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '') . '&sort=' . $sortBy . '&dir=' . $sortDir) ?>">
                                         <i class="icofont-file-excel me-1"></i> Excel Format
+                                    </a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="<?= base_url('dashboard/kk-zip?jalur=' . str_replace("'", '', strtolower($jalur)) . (!empty($search) ? '&search=' . urlencode($search) : '') . (!empty($startDate) ? '&start_date=' . $startDate : '') . (!empty($endDate) ? '&end_date=' . $endDate : '')) ?>">
+                                        <i class="icofont-file-zip me-1"></i> Unduh Kartu Keluarga (ZIP)
                                     </a></li>
                                 </ul>
                             </div>
@@ -342,10 +347,21 @@
                                                    class="btn btn-sm btn-primary me-1" title="Lihat Detail">
                                                     <i class="icofont-eye"></i>
                                                 </a>
+                                                <a href="<?= base_url('dashboard/edit/' . $reg['id_pendaftar']) ?>"
+                                                   class="btn btn-sm btn-warning me-1" title="Edit Data">
+                                                    <i class="icofont-edit"></i>
+                                                </a>
                                                 <a href="<?= base_url('pendaftaran/download-kartu/' . $reg['nomor_pendaftaran']) ?>"
-                                                   class="btn btn-sm btn-success" title="Download Kartu">
+                                                   class="btn btn-sm btn-success me-1" title="Download Kartu">
                                                     <i class="icofont-download"></i>
                                                 </a>
+                                                <button type="button" class="btn btn-sm btn-danger btn-delete"
+                                                        data-id="<?= $reg['id_pendaftar'] ?>"
+                                                        data-nama="<?= esc($reg['nama_lengkap'], 'attr') ?>"
+                                                        data-nomor="<?= esc($reg['nomor_pendaftaran'], 'attr') ?>"
+                                                        title="Hapus Permanen">
+                                                    <i class="icofont-trash"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -380,6 +396,8 @@
     </div>
 
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
+    <?php include APPPATH . 'Views/dashboard/_modal_hapus.php'; ?>
+    <?php include APPPATH . 'Views/components/toast.php'; ?>
 </body>
 
 </html>

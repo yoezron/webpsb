@@ -11,10 +11,10 @@
     <meta name="description" content="Edit Data Pendaftar <?= esc($jalur_label) ?> - Pesantren Persatuan Islam 31 Banjaran">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/images/logo/favicon.ico') ?>">
-    <link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/images/logo/favicon-16x16.png') ?>">
-    <link rel="icon" type="image/png" sizes="32x32" href="<?= base_url('assets/images/logo/favicon-32x32.png') ?>">
-    <link rel="apple-touch-icon" href="<?= base_url('assets/images/logo/apple-touch-icon.png') ?>">
+    <link rel="icon" type="image/x-icon" href="<?= logo_aset('favicon.ico') ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?= logo_aset('favicon-16x16.png') ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= logo_aset('favicon-32x32.png') ?>">
+    <link rel="apple-touch-icon" href="<?= logo_aset('apple-touch-icon.png') ?>">
 
     <!-- CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
@@ -414,13 +414,13 @@
             <!-- Header -->
             <div class="form-header">
                 <div class="form-header-logo">
-                    <img src="<?= base_url('assets/images/logo/01.png') ?>" alt="Logo Pesantren Persatuan Islam 31 Banjaran">
+                    <img src="<?= logo_aset('01.png') ?>" alt="Logo Pesantren Persatuan Islam 31 Banjaran">
                 </div>
                 <h1><i class="icofont-edit"></i> Edit Data Pendaftar</h1>
                 <p>Pesantren Persatuan Islam 31 Banjaran</p>
                 <p>Tahun Ajaran <?= esc($year) ?>/<?= esc($year + 1) ?></p>
                 <div class="registration-badge">
-                    <i class="icofont-id-card"></i> <?= esc($pendaftar['nomor_pendaftaran']) ?> - <?= esc($jalur_label) ?>
+                    <i class="icofont-id-card"></i> <?= esc($pendaftar['nomor_pendaftaran']) ?> - <?= esc($jalur_label) ?><?= !empty($pendaftar['nama_lengkap']) ? ' - ' . esc($pendaftar['nama_lengkap']) : '' ?>
                 </div>
             </div>
 
@@ -496,30 +496,34 @@
 
                 <!-- Info Box -->
                 <div class="alert alert-warning mb-4">
-                    <i class="icofont-info-circle"></i> <strong>Mode Edit:</strong> Anda sedang mengedit data pendaftaran. Periksa kembali data Anda sebelum menyimpan perubahan.
+                    <?php if (!empty($modeAdmin)): ?>
+                        <i class="icofont-info-circle"></i> <strong>Mode Panitia:</strong> Anda sedang memperbaiki data pendaftar atas nama <strong><?= esc($pendaftar['nama_lengkap'] ?? '') ?></strong>. Perubahan dicatat di log atas nama akun Anda.
+                    <?php else: ?>
+                        <i class="icofont-info-circle"></i> <strong>Mode Edit:</strong> Anda sedang mengedit data pendaftaran. Periksa kembali data Anda sebelum menyimpan perubahan.
+                    <?php endif; ?>
                 </div>
 
                 <!-- Main Form -->
-                <form id="main-form" method="post" action="<?= base_url('update-data/update') ?>">
+                <form id="main-form" method="post" enctype="multipart/form-data" action="<?= esc($formAction ?? base_url('update-data/update'), 'attr') ?>">
                     <?= csrf_field() ?>
 
                     <!-- Section 1: Data Diri -->
-                    <?php include __DIR__ . '/sections/section1_data_diri.php'; ?>
+                    <?php include APPPATH . 'Views/pendaftaran/sections/section1_data_diri.php'; ?>
 
                     <!-- Section 2: Alamat -->
-                    <?php include __DIR__ . '/sections/section2_alamat.php'; ?>
+                    <?php include APPPATH . 'Views/pendaftaran/sections/section2_alamat.php'; ?>
 
                     <!-- Section 3: Data Ayah -->
-                    <?php include __DIR__ . '/sections/section3_ayah.php'; ?>
+                    <?php include APPPATH . 'Views/pendaftaran/sections/section3_ayah.php'; ?>
 
                     <!-- Section 4: Data Ibu -->
-                    <?php include __DIR__ . '/sections/section4_ibu.php'; ?>
+                    <?php include APPPATH . 'Views/pendaftaran/sections/section4_ibu.php'; ?>
 
                     <!-- Section 5: Data Wali -->
-                    <?php include __DIR__ . '/sections/section5_wali.php'; ?>
+                    <?php include APPPATH . 'Views/pendaftaran/sections/section5_wali.php'; ?>
 
                     <!-- Section 6: Bansos -->
-                    <?php include __DIR__ . '/sections/section6_bansos.php'; ?>
+                    <?php include APPPATH . 'Views/pendaftaran/sections/section6_bansos.php'; ?>
 
                     <!-- Section 7: Asal Sekolah -->
                     <?php include __DIR__ . '/sections/section7_sekolah.php'; ?>
@@ -543,7 +547,7 @@
 
                 <!-- Cancel Link -->
                 <div class="cancel-link">
-                    <a href="<?= base_url('update-data/batal') ?>" onclick="return confirm('Apakah Anda yakin ingin membatalkan proses update?')">
+                    <a href="<?= esc($batalUrl ?? base_url('update-data/batal'), 'attr') ?>" onclick="return confirm('Apakah Anda yakin ingin membatalkan proses update?')">
                         <i class="icofont-close-circled"></i> Batalkan Update
                     </a>
                 </div>
@@ -558,6 +562,7 @@
     <!-- JS -->
     <script src="<?= base_url('assets/js/jquery.js') ?>"></script>
     <script src="<?= base_url('assets/js/bootstrap.bundle.min.js') ?>"></script>
+    <?php include APPPATH . 'Views/pendaftaran/sections/_form_dinamis_js.php'; ?>
 
     <script>
         $(document).ready(function() {
@@ -633,107 +638,17 @@
                 }, 500);
             }
 
-            // Validate step
+            // Validate step (aturan wajib dinamis ada di PSBForm)
             function validateStep(step) {
-                let isValid = true;
-                const section = $('#section-' + step);
-
-                // Clear previous errors
-                section.find('.is-invalid').removeClass('is-invalid');
-                section.find('.invalid-feedback').remove();
-
-                // Validate required fields
-                section.find('[required]').each(function() {
-                    if (!$(this).val()) {
-                        isValid = false;
-                        $(this).addClass('is-invalid');
-                        $(this).after('<div class="invalid-feedback">Field ini wajib diisi!</div>');
-                    }
-                });
-
-                if (!isValid) {
-                    showToast('Mohon lengkapi semua field yang wajib diisi!', 'warning', 5000);
-                }
-
-                return isValid;
+                return PSBForm.validasiSection($('#section-' + step));
             }
 
-            // Populate review section
+            // Populate review section (dibangun otomatis dari semua field yang tampil)
             function populateReview() {
-                const formData = $('#main-form').serializeArray();
-                let reviewHtml = '';
-
-                const sections = {
-                    'Data Diri': ['nisn', 'nik', 'nama_lengkap', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir', 'status_keluarga', 'anak_ke', 'jumlah_saudara', 'hobi', 'cita_cita', 'pernah_paud', 'pernah_tk', 'kebutuhan_disabilitas[]', 'kebutuhan_khusus', 'imunisasi[]', 'no_hp', 'ukuran_baju', 'prestasi', 'minat_bakat'],
-                    'Data Alamat': ['nomor_kk', 'nama_kepala_keluarga', 'jenis_tempat_tinggal', 'alamat', 'rt_rw', 'desa', 'kecamatan', 'kabupaten', 'provinsi', 'kode_pos', 'tinggal_bersama', 'jarak_ke_sekolah', 'waktu_tempuh', 'transportasi', 'email', 'media_sosial'],
-                    'Data Ayah': ['nama_ayah', 'nik_ayah', 'tempat_lahir_ayah', 'tanggal_lahir_ayah', 'status_ayah', 'pendidikan_ayah', 'pekerjaan_ayah', 'penghasilan_ayah', 'hp_ayah', 'alamat_ayah'],
-                    'Data Ibu': ['nama_ibu', 'nik_ibu', 'tempat_lahir_ibu', 'tanggal_lahir_ibu', 'status_ibu', 'pendidikan_ibu', 'pekerjaan_ibu', 'penghasilan_ibu', 'hp_ibu', 'alamat_ibu'],
-                    'Data Wali': ['nama_wali', 'hubungan_wali', 'nik_wali', 'tempat_lahir_wali', 'tanggal_lahir_wali', 'pendidikan_wali', 'pekerjaan_wali', 'penghasilan_wali', 'hp_wali'],
-                    'Data Bansos': ['no_kks', 'no_pkh', 'no_kip'],
-                    'Data Asal Sekolah': ['nama_asal_sekolah', 'jenjang_sekolah', 'status_sekolah', 'npsn', 'lokasi_sekolah', 'alamat_sekolah', 'tahun_lulus', 'rata_rata_rapor', 'nilai_tka', 'sekolah_md', 'asal_jenjang']
-                };
-
-                Object.keys(sections).forEach(sectionTitle => {
-                    reviewHtml += '<div class="review-section">';
-                    reviewHtml += '<div class="review-section-title">' + sectionTitle + '</div>';
-                    reviewHtml += '<table class="review-table"><tbody>';
-
-                    sections[sectionTitle].forEach(fieldName => {
-                        let value = '';
-                        let label = '';
-
-                        // Handle checkbox arrays (name ends with [])
-                        if (fieldName.endsWith('[]')) {
-                            const fields = formData.filter(f => f.name === fieldName);
-                            if (fields.length > 0) {
-                                const values = fields.map(f => f.value);
-                                value = values.join(', ');
-                                const $input = $('[name="' + fieldName + '"]').first();
-                                label = $input.closest('.mb-3').find('label').first().text().replace('*', '').trim();
-                            }
-                        } else {
-                            // Handle regular fields
-                            const field = formData.find(f => f.name === fieldName);
-                            if (field && field.value) {
-                                const $input = $('[name="' + fieldName + '"]');
-                                value = field.value;
-
-                                // Get appropriate label based on input type
-                                if ($input.attr('type') === 'checkbox' && $input.closest('.form-check').length) {
-                                    // For single checkboxes in form-check, use the check label
-                                    label = $input.closest('.form-check').find('.form-check-label').text().trim();
-                                    if (value === '1') {
-                                        value = 'Ya';
-                                    }
-                                } else {
-                                    // For other inputs, use the main label
-                                    label = $input.closest('.mb-3').find('label').first().text().replace('*', '').trim();
-                                }
-
-                                // Format special values
-                                if (value === 'L') {
-                                    value = 'Laki-laki';
-                                } else if (value === 'P') {
-                                    value = 'Perempuan';
-                                }
-                            }
-                        }
-
-                        if (value) {
-                            reviewHtml += '<tr><td style="width: 40%; font-weight: 600;">' + label + '</td><td>' + value + '</td></tr>';
-                        }
-                    });
-
-                    reviewHtml += '</tbody></table></div>';
-                });
-
-                $('#review-content').html(reviewHtml);
+                $('#review-content').html(PSBForm.ringkasan());
             }
 
-            // Numeric validation
-            $('.numeric-only').on('input', function() {
-                this.value = this.value.replace(/[^0-9]/g, '');
-            });
+            PSBForm.init();
 
             // Form submission
             $('#main-form').on('submit', function(e) {

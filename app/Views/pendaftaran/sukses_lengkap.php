@@ -10,10 +10,10 @@
     <meta name="description" content="Pendaftaran Berhasil - Pesantren Persatuan Islam 31 Banjaran">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/images/logo/favicon.ico') ?>">
-    <link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/images/logo/favicon-16x16.png') ?>">
-    <link rel="icon" type="image/png" sizes="32x32" href="<?= base_url('assets/images/logo/favicon-32x32.png') ?>">
-    <link rel="apple-touch-icon" href="<?= base_url('assets/images/logo/apple-touch-icon.png') ?>">
+    <link rel="icon" type="image/x-icon" href="<?= logo_aset('favicon.ico') ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?= logo_aset('favicon-16x16.png') ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= logo_aset('favicon-32x32.png') ?>">
+    <link rel="apple-touch-icon" href="<?= logo_aset('apple-touch-icon.png') ?>">
 
     <!-- CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
@@ -432,13 +432,17 @@
                 <!-- Footer Note -->
                 <div class="text-center mt-4" style="color: #666; font-size: 0.9rem;">
                     <p>Jika ada pertanyaan, silakan hubungi panitia PSB di:</p>
+                    <?php if (pengaturan('kontak_whatsapp') || pengaturan('kontak_email')): ?>
                     <p>
-                        <i class="icofont-whatsapp"></i> +6281320206395 |
-                        <i class="icofont-email"></i> pesantrenpersis31@gmail.com
+                        <?php if (pengaturan('kontak_whatsapp')): ?><i class="icofont-whatsapp"></i> <?= esc(pengaturan('kontak_whatsapp')) ?><?php endif; ?>
+                        <?php if (pengaturan('kontak_whatsapp') && pengaturan('kontak_email')): ?> | <?php endif; ?>
+                        <?php if (pengaturan('kontak_email')): ?><i class="icofont-email"></i> <?= esc(pengaturan('kontak_email')) ?><?php endif; ?>
                     </p>
+                    <?php endif; ?>
                     <p style="font-size: 0.85rem;">
-                        <i class="icofont-location-pin"></i> Jl. Pajagalan No. 115, Banjaran |
-                        <i class="icofont-web"></i> psb.mapersis31banjaran.sch.id
+                        <?php if (pengaturan('kontak_alamat')): ?><i class="icofont-location-pin"></i> <?= esc(pengaturan('kontak_alamat')) ?><?php endif; ?>
+                        <?php if (pengaturan('kontak_alamat') && pengaturan('kontak_website')): ?> | <?php endif; ?>
+                        <?php if (pengaturan('kontak_website')): ?><i class="icofont-web"></i> <?= esc(pengaturan('kontak_website')) ?><?php endif; ?>
                     </p>
                 </div>
             </div>

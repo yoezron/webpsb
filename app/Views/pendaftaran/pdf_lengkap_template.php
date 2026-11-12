@@ -238,13 +238,13 @@
     <table class="header-table">
         <tr>
             <td class="logo-cell">
-                <img src="<?= FCPATH . 'assets/images/logo/01.png' ?>" width="75" alt="Logo">
+                <img src="<?= logo_data_uri() ?>" width="75" alt="Logo">
             </td>
             <td class="info-cell">
                 <div class="school-name">PESANTREN PERSIS 31 BANJARAN</div>
-                <div class="school-address">Jl. Pajagalan No. 115, Banjaran, Bandung, Jawa Barat</div>
+                <div class="school-address"><?= esc(pengaturan('kontak_alamat')) ?></div>
                 <div class="form-title">FORMULIR PENDAFTARAN SANTRI BARU</div>
-                <div style="font-size: 9pt;">Tahun Ajaran 2026/2027</div>
+                <div style="font-size: 9pt;">Tahun Ajaran <?= esc(tahun_ajaran_pendaftar($pendaftar ?? null)) ?></div>
             </td>
             <td class="badge-cell">
                 <div class="reg-box">
@@ -276,6 +276,11 @@
                 <td class="td-label">Jenis Kelamin</td>
                 <td class="td-sep">:</td>
                 <td class="td-value"><?= $pendaftar['jenis_kelamin'] === 'L' ? 'Laki-laki' : 'Perempuan' ?></td>
+            </tr>
+            <tr>
+                <td class="td-label">Agama</td>
+                <td class="td-sep">:</td>
+                <td class="td-value"><?= esc($pendaftar['agama'] ?? '-') ?></td>
             </tr>
             <tr>
                 <td class="td-label">TTL (Usia)</td>
@@ -454,6 +459,16 @@
                     <td class="td-sep">:</td>
                     <td class="td-value"><?= esc($ayah['hp_ayah'] ?? '-') ?></td>
                 </tr>
+                <tr>
+                    <td class="td-label">Domisili</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($ayah['domisili_ayah'] ?? '-') ?></td>
+                </tr>
+                <tr>
+                    <td class="td-label">Status Tempat Tinggal</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($ayah['status_tempat_tinggal_ayah'] ?? '-') ?></td>
+                </tr>
                 <?php if (!empty($ayah['alamat_ayah'])): ?>
                     <tr>
                         <td class="td-label">Alamat Khusus</td>
@@ -495,6 +510,16 @@
                     <td class="td-label">No. Handphone</td>
                     <td class="td-sep">:</td>
                     <td class="td-value"><?= esc($ibu['hp_ibu'] ?? '-') ?></td>
+                </tr>
+                <tr>
+                    <td class="td-label">Domisili</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($ibu['domisili_ibu'] ?? '-') ?></td>
+                </tr>
+                <tr>
+                    <td class="td-label">Status Tempat Tinggal</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($ibu['status_tempat_tinggal_ibu'] ?? '-') ?></td>
                 </tr>
                 <?php if (!empty($ibu['alamat_ibu'])): ?>
                     <tr>
@@ -542,6 +567,21 @@
                     <td class="td-label">No. Handphone</td>
                     <td class="td-sep">:</td>
                     <td class="td-value"><?= esc($wali['hp_wali'] ?? '-') ?></td>
+                </tr>
+                <tr>
+                    <td class="td-label">Domisili</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($wali['domisili_wali'] ?? '-') ?></td>
+                </tr>
+                <tr>
+                    <td class="td-label">Status Tempat Tinggal</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($wali['status_tempat_tinggal_wali'] ?? '-') ?></td>
+                </tr>
+                <tr>
+                    <td class="td-label">Alamat</td>
+                    <td class="td-sep">:</td>
+                    <td class="td-value"><?= esc($wali['alamat_wali'] ?? '-') ?></td>
                 </tr>
             </table>
         <?php endif; ?>
@@ -611,7 +651,7 @@
                 <span class="sign-name">( ........................................ )</span>
             </td>
             <td class="sign-cell">
-                <div class="sign-title">Banjaran, <?= date('d F Y') ?></div>
+                <div class="sign-title"><?= esc(pengaturan('kota_ttd', 'Banjaran')) ?>, <?= date('d F Y') ?></div>
                 <div class="sign-role">ORANG TUA / WALI</div>
                 <br><br>
                 <span class="sign-name">( ........................................ )</span>

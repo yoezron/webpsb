@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= esc($title) ?></title>
     <meta name="description" content="<?= esc(substr(strip_tags($announcement['konten']), 0, 160)) ?>">
-    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/images/logo/favicon.ico') ?>">
+    <link rel="icon" type="image/x-icon" href="<?= logo_aset('favicon.ico') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/all.min.css') ?>">
     <link rel="stylesheet" href="<?= base_url('assets/css/icofont.min.css') ?>">

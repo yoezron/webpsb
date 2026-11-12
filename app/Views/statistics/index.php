@@ -13,7 +13,7 @@
     <meta name="robots" content="index, follow">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/images/logo/favicon.ico') ?>">
+    <link rel="icon" type="image/x-icon" href="<?= logo_aset('favicon.ico') ?>">
 
     <!-- CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
@@ -241,7 +241,8 @@
     <div class="hero-section">
         <div class="container">
             <h1><i class="icofont-chart-bar-graph"></i> Statistik Pendaftar</h1>
-            <p>Data dan statistik pendaftar santri baru Pesantren Persatuan Islam 31 Banjaran</p>
+            <p>Data dan statistik pendaftar santri baru <?= esc(nama_lembaga()) ?></p>
+            <p class="mb-0"><span class="badge bg-light text-dark fs-6">Tahun Ajaran <?= esc($tahun_ajaran ?? tahun_ajaran_aktif()) ?></span></p>
         </div>
     </div>
 
@@ -371,7 +372,7 @@
     <!-- Footer -->
     <div class="footer">
         <div class="container">
-            <p class="mb-0">&copy; 2026 Pesantren Persatuan Islam 31 Banjaran. All rights reserved.</p>
+            <p class="mb-0">&copy; <?= date('Y') ?> <?= esc(nama_lembaga()) ?>. All rights reserved.</p>
         </div>
     </div>
 

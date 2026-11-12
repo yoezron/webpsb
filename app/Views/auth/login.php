@@ -8,8 +8,8 @@
     <title><?= esc($title) ?></title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/images/logo/favicon.ico') ?>">
-    <link rel="icon" type="image/png" sizes="32x32" href="<?= base_url('assets/images/logo/favicon-32x32.png') ?>">
+    <link rel="icon" type="image/x-icon" href="<?= logo_aset('favicon.ico') ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= logo_aset('favicon-32x32.png') ?>">
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
@@ -233,7 +233,7 @@
         <div class="login-card">
             <!-- Login Header -->
             <div class="login-header">
-                <img src="<?= base_url('assets/images/logo/01.png') ?>" alt="Logo Persis 31" class="login-logo">
+                <img src="<?= logo_aset('01.png') ?>" alt="Logo Persis 31" class="login-logo">
                 <h2>Login Panitia PSB</h2>
                 <p>Pesantren Persatuan Islam 31 Banjaran</p>
             </div>

@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Libraries\FormPendaftaran;
 use App\Models\PendaftarModel;
 
 class StatisticsPublic extends BaseController
@@ -21,6 +22,7 @@ class StatisticsPublic extends BaseController
     public function index(): string
     {
         $data = [
+            'tahun_ajaran' => tahun_ajaran_aktif(),
             'title' => 'Statistik Pendaftar - Pesantren Persatuan Islam 31 Banjaran',
             'meta_description' => 'Statistik dan data pendaftar santri baru Pesantren Persatuan Islam 31 Banjaran',
             'meta_keywords' => 'statistik pendaftar, data pendaftar, pesantren persis 31, banjaran',
@@ -38,7 +40,7 @@ class StatisticsPublic extends BaseController
     {
         $db = \Config\Database::connect();
 
-        $jalurStats = $db->table('pendaftar')
+        $jalurStats = $this->scopePendaftar($db->table('pendaftar'))
             ->select('jalur_pendaftaran, COUNT(*) as total')
             ->groupBy('jalur_pendaftaran')
             ->get()
@@ -69,7 +71,7 @@ class StatisticsPublic extends BaseController
     {
         $db = \Config\Database::connect();
 
-        $dateStats = $db->table('pendaftar')
+        $dateStats = $this->scopePendaftar($db->table('pendaftar'))
             ->select('DATE(tanggal_daftar) as tanggal, COUNT(*) as total')
             ->groupBy('DATE(tanggal_daftar)')
             ->orderBy('tanggal', 'ASC')
@@ -101,7 +103,7 @@ class StatisticsPublic extends BaseController
     {
         $db = \Config\Database::connect();
 
-        $pendaftarData = $db->table('pendaftar')
+        $pendaftarData = $this->scopePendaftar($db->table('pendaftar'))
             ->select('tanggal_lahir')
             ->get()
             ->getResultArray();
@@ -152,7 +154,7 @@ class StatisticsPublic extends BaseController
     {
         $db = \Config\Database::connect();
 
-        $desaStats = $db->table('alamat_pendaftar')
+        $desaStats = $this->scopeRelasi($db->table('alamat_pendaftar'), 'alamat_pendaftar')
             ->select('desa, COUNT(*) as total')
             ->groupBy('desa')
             ->orderBy('total', 'DESC')
@@ -177,80 +179,59 @@ class StatisticsPublic extends BaseController
     }
 
     /**
-     * API: Get statistics by jarak ke sekolah
+     * API: Get statistics by jarak ke sekolah (kategori sesuai pilihan EMIS)
      *
      * @return \CodeIgniter\HTTP\ResponseInterface
      */
     public function getByJarak()
     {
-        $db = \Config\Database::connect();
-
-        $distanceData = $db->table('alamat_pendaftar')
-            ->select('jarak_ke_sekolah')
-            ->get()
-            ->getResultArray();
-
-        $distanceRanges = [
-            '< 5 km' => 0,
-            '5-10 km' => 0,
-            '10-20 km' => 0,
-            '> 20 km' => 0
-        ];
-
-        foreach ($distanceData as $row) {
-            $distance = (float)$row['jarak_ke_sekolah'];
-
-            if ($distance < 5) {
-                $distanceRanges['< 5 km']++;
-            } elseif ($distance >= 5 && $distance < 10) {
-                $distanceRanges['5-10 km']++;
-            } elseif ($distance >= 10 && $distance < 20) {
-                $distanceRanges['10-20 km']++;
-            } else {
-                $distanceRanges['> 20 km']++;
-            }
-        }
-
         return $this->response->setJSON([
             'success' => true,
-            'data' => [
-                'labels' => array_keys($distanceRanges),
-                'values' => array_values($distanceRanges)
-            ]
+            'data'    => $this->hitungKategori('jarak_ke_sekolah', FormPendaftaran::JARAK),
         ]);
     }
 
     /**
-     * API: Get statistics by waktu tempuh
+     * API: Get statistics by waktu tempuh (kategori sesuai pilihan EMIS)
      *
      * @return \CodeIgniter\HTTP\ResponseInterface
      */
     public function getByWaktuTempuh()
     {
+        return $this->response->setJSON([
+            'success' => true,
+            'data'    => $this->hitungKategori('waktu_tempuh', FormPendaftaran::WAKTU_TEMPUH),
+        ]);
+    }
+
+    /**
+     * Hitung jumlah per kategori pada alamat_pendaftar (periode aktif), urut sesuai daftar pilihan.
+     * Nilai di luar daftar (data lama) dikumpulkan sebagai "Lainnya (data lama)".
+     */
+    private function hitungKategori(string $kolom, array $kategori): array
+    {
         $db = \Config\Database::connect();
 
-        $waktuStats = $db->table('alamat_pendaftar')
-            ->select('waktu_tempuh, COUNT(*) as total')
-            ->groupBy('waktu_tempuh')
-            ->orderBy('waktu_tempuh', 'ASC')
+        $rows = $this->scopeRelasi($db->table('alamat_pendaftar'), 'alamat_pendaftar')
+            ->select("alamat_pendaftar.{$kolom} AS nilai, COUNT(*) AS total")
+            ->groupBy("alamat_pendaftar.{$kolom}")
             ->get()
             ->getResultArray();
 
-        $data = [
-            'labels' => [],
-            'values' => []
-        ];
-
-        foreach ($waktuStats as $row) {
-            $waktu = $row['waktu_tempuh'] ?? 'Tidak diisi';
-            $data['labels'][] = $waktu;
-            $data['values'][] = (int)$row['total'];
+        $hitung = array_fill_keys($kategori, 0);
+        $lainnya = 0;
+        foreach ($rows as $row) {
+            if (array_key_exists((string) $row['nilai'], $hitung)) {
+                $hitung[$row['nilai']] = (int) $row['total'];
+            } elseif ((string) $row['nilai'] !== '') {
+                $lainnya += (int) $row['total'];
+            }
+        }
+        if ($lainnya > 0) {
+            $hitung['Lainnya (data lama)'] = $lainnya;
         }
 
-        return $this->response->setJSON([
-            'success' => true,
-            'data' => $data
-        ]);
+        return ['labels' => array_keys($hitung), 'values' => array_values($hitung)];
     }
 
     /**
@@ -263,7 +244,7 @@ class StatisticsPublic extends BaseController
         $db = \Config\Database::connect();
 
         // Get jenjang_sekolah as status
-        $sekolahStats = $db->table('asal_sekolah')
+        $sekolahStats = $this->scopeRelasi($db->table('asal_sekolah'), 'asal_sekolah')
             ->select('jenjang_sekolah, COUNT(*) as total')
             ->groupBy('jenjang_sekolah')
             ->get()
@@ -294,7 +275,7 @@ class StatisticsPublic extends BaseController
     {
         $db = \Config\Database::connect();
 
-        $incomeData = $db->table('data_ayah')
+        $incomeData = $this->scopeRelasi($db->table('data_ayah'), 'data_ayah')
             ->select('penghasilan_ayah')
             ->get()
             ->getResultArray();
@@ -344,6 +325,7 @@ class StatisticsPublic extends BaseController
             ->select('p.nomor_pendaftaran, p.nama_lengkap, p.jenis_kelamin, p.jalur_pendaftaran, s.nama_asal_sekolah')
             ->join('asal_sekolah s', 's.id_pendaftar = p.id_pendaftar', 'left')
             ->orderBy('p.tanggal_daftar', 'DESC');
+        $this->scopePendaftar($builder, 'p');
 
         if ($jalur !== 'all') {
             $builder->where('p.jalur_pendaftaran', strtoupper($jalur));
@@ -366,5 +348,29 @@ class StatisticsPublic extends BaseController
             'success' => true,
             'data' => $data
         ]);
+    }
+
+    /**
+     * Batasi query tabel pendaftar ke periode aktif.
+     */
+    private function scopePendaftar($builder, string $alias = 'pendaftar')
+    {
+        $idPeriode = periode_aktif_id();
+        if ($idPeriode) {
+            $builder->where($alias . '.id_periode', $idPeriode);
+        }
+        $builder->where($alias . '.deleted_at', null);
+
+        return $builder;
+    }
+
+    /**
+     * Batasi query tabel relasi (alamat/ayah/sekolah) ke pendaftar periode aktif.
+     */
+    private function scopeRelasi($builder, string $table)
+    {
+        $builder->join('pendaftar psb_p', 'psb_p.id_pendaftar = ' . $table . '.id_pendaftar', 'inner');
+
+        return $this->scopePendaftar($builder, 'psb_p');
     }
 }

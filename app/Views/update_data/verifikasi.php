@@ -11,10 +11,10 @@
     <meta name="description" content="Update Data Pendaftar - Pesantren Persatuan Islam 31 Banjaran">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="<?= base_url('assets/images/logo/favicon.ico') ?>">
-    <link rel="icon" type="image/png" sizes="16x16" href="<?= base_url('assets/images/logo/favicon-16x16.png') ?>">
-    <link rel="icon" type="image/png" sizes="32x32" href="<?= base_url('assets/images/logo/favicon-32x32.png') ?>">
-    <link rel="apple-touch-icon" href="<?= base_url('assets/images/logo/apple-touch-icon.png') ?>">
+    <link rel="icon" type="image/x-icon" href="<?= logo_aset('favicon.ico') ?>">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?= logo_aset('favicon-16x16.png') ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= logo_aset('favicon-32x32.png') ?>">
+    <link rel="apple-touch-icon" href="<?= logo_aset('apple-touch-icon.png') ?>">
 
     <!-- CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/css/bootstrap.min.css') ?>">
@@ -232,7 +232,7 @@
         <!-- Header -->
         <div class="verification-header">
             <div class="verification-header-logo">
-                <img src="<?= base_url('assets/images/logo/01.png') ?>" alt="Logo Pesantren Persatuan Islam 31 Banjaran">
+                <img src="<?= logo_aset('01.png') ?>" alt="Logo Pesantren Persatuan Islam 31 Banjaran">
             </div>
             <h1>Update Data Pendaftar</h1>
             <p>Pesantren Persatuan Islam 31 Banjaran</p>

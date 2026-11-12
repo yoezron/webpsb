@@ -1,3 +1,20 @@
+<?php
+/**
+ * Section 1: Data Diri — dipakai oleh form pendaftaran baru & form update data.
+ * Variabel opsional: $pendaftar (array data lama saat update).
+ */
+helper('psb_form');
+
+use App\Libraries\FormPendaftaran as F;
+
+$d = $pendaftar ?? [];
+
+$disabilitasLama  = pf_nilai('kebutuhan_disabilitas', $d['kebutuhan_disabilitas'] ?? '');
+$disabilitasArray = is_array($disabilitasLama) ? $disabilitasLama : ($disabilitasLama !== '' ? array_map('trim', explode(',', $disabilitasLama)) : []);
+
+$imunisasiLama  = pf_nilai('imunisasi', $d['imunisasi'] ?? '');
+$imunisasiArray = is_array($imunisasiLama) ? $imunisasiLama : ($imunisasiLama !== '' ? array_map('trim', explode(',', $imunisasiLama)) : []);
+?>
 <!-- Section 1: Data Diri -->
 <div class="section-card active" id="section-1">
     <h2 class="section-title">
@@ -5,329 +22,81 @@
     </h2>
 
     <div class="row">
-        <!-- NISN -->
-        <div class="col-md-6 mb-3">
-            <label for="nisn" class="form-label required">NISN</label>
-            <input type="text" class="form-control numeric-only" id="nisn" name="nisn"
-                value="<?= old('nisn') ?>" placeholder="Masukkan NISN (10 digit)" maxlength="10" required>
-            <div class="form-text">Nomor Induk Siswa Nasional (wajib diisi, 10 digit).</div>
-        </div>
+        <?= pf_input('nisn', 'NISN', $d['nisn'] ?? '', ['wajib' => true, 'kelas' => 'numeric-only', 'maxlength' => 10, 'placeholder' => 'Masukkan NISN (10 digit)', 'hint' => 'Nomor Induk Siswa Nasional (10 digit).']) ?>
+        <?= pf_input('nik', 'NIK', $d['nik'] ?? '', ['wajib' => true, 'kelas' => 'numeric-only', 'maxlength' => 16, 'placeholder' => 'Masukkan NIK (16 digit)', 'hint' => 'Nomor Induk Kependudukan sesuai Kartu Keluarga (16 digit).']) ?>
 
-        <!-- NIK -->
-        <div class="col-md-6 mb-3">
-            <label for="nik" class="form-label required">NIK</label>
-            <input type="text" class="form-control numeric-only" id="nik" name="nik"
-                value="<?= old('nik') ?>" placeholder="Masukkan NIK (16 digit)" maxlength="16" required>
-            <div class="form-text">Nomor Induk Kependudukan (wajib diisi, 16 digit).</div>
-        </div>
+        <?= pf_input('nama_lengkap', 'Nama Lengkap', $d['nama_lengkap'] ?? '', ['wajib' => true, 'col' => 'col-md-12', 'kelas' => 'huruf-besar', 'placeholder' => 'Nama lengkap sesuai akta kelahiran', 'hint' => 'Otomatis ditulis dengan HURUF BESAR.']) ?>
 
-        <!-- Nama Lengkap -->
-        <div class="col-md-12 mb-3">
-            <label for="nama_lengkap" class="form-label required">Nama Lengkap</label>
-            <input type="text" class="form-control" id="nama_lengkap" name="nama_lengkap"
-                value="<?= old('nama_lengkap') ?>" placeholder="Masukkan nama lengkap sesuai akta kelahiran" required>
-        </div>
+        <?= pf_select('jenis_kelamin', 'Jenis Kelamin', ['L' => 'Laki-laki', 'P' => 'Perempuan'], $d['jenis_kelamin'] ?? '', ['wajib' => true, 'kosong' => 'Pilih Jenis Kelamin']) ?>
+        <?= pf_select('agama', 'Agama', F::AGAMA, $d['agama'] ?? '', ['wajib' => true, 'kosong' => 'Pilih Agama']) ?>
 
-        <!-- Jenis Kelamin -->
-        <div class="col-md-6 mb-3">
-            <label for="jenis_kelamin" class="form-label required">Jenis Kelamin</label>
-            <select class="form-select" id="jenis_kelamin" name="jenis_kelamin" required>
-                <option value="">Pilih Jenis Kelamin</option>
-                <option value="L" <?= old('jenis_kelamin') === 'L' ? 'selected' : '' ?>>Laki-laki</option>
-                <option value="P" <?= old('jenis_kelamin') === 'P' ? 'selected' : '' ?>>Perempuan</option>
-            </select>
-        </div>
+        <?= pf_input('tempat_lahir', 'Tempat Lahir', $d['tempat_lahir'] ?? '', ['wajib' => true, 'placeholder' => 'Masukkan tempat lahir']) ?>
+        <?= pf_input('tanggal_lahir', 'Tanggal Lahir', $d['tanggal_lahir'] ?? '', ['wajib' => true, 'type' => 'date', 'attrs' => 'max="' . date('Y-m-d') . '"']) ?>
 
-        <!-- Tempat Lahir -->
-        <div class="col-md-6 mb-3">
-            <label for="tempat_lahir" class="form-label">Tempat Lahir</label>
-            <input type="text" class="form-control" id="tempat_lahir" name="tempat_lahir"
-                value="<?= old('tempat_lahir') ?>" placeholder="Masukkan tempat lahir">
-        </div>
+        <?= pf_select('status_keluarga', 'Status dalam Keluarga', ['Anak Kandung', 'Anak Tiri', 'Anak Angkat'], $d['status_keluarga'] ?? '', ['kosong' => 'Pilih Status']) ?>
+        <?= pf_input('anak_ke', 'Anak Ke-', $d['anak_ke'] ?? '', ['wajib' => true, 'type' => 'number', 'placeholder' => 'Masukkan urutan anak', 'attrs' => 'min="1" max="19"']) ?>
+        <?= pf_input('jumlah_saudara', 'Jumlah Saudara Kandung', $d['jumlah_saudara'] ?? '', ['wajib' => true, 'type' => 'number', 'placeholder' => 'Isi 0 jika tidak punya saudara', 'attrs' => 'min="0" max="19"']) ?>
 
-        <!-- Tanggal Lahir -->
-        <div class="col-md-6 mb-3">
-            <label for="tanggal_lahir" class="form-label">Tanggal Lahir</label>
-            <input type="date" class="form-control" id="tanggal_lahir" name="tanggal_lahir"
-                value="<?= old('tanggal_lahir') ?>">
-        </div>
+        <?= pf_select('hobi', 'Hobi', ['Olah Raga', 'Kesenian', 'Membaca', 'Menulis', 'Jalan-jalan', 'Lainnya'], $d['hobi'] ?? '', ['wajib' => true, 'kosong' => 'Pilih Hobi']) ?>
+        <?= pf_select('cita_cita', 'Cita-cita', ['PNS', 'TNI/Polri', 'Guru/Dosen', 'Dokter', 'Politikus', 'Wiraswasta', 'Seniman/Artis', 'Ilmuwan', 'Agamawan', 'Lainnya'], $d['cita_cita'] ?? '', ['wajib' => true, 'kosong' => 'Pilih Cita-cita']) ?>
 
-        <!-- Status Keluarga -->
-        <div class="col-md-6 mb-3">
-            <label for="status_keluarga" class="form-label">Status dalam Keluarga</label>
-            <select class="form-select" id="status_keluarga" name="status_keluarga">
-                <option value="">Pilih Status</option>
-                <option value="Anak Kandung" <?= old('status_keluarga') === 'Anak Kandung' ? 'selected' : '' ?>>Anak Kandung</option>
-                <option value="Anak Tiri" <?= old('status_keluarga') === 'Anak Tiri' ? 'selected' : '' ?>>Anak Tiri</option>
-                <option value="Anak Angkat" <?= old('status_keluarga') === 'Anak Angkat' ? 'selected' : '' ?>>Anak Angkat</option>
-            </select>
-        </div>
-
-        <!-- Anak Ke -->
-        <div class="col-md-6 mb-3">
-            <label for="anak_ke" class="form-label">Anak Ke-</label>
-            <input type="number" class="form-control" id="anak_ke" name="anak_ke"
-                value="<?= old('anak_ke') ?>" placeholder="Masukkan urutan anak" min="1" max="20">
-        </div>
-
-        <!-- Jumlah Saudara -->
-        <div class="col-md-6 mb-3">
-            <label for="jumlah_saudara" class="form-label">Jumlah Saudara Kandung</label>
-            <input type="number" class="form-control" id="jumlah_saudara" name="jumlah_saudara"
-                value="<?= old('jumlah_saudara') ?>" placeholder="Masukkan jumlah saudara" min="0" max="20">
-        </div>
-
-        <!-- Hobi -->
-        <div class="col-md-6 mb-3">
-            <label for="hobi" class="form-label required">Hobi</label>
-            <select class="form-select" id="hobi" name="hobi" required>
-                <option value="">Pilih Hobi</option>
-                <option value="Olah Raga" <?= old('hobi') === 'Olah Raga' ? 'selected' : '' ?>>Olah Raga</option>
-                <option value="Kesenian" <?= old('hobi') === 'Kesenian' ? 'selected' : '' ?>>Kesenian</option>
-                <option value="Membaca" <?= old('hobi') === 'Membaca' ? 'selected' : '' ?>>Membaca</option>
-                <option value="Menulis" <?= old('hobi') === 'Menulis' ? 'selected' : '' ?>>Menulis</option>
-                <option value="Jalan-jalan" <?= old('hobi') === 'Jalan-jalan' ? 'selected' : '' ?>>Jalan-jalan</option>
-                <option value="Lainnya" <?= old('hobi') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
-            </select>
-        </div>
-
-        <!-- Cita-cita -->
-        <div class="col-md-6 mb-3">
-            <label for="cita_cita" class="form-label required">Cita-cita</label>
-            <select class="form-select" id="cita_cita" name="cita_cita" required>
-                <option value="">Pilih Cita-cita</option>
-                <option value="PNS" <?= old('cita_cita') === 'PNS' ? 'selected' : '' ?>>PNS</option>
-                <option value="TNI/Polri" <?= old('cita_cita') === 'TNI/Polri' ? 'selected' : '' ?>>TNI/Polri</option>
-                <option value="Guru/Dosen" <?= old('cita_cita') === 'Guru/Dosen' ? 'selected' : '' ?>>Guru/Dosen</option>
-                <option value="Dokter" <?= old('cita_cita') === 'Dokter' ? 'selected' : '' ?>>Dokter</option>
-                <option value="Politikus" <?= old('cita_cita') === 'Politikus' ? 'selected' : '' ?>>Politikus</option>
-                <option value="Wiraswasta" <?= old('cita_cita') === 'Wiraswasta' ? 'selected' : '' ?>>Wiraswasta</option>
-                <option value="Seniman/Artis" <?= old('cita_cita') === 'Seniman/Artis' ? 'selected' : '' ?>>Seniman/Artis</option>
-                <option value="Ilmuwan" <?= old('cita_cita') === 'Ilmuwan' ? 'selected' : '' ?>>Ilmuwan</option>
-                <option value="Agamawan" <?= old('cita_cita') === 'Agamawan' ? 'selected' : '' ?>>Agamawan</option>
-                <option value="Lainnya" <?= old('cita_cita') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
-            </select>
-        </div>
-
-        <!-- Yang Membiayai Sekolah (dinonaktifkan sementara) -->
-        <?php /*
-        <div class="col-md-6 mb-3">
-            <label for="yang_membiayai_sekolah" class="form-label required">Yang Membiayai Sekolah</label>
-            <select class="form-select" id="yang_membiayai_sekolah" name="yang_membiayai_sekolah" required>
-                <option value="">Pilih</option>
-                <option value="Orang Tua" <?= old('yang_membiayai_sekolah') === 'Orang Tua' ? 'selected' : '' ?>>Orang Tua</option>
-                <option value="Wali/Orang Tua Asuh" <?= old('yang_membiayai_sekolah') === 'Wali/Orang Tua Asuh' ? 'selected' : '' ?>>Wali/Orang Tua Asuh</option>
-                <option value="Tanggungan Sendiri" <?= old('yang_membiayai_sekolah') === 'Tanggungan Sendiri' ? 'selected' : '' ?>>Tanggungan Sendiri</option>
-                <option value="Lainnya" <?= old('yang_membiayai_sekolah') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
-            </select>
-        </div>
-        */ ?>
+        <?= pf_input('no_hp', 'Nomor HP/WhatsApp Santri', $d['no_hp'] ?? '', ['wajib' => true, 'kelas' => 'numeric-only', 'maxlength' => 20, 'placeholder' => 'Contoh: 08123456789', 'hint' => 'Jika santri belum memiliki HP, isi dengan nomor orang tua/wali.']) ?>
+        <?= pf_select('yang_membiayai_sekolah', 'Yang Membiayai Sekolah', F::YANG_MEMBIAYAI, $d['yang_membiayai_sekolah'] ?? '', ['wajib' => true]) ?>
 
         <!-- Pendidikan Sebelumnya -->
         <div class="col-md-12 mb-3">
             <label class="form-label">Pendidikan Sebelumnya</label>
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="pernah_paud" name="pernah_paud" value="1"
-                    <?= old('pernah_paud') ? 'checked' : '' ?>>
+                    <?= pf_nilai('pernah_paud', $d['pernah_paud'] ?? '') ? 'checked' : '' ?>>
                 <label class="form-check-label" for="pernah_paud">Pernah PAUD</label>
             </div>
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" id="pernah_tk" name="pernah_tk" value="1"
-                    <?= old('pernah_tk') ? 'checked' : '' ?>>
+                    <?= pf_nilai('pernah_tk', $d['pernah_tk'] ?? '') ? 'checked' : '' ?>>
                 <label class="form-check-label" for="pernah_tk">Pernah TK</label>
             </div>
         </div>
 
-        <!-- Kebutuhan Disabilitas (Checkbox) -->
-        <div class="col-md-12 mb-3">
+        <!-- Kebutuhan Disabilitas (Checkbox, minimal 1) -->
+        <div class="col-md-12 mb-3" data-field="kebutuhan_disabilitas" data-wajib-grup="kebutuhan_disabilitas[]">
             <label class="form-label required">Kebutuhan Disabilitas</label>
-            <div class="form-text mb-2">Centang jika memiliki kebutuhan khusus disabilitas</div>
-
+            <div class="form-text mb-2">Pilih "Tidak Ada" jika tidak memiliki kebutuhan disabilitas.</div>
             <div class="row">
-                <div class="col-md-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="disabilitas_tidak"
-                               name="kebutuhan_disabilitas[]" value="Tidak Ada" <?= is_array(old('kebutuhan_disabilitas')) && in_array('Tidak Ada', old('kebutuhan_disabilitas')) ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="disabilitas_tidak">
-                            Tidak Ada
-                        </label>
+                <?php foreach (['Tidak Ada' => 'tidak', 'Tuna Netra' => 'netra', 'Tuna Rungu' => 'rungu', 'Tuna Daksa' => 'daksa', 'Tuna Grahita' => 'grahita', 'Tuna Laras' => 'laras', 'Tuna Wicara' => 'wicara', 'Lainnya' => 'lainnya'] as $val => $id): ?>
+                    <div class="col-md-3">
+                        <div class="form-check">
+                            <input class="form-check-input cek-disabilitas" type="checkbox" id="disabilitas_<?= $id ?>"
+                                name="kebutuhan_disabilitas[]" value="<?= esc($val) ?>" <?= in_array($val, $disabilitasArray, true) ? 'checked' : '' ?>>
+                            <label class="form-check-label" for="disabilitas_<?= $id ?>"><?= esc($val) ?></label>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="disabilitas_netra"
-                               name="kebutuhan_disabilitas[]" value="Tuna Netra" <?= is_array(old('kebutuhan_disabilitas')) && in_array('Tuna Netra', old('kebutuhan_disabilitas')) ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="disabilitas_netra">
-                            Tuna Netra
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="disabilitas_rungu"
-                               name="kebutuhan_disabilitas[]" value="Tuna Rungu" <?= is_array(old('kebutuhan_disabilitas')) && in_array('Tuna Rungu', old('kebutuhan_disabilitas')) ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="disabilitas_rungu">
-                            Tuna Rungu
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="disabilitas_daksa"
-                               name="kebutuhan_disabilitas[]" value="Tuna Daksa" <?= is_array(old('kebutuhan_disabilitas')) && in_array('Tuna Daksa', old('kebutuhan_disabilitas')) ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="disabilitas_daksa">
-                            Tuna Daksa
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="disabilitas_grahita"
-                               name="kebutuhan_disabilitas[]" value="Tuna Grahita" <?= is_array(old('kebutuhan_disabilitas')) && in_array('Tuna Grahita', old('kebutuhan_disabilitas')) ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="disabilitas_grahita">
-                            Tuna Grahita
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="disabilitas_laras"
-                               name="kebutuhan_disabilitas[]" value="Tuna Laras" <?= is_array(old('kebutuhan_disabilitas')) && in_array('Tuna Laras', old('kebutuhan_disabilitas')) ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="disabilitas_laras">
-                            Tuna Laras
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="disabilitas_wicara"
-                               name="kebutuhan_disabilitas[]" value="Tuna Wicara" <?= is_array(old('kebutuhan_disabilitas')) && in_array('Tuna Wicara', old('kebutuhan_disabilitas')) ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="disabilitas_wicara">
-                            Tuna Wicara
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="disabilitas_lainnya"
-                               name="kebutuhan_disabilitas[]" value="Lainnya" <?= is_array(old('kebutuhan_disabilitas')) && in_array('Lainnya', old('kebutuhan_disabilitas')) ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="disabilitas_lainnya">
-                            Lainnya
-                        </label>
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
         </div>
 
-        <!-- Kebutuhan Khusus (Dropdown) -->
-        <div class="col-md-6 mb-3">
-            <label for="kebutuhan_khusus" class="form-label required">Kebutuhan Khusus</label>
-            <select class="form-select" id="kebutuhan_khusus" name="kebutuhan_khusus" required>
-                <option value="">Pilih Kebutuhan Khusus</option>
-                <option value="Tidak ada" <?= old('kebutuhan_khusus') === 'Tidak ada' ? 'selected' : '' ?>>Tidak ada</option>
-                <option value="Lamban Belajar" <?= old('kebutuhan_khusus') === 'Lamban Belajar' ? 'selected' : '' ?>>Lamban Belajar</option>
-                <option value="Kesulitan belajar Spesifik" <?= old('kebutuhan_khusus') === 'Kesulitan belajar Spesifik' ? 'selected' : '' ?>>Kesulitan belajar Spesifik</option>
-                <option value="Gangguan Komunikasi" <?= old('kebutuhan_khusus') === 'Gangguan Komunikasi' ? 'selected' : '' ?>>Gangguan Komunikasi</option>
-                <option value="Berbakat/memiliki kemampuan dan kecerdasan luar biasa" <?= old('kebutuhan_khusus') === 'Berbakat/memiliki kemampuan dan kecerdasan luar biasa' ? 'selected' : '' ?>>Berbakat/memiliki kemampuan dan kecerdasan luar biasa</option>
-                <option value="Lainnya" <?= old('kebutuhan_khusus') === 'Lainnya' ? 'selected' : '' ?>>Lainnya</option>
-            </select>
-        </div>
+        <?= pf_select('kebutuhan_khusus', 'Kebutuhan Khusus', ['Tidak ada', 'Lamban Belajar', 'Kesulitan belajar Spesifik', 'Gangguan Komunikasi', 'Berbakat/memiliki kemampuan dan kecerdasan luar biasa', 'Lainnya'], $d['kebutuhan_khusus'] ?? '', ['wajib' => true, 'kosong' => 'Pilih Kebutuhan Khusus']) ?>
 
         <!-- Imunisasi (Checkbox) -->
-        <div class="col-md-12 mb-3">
+        <div class="col-md-12 mb-3" data-field="imunisasi">
             <label class="form-label required">Riwayat Imunisasi</label>
             <div class="form-text mb-2">Centang jenis imunisasi yang sudah diterima</div>
-
             <div class="row">
-                <div class="col-md-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="imunisasi_hepatitis"
-                               name="imunisasi[]" value="Hepatitis B" <?= is_array(old('imunisasi')) && in_array('Hepatitis B', old('imunisasi')) ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="imunisasi_hepatitis">
-                            Hepatitis B
-                        </label>
+                <?php foreach (['Hepatitis B' => 'hepatitis', 'BCG' => 'bcg', 'DPT' => 'dpt', 'Polio' => 'polio', 'Campak' => 'campak', 'Covid-19' => 'covid'] as $val => $id): ?>
+                    <div class="col-md-4">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="imunisasi_<?= $id ?>"
+                                name="imunisasi[]" value="<?= esc($val) ?>" <?= in_array($val, $imunisasiArray, true) ? 'checked' : '' ?>>
+                            <label class="form-check-label" for="imunisasi_<?= $id ?>"><?= esc($val) ?></label>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="imunisasi_bcg"
-                               name="imunisasi[]" value="BCG" <?= is_array(old('imunisasi')) && in_array('BCG', old('imunisasi')) ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="imunisasi_bcg">
-                            BCG
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="imunisasi_dpt"
-                               name="imunisasi[]" value="DPT" <?= is_array(old('imunisasi')) && in_array('DPT', old('imunisasi')) ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="imunisasi_dpt">
-                            DPT
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="imunisasi_polio"
-                               name="imunisasi[]" value="Polio" <?= is_array(old('imunisasi')) && in_array('Polio', old('imunisasi')) ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="imunisasi_polio">
-                            Polio
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="imunisasi_campak"
-                               name="imunisasi[]" value="Campak" <?= is_array(old('imunisasi')) && in_array('Campak', old('imunisasi')) ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="imunisasi_campak">
-                            Campak
-                        </label>
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="imunisasi_covid"
-                               name="imunisasi[]" value="Covid-19" <?= is_array(old('imunisasi')) && in_array('Covid-19', old('imunisasi')) ? 'checked' : '' ?>>
-                        <label class="form-check-label" for="imunisasi_covid">
-                            Covid-19
-                        </label>
-                    </div>
-                </div>
+                <?php endforeach; ?>
             </div>
         </div>
 
-        <!-- No HP -->
-        <div class="col-md-6 mb-3">
-            <label for="no_hp" class="form-label">Nomor HP/WhatsApp</label>
-            <input type="text" class="form-control numeric-only" id="no_hp" name="no_hp"
-                value="<?= old('no_hp') ?>" placeholder="Contoh: 08123456789" maxlength="20">
-        </div>
+        <?= pf_select('ukuran_baju', 'Ukuran Baju', ['S', 'M', 'L', 'XL', 'XXL'], $d['ukuran_baju'] ?? '', ['kosong' => 'Pilih Ukuran']) ?>
 
-        <!-- Ukuran Baju -->
-        <div class="col-md-6 mb-3">
-            <label for="ukuran_baju" class="form-label">Ukuran Baju</label>
-            <select class="form-select" id="ukuran_baju" name="ukuran_baju">
-                <option value="">Pilih Ukuran</option>
-                <option value="S" <?= old('ukuran_baju') === 'S' ? 'selected' : '' ?>>S</option>
-                <option value="M" <?= old('ukuran_baju') === 'M' ? 'selected' : '' ?>>M</option>
-                <option value="L" <?= old('ukuran_baju') === 'L' ? 'selected' : '' ?>>L</option>
-                <option value="XL" <?= old('ukuran_baju') === 'XL' ? 'selected' : '' ?>>XL</option>
-                <option value="XXL" <?= old('ukuran_baju') === 'XXL' ? 'selected' : '' ?>>XXL</option>
-            </select>
-        </div>
-
-        <!-- Prestasi -->
-        <div class="col-md-12 mb-3">
-            <label for="prestasi" class="form-label">Prestasi yang Pernah Diraih</label>
-            <textarea class="form-control" id="prestasi" name="prestasi" rows="3"
-                placeholder="Tuliskan prestasi yang pernah diraih (jika ada)"><?= old('prestasi') ?></textarea>
-        </div>
-
-        <!-- Minat & Bakat -->
-        <div class="col-md-12 mb-3">
-            <label for="minat_bakat" class="form-label">Minat & Bakat</label>
-            <textarea class="form-control" id="minat_bakat" name="minat_bakat" rows="3"
-                placeholder="Tuliskan minat dan bakat yang dimiliki"><?= old('minat_bakat') ?></textarea>
-        </div>
+        <?= pf_textarea('prestasi', 'Prestasi yang Pernah Diraih', $d['prestasi'] ?? '', ['col' => 'col-md-12', 'rows' => 3, 'placeholder' => 'Tuliskan prestasi yang pernah diraih (jika ada)']) ?>
+        <?= pf_textarea('minat_bakat', 'Minat & Bakat', $d['minat_bakat'] ?? '', ['col' => 'col-md-12', 'rows' => 3, 'placeholder' => 'Tuliskan minat dan bakat yang dimiliki']) ?>
     </div>
 </div>

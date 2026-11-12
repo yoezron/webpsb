@@ -310,13 +310,13 @@
             <?php endif; ?>
             <h1>PESANTREN PERSATUAN ISLAM 31</h1>
             <h2>BANJARAN</h2>
-            <p>Jl. Pajagalan No. 115, Banjaran</p>
-            <p>WA: +6281320206395 | Email: pesantrenpersis31@gmail.com | Website: psb.mapersis31banjaran.sch.id</p>
+            <?php if (pengaturan('kontak_alamat')): ?><p><?= esc(pengaturan('kontak_alamat')) ?></p><?php endif; ?>
+            <?php if (kontak_ringkas() !== ''): ?><p><?= esc(kontak_ringkas()) ?></p><?php endif; ?>
         </div>
 
         <!-- Card Title -->
         <div class="card-title">KARTU BUKTI PENDAFTARAN<br>
-            <span style="font-size: 11pt; font-weight: normal;">Tahun Ajaran 2026/2027</span>
+            <span style="font-size: 11pt; font-weight: normal;">Tahun Ajaran <?= esc(tahun_ajaran_pendaftar($pendaftar ?? null)) ?></span>
         </div>
 
         <!-- Nomor Pendaftaran & QR Code -->
@@ -403,8 +403,8 @@
                 <div class="name"><?= esc($pendaftar['nama_lengkap']) ?></div>
             </div>
             <div class="signature-box">
-                <div class="label">Ketua Panitia PSB,</div>
-                <div class="name">(Hilman Latief, M.Pd.)</div>
+                <div class="label"><?= esc(pengaturan('jabatan_ttd', 'Ketua Panitia PSB')) ?>,</div>
+                <div class="name">(<?= esc(pengaturan('ketua_panitia', '')) ?: str_repeat('.', 30) ?>)</div>
             </div>
         </div>
 
