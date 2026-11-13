@@ -121,6 +121,10 @@ $routes->group('admin', ['filter' => ['auth', 'role:superadmin']], static functi
     $routes->post('pengaturan/tampilan/reset', 'Pengaturan::tampilanReset');
     $routes->post('pengaturan/logo', 'Pengaturan::logoSimpan');
     $routes->post('pengaturan/logo/reset', 'Pengaturan::logoReset');
+    $routes->post('pengaturan/teks', 'Pengaturan::teksSimpan');
+    $routes->post('pengaturan/teks/reset', 'Pengaturan::teksReset');
+    $routes->post('pengaturan/latar', 'Pengaturan::latarSimpan');
+    $routes->post('pengaturan/latar/reset', 'Pengaturan::latarReset');
     $routes->get('pengaturan/landing', 'Pengaturan::landing');
     $routes->post('pengaturan/landing', 'Pengaturan::landingSimpan');
 

@@ -192,6 +192,34 @@ if (!function_exists('logo_aset')) {
     }
 }
 
+if (!function_exists('latar_kustom')) {
+    /**
+     * Apakah superadmin sudah mengunggah gambar latar halaman utama.
+     */
+    function latar_kustom(): bool
+    {
+        $file = (string) pengaturan('latar_file', '');
+
+        return $file !== '' && preg_match('#^uploads/latar/[A-Za-z0-9_\-]+\.(png|jpe?g|webp)$#', $file) && is_file(FCPATH . $file);
+    }
+}
+
+if (!function_exists('latar_url')) {
+    /**
+     * URL gambar latar halaman utama (unggahan superadmin, atau gambar bawaan).
+     */
+    function latar_url(): string
+    {
+        if (latar_kustom()) {
+            $file = (string) pengaturan('latar_file');
+
+            return base_url($file) . '?v=' . filemtime(FCPATH . $file);
+        }
+
+        return base_url('assets/images/banner/01.png');
+    }
+}
+
 if (!function_exists('logo_data_uri')) {
     /**
      * Logo sebagai data URI (untuk PDF Dompdf).

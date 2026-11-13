@@ -127,3 +127,4 @@ _modules/*
 
 # Logo unggahan superadmin (menu Pengaturan > Logo & Warna)
 public/uploads/logo/*
+public/uploads/latar/*
