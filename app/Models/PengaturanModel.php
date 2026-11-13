@@ -32,6 +32,14 @@ class PengaturanModel extends Model
             'warna_sekunder'        => '#F3C623',
             'warna_sekunder_terang' => '#f5d565',
 
+            // ---------------- Teks & latar halaman utama ----------------
+            'hero_warna_judul'    => '#FFFFFF',
+            'hero_warna_subjudul' => '',        // kosong = ikuti Warna Aksen (Terang)
+            'hero_warna_teks'     => '#FFFFFF',
+            'hero_bayangan_teks'  => '1',
+            'hero_overlay'        => '95',      // kepekatan lapisan warna di atas gambar latar (0-100 %)
+            'latar_file'          => '',        // gambar latar unggahan (relatif thd folder public)
+
             // ---------------- Identitas ----------------
             'nama_lembaga'   => 'Pesantren Persatuan Islam 31 Banjaran',
             'nama_singkat'   => 'PSB Persis 31',

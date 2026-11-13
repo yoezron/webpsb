@@ -36,12 +36,27 @@
     <link rel="stylesheet" href="<?= base_url('assets/css/style.css') ?>">
 
     <!-- Custom Branding CSS -->
+    <?php
+    $heroHex = static fn($v, $d) => preg_match('/^#[0-9a-fA-F]{6}$/', (string) $v) ? $v : $d;
+    $heroJudul = $heroHex($set['hero_warna_judul'] ?? '', '#FFFFFF');
+    $heroTeks  = $heroHex($set['hero_warna_teks'] ?? '', '#FFFFFF');
+    $heroSub   = $heroHex($set['hero_warna_subjudul'] ?? '', 'var(--light-yellow)');
+    $heroAlpha = number_format(max(0, min(100, (int) ($set['hero_overlay'] ?? 95))) / 100, 2, '.', '');
+    $heroShadow = ($set['hero_bayangan_teks'] ?? '1') === '1';
+    // URL dipakai di dalam CSS url('...'): buang karakter yang bisa keluar dari konteks tsb.
+    $latarUrl  = str_replace(["'", '"', '(', ')', '\\', '<', '>'], '', latar_url());
+    ?>
     <style>
         :root {
             --primary-green: #1AB34A;
             --secondary-yellow: #F3C623;
             --dark-green: #158a3a;
             --light-yellow: #f5d565;
+            --hero-judul: <?= $heroJudul ?>;
+            --hero-sub: <?= $heroSub ?>;
+            --hero-teks: <?= $heroTeks ?>;
+            --hero-shadow-lg: <?= $heroShadow ? '2px 2px 4px rgba(0, 0, 0, 0.3)' : 'none' ?>;
+            --hero-shadow-sm: <?= $heroShadow ? '1px 1px 2px rgba(0, 0, 0, 0.35)' : 'none' ?>;
         }
 
         /* Custom Branding */
@@ -91,8 +106,8 @@
             min-height: 100vh;
             display: flex;
             align-items: center;
-            background: linear-gradient(135deg, rgba(26, 179, 74, 0.95) 0%, rgba(21, 138, 58, 0.95) 100%),
-                url('<?= base_url('assets/images/banner/01.png') ?>') center/cover;
+            background: linear-gradient(135deg, rgba(26, 179, 74, <?= $heroAlpha ?>) 0%, rgba(21, 138, 58, <?= $heroAlpha ?>) 100%),
+                url('<?= $latarUrl ?>') center/cover;
             position: relative;
             padding: 80px 0;
         }
@@ -110,7 +125,7 @@
         .hero-content {
             position: relative;
             z-index: 2;
-            color: white;
+            color: var(--hero-teks);
         }
 
         .hero-logo {
@@ -142,15 +157,16 @@
             font-weight: 800;
             margin-bottom: 20px;
             line-height: 1.2;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            color: var(--hero-judul);
+            text-shadow: var(--hero-shadow-lg);
         }
 
         .hero-subtitle {
             font-size: 1.5rem;
             font-weight: 400;
             margin-bottom: 30px;
-            color: var(--light-yellow);
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            color: var(--hero-sub);
+            text-shadow: var(--hero-shadow-sm);
         }
 
         .hero-text {
@@ -158,6 +174,31 @@
             margin-bottom: 40px;
             line-height: 1.8;
             max-width: 700px;
+            color: var(--hero-teks);
+            text-shadow: var(--hero-shadow-sm);
+        }
+
+        .hero-note {
+            font-size: 0.9rem;
+            opacity: 0.85;
+            color: var(--hero-teks);
+            text-shadow: var(--hero-shadow-sm);
+        }
+
+        .hero-content .btn-hero-outline {
+            border: 2px solid var(--hero-teks);
+            color: var(--hero-teks);
+            background: transparent;
+            border-radius: 50px;
+            padding: 12px 30px;
+            font-weight: 600;
+            text-shadow: var(--hero-shadow-sm);
+        }
+
+        .hero-content .btn-hero-outline:hover {
+            background: var(--hero-teks);
+            color: var(--dark-green);
+            text-shadow: none;
         }
 
         .cta-buttons {
@@ -187,13 +228,13 @@
         .info-badge p {
             margin: 5px 0 0 0;
             font-size: 1rem;
-            color: white;
+            color: var(--hero-teks);
         }
 
         /* Features Section */
         .features-section {
             padding: 80px 0;
-            background: linear-gradient(135deg, rgba(243, 198, 35, 0.4) 0%, rgba(21, 138, 58, 0.95) 100%), url('<?= base_url('assets/images/banner/01.png') ?>') center/cover;
+            background: linear-gradient(135deg, rgba(243, 198, 35, 0.4) 0%, rgba(21, 138, 58, 0.95) 100%), url('<?= $latarUrl ?>') center/cover;
         }
 
         .feature-card {
@@ -409,11 +450,12 @@
             gap: 15px;
             max-width: 560px;
             background: rgba(255, 255, 255, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.5);
+            border: 2px solid color-mix(in srgb, var(--hero-teks) 55%, transparent);
             border-radius: 15px;
             padding: 18px 24px;
             text-align: left;
-            color: #fff;
+            color: var(--hero-teks);
+            text-shadow: var(--hero-shadow-sm);
         }
 
         .pendaftaran-tutup i {
@@ -563,17 +605,17 @@
                         <div class="mt-4 animate__animated animate__fadeInUp">
                             <div class="d-flex gap-3 justify-content-center flex-wrap">
                                 <?php if (!empty($set['tampil_tombol_update'])) : ?>
-                                <a href="<?= base_url('update-data') ?>" class="btn btn-outline-light btn-lg" style="border-radius: 50px; padding: 12px 30px; font-weight: 600;">
+                                <a href="<?= base_url('update-data') ?>" class="btn btn-hero-outline btn-lg">
                                     <i class="icofont-edit"></i> Perbarui Data Pendaftaran
                                 </a>
                                 <?php endif; ?>
                                 <?php if (!empty($set['tampil_tombol_statistik'])) : ?>
-                                <a href="<?= base_url('statistik') ?>" class="btn btn-outline-light btn-lg" style="border-radius: 50px; padding: 12px 30px; font-weight: 600;">
+                                <a href="<?= base_url('statistik') ?>" class="btn btn-hero-outline btn-lg">
                                     <i class="icofont-chart-bar-graph"></i> Lihat Statistik Pendaftar
                                 </a>
                                 <?php endif; ?>
                             </div>
-                            <p class="mt-3" style="font-size: 0.9rem; opacity: 0.8;">
+                            <p class="mt-3 hero-note">
                                 Sudah mendaftar? Perbarui data Anda atau lihat statistik pendaftar
                             </p>
                         </div>

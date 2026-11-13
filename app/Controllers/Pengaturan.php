@@ -234,6 +234,99 @@ class Pengaturan extends BaseController
     }
 
     // =====================================================================
+    // TEKS & LATAR HALAMAN UTAMA
+    // =====================================================================
+
+    public function teksSimpan()
+    {
+        $data = [];
+        foreach (['hero_warna_judul', 'hero_warna_teks'] as $key) {
+            $nilai = trim((string) $this->request->getPost($key));
+            if (!preg_match('/^#[0-9a-fA-F]{6}$/', $nilai)) {
+                return redirect()->to(base_url('admin/pengaturan/tampilan'))->withInput()->with('error', 'Format warna teks tidak valid (gunakan format #RRGGBB).');
+            }
+            $data[$key] = strtoupper($nilai);
+        }
+
+        // Subjudul: kosong = ikuti warna aksen tema
+        $sub = trim((string) $this->request->getPost('hero_warna_subjudul'));
+        if ($this->request->getPost('subjudul_ikut_tema') || $sub === '') {
+            $data['hero_warna_subjudul'] = '';
+        } elseif (preg_match('/^#[0-9a-fA-F]{6}$/', $sub)) {
+            $data['hero_warna_subjudul'] = strtoupper($sub);
+        } else {
+            return redirect()->to(base_url('admin/pengaturan/tampilan'))->withInput()->with('error', 'Format warna subjudul tidak valid (gunakan format #RRGGBB).');
+        }
+
+        $data['hero_overlay']       = (string) max(0, min(100, (int) $this->request->getPost('hero_overlay')));
+        $data['hero_bayangan_teks'] = $this->request->getPost('hero_bayangan_teks') ? '1' : '0';
+
+        $this->pengaturanModel->simpanBanyak($data);
+
+        return redirect()->to(base_url('admin/pengaturan/tampilan'))->with('success', 'Warna teks & lapisan latar halaman utama berhasil disimpan.');
+    }
+
+    public function teksReset()
+    {
+        $this->pengaturanModel->resetKunci(['hero_warna_judul', 'hero_warna_subjudul', 'hero_warna_teks', 'hero_bayangan_teks', 'hero_overlay']);
+
+        return redirect()->to(base_url('admin/pengaturan/tampilan'))->with('success', 'Warna teks halaman utama dikembalikan ke bawaan.');
+    }
+
+    public function latarSimpan()
+    {
+        $rules = [
+            'latar' => 'uploaded[latar]|max_size[latar,4096]|is_image[latar]|ext_in[latar,png,jpg,jpeg,webp]|mime_in[latar,image/png,image/jpeg,image/pjpeg,image/webp]',
+        ];
+        $messages = [
+            'latar' => [
+                'uploaded' => 'Pilih file gambar latar terlebih dahulu.',
+                'max_size' => 'Ukuran gambar latar maksimal 4 MB.',
+                'is_image' => 'File latar harus berupa gambar.',
+                'ext_in'   => 'Gambar latar harus berformat JPG, PNG, atau WEBP.',
+                'mime_in'  => 'Gambar latar harus berformat JPG, PNG, atau WEBP.',
+            ],
+        ];
+
+        if (!$this->validate($rules, $messages)) {
+            return redirect()->to(base_url('admin/pengaturan/tampilan'))->with('error', implode(' ', $this->validator->getErrors()));
+        }
+
+        $file   = $this->request->getFile('latar');
+        $folder = FCPATH . 'uploads' . DIRECTORY_SEPARATOR . 'latar' . DIRECTORY_SEPARATOR;
+        if (!is_dir($folder)) {
+            mkdir($folder, 0755, true);
+        }
+
+        $ext  = strtolower($file->guessExtension() ?: $file->getClientExtension());
+        $ext  = in_array($ext, ['png', 'webp'], true) ? $ext : 'jpg';
+        $nama = 'latar_' . date('YmdHis') . '.' . $ext;
+        $file->move($folder, $nama);
+
+        $lama = (string) $this->pengaturanModel->ambil('latar_file', '');
+        $this->pengaturanModel->simpanBanyak(['latar_file' => 'uploads/latar/' . $nama]);
+        $this->hapusLatarLama($lama);
+
+        return redirect()->to(base_url('admin/pengaturan/tampilan'))->with('success', 'Gambar latar halaman utama berhasil diperbarui.');
+    }
+
+    public function latarReset()
+    {
+        $lama = (string) $this->pengaturanModel->ambil('latar_file', '');
+        $this->pengaturanModel->resetKunci(['latar_file']);
+        $this->hapusLatarLama($lama);
+
+        return redirect()->to(base_url('admin/pengaturan/tampilan'))->with('success', 'Gambar latar dikembalikan ke gambar bawaan.');
+    }
+
+    private function hapusLatarLama(string $relatif): void
+    {
+        if ($relatif !== '' && preg_match('#^uploads/latar/[A-Za-z0-9_\-]+\.(png|jpe?g|webp)$#', $relatif) && is_file(FCPATH . $relatif)) {
+            @unlink(FCPATH . $relatif);
+        }
+    }
+
+    // =====================================================================
     // LOGO
     // =====================================================================
 
