@@ -3,205 +3,357 @@
 namespace App\Controllers;
 
 use App\Libraries\FormPendaftaran;
-use App\Models\PendaftarModel;
+use App\Models\PeriodeModel;
+use CodeIgniter\Database\BaseConnection;
 
+/**
+ * Laman statistik pendaftar publik (/statistik) + endpoint JSON-nya.
+ *
+ * Semua angka dibatasi ke periode aktif dan mengabaikan pendaftar yang dihapus.
+ * Laman utama menyematkan seluruh data sekaligus (tanpa 9 request AJAX terpisah);
+ * endpoint /api/statistik/* tetap tersedia untuk kebutuhan lain.
+ */
 class StatisticsPublic extends BaseController
 {
-    protected $pendaftarModel;
+    private const JALUR = ['TSANAWIYYAH' => 'Tsanawiyyah', 'MUALLIMIN' => "Mu'allimin"];
+
+    private const JK = ['L' => 'Laki-laki', 'P' => 'Perempuan'];
+
+    private const BULAN = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+
+    protected BaseConnection $db;
 
     public function __construct()
     {
-        $this->pendaftarModel = new PendaftarModel();
+        $this->db = \Config\Database::connect();
     }
 
-    /**
-     * Display the public statistics page
-     *
-     * @return string
-     */
     public function index(): string
     {
-        $data = [
-            'tahun_ajaran' => tahun_ajaran_aktif(),
-            'title' => 'Statistik Pendaftar - Pesantren Persatuan Islam 31 Banjaran',
-            'meta_description' => 'Statistik dan data pendaftar santri baru Pesantren Persatuan Islam 31 Banjaran',
-            'meta_keywords' => 'statistik pendaftar, data pendaftar, pesantren persis 31, banjaran',
-        ];
+        $periode = (new PeriodeModel())->getAktif();
 
-        return view('statistics/index', $data);
+        return view('statistics/index', [
+            'title'              => 'Statistik Pendaftar - ' . nama_lembaga(),
+            'meta_description'   => 'Statistik dan data pendaftar santri baru ' . nama_lembaga(),
+            'meta_keywords'      => 'statistik pendaftar, data pendaftar, ' . pengaturan('meta_keywords', ''),
+            'tahun_ajaran'       => tahun_ajaran_aktif(),
+            'periode'            => $periode,
+            'status_pendaftaran' => (new PeriodeModel())->statusPendaftaran(),
+            'ringkasan'          => $this->dataRingkasan($periode),
+            'grafik'             => [
+                'jalur'       => $this->dataJalur(),
+                'tanggal'     => $this->dataTanggal(),
+                'usia'        => $this->dataUsia(),
+                'desa'        => $this->dataDesa(),
+                'jarak'       => $this->hitungKategori('jarak_ke_sekolah', FormPendaftaran::JARAK),
+                'waktu'       => $this->hitungKategori('waktu_tempuh', FormPendaftaran::WAKTU_TEMPUH),
+                'sekolah'     => $this->dataStatusSekolah(),
+                'jenjang'     => $this->dataJenjangSekolah(),
+                'penghasilan' => $this->dataPenghasilan(),
+            ],
+            'tabel'              => $this->dataTabel(),
+        ]);
     }
 
-    /**
-     * API: Get statistics by jalur pendaftaran
-     *
-     * @return \CodeIgniter\HTTP\ResponseInterface
-     */
+    // =====================================================================
+    // Endpoint JSON
+    // =====================================================================
+
     public function getByJalur()
     {
-        $db = \Config\Database::connect();
-
-        $jalurStats = $this->scopePendaftar($db->table('pendaftar'))
-            ->select('jalur_pendaftaran, COUNT(*) as total')
-            ->groupBy('jalur_pendaftaran')
-            ->get()
-            ->getResultArray();
-
-        $data = [
-            'labels' => [],
-            'values' => []
-        ];
-
-        foreach ($jalurStats as $row) {
-            $data['labels'][] = ucfirst(strtolower($row['jalur_pendaftaran']));
-            $data['values'][] = (int)$row['total'];
-        }
-
-        return $this->response->setJSON([
-            'success' => true,
-            'data' => $data
-        ]);
+        return $this->json($this->dataJalur());
     }
 
-    /**
-     * API: Get statistics by registration date
-     *
-     * @return \CodeIgniter\HTTP\ResponseInterface
-     */
     public function getByTanggalDaftar()
     {
-        $db = \Config\Database::connect();
-
-        $dateStats = $this->scopePendaftar($db->table('pendaftar'))
-            ->select('DATE(tanggal_daftar) as tanggal, COUNT(*) as total')
-            ->groupBy('DATE(tanggal_daftar)')
-            ->orderBy('tanggal', 'ASC')
-            ->get()
-            ->getResultArray();
-
-        $data = [
-            'labels' => [],
-            'values' => []
-        ];
-
-        foreach ($dateStats as $row) {
-            $data['labels'][] = date('d M Y', strtotime($row['tanggal']));
-            $data['values'][] = (int)$row['total'];
-        }
-
-        return $this->response->setJSON([
-            'success' => true,
-            'data' => $data
-        ]);
+        return $this->json($this->dataTanggal());
     }
 
-    /**
-     * API: Get statistics by age groups
-     *
-     * @return \CodeIgniter\HTTP\ResponseInterface
-     */
     public function getByUsia()
     {
-        $db = \Config\Database::connect();
+        return $this->json($this->dataUsia());
+    }
 
-        $pendaftarData = $this->scopePendaftar($db->table('pendaftar'))
-            ->select('tanggal_lahir')
-            ->get()
-            ->getResultArray();
+    public function getByDesa()
+    {
+        return $this->json($this->dataDesa());
+    }
 
-        $ageRanges = [
-            '< 12 tahun' => 0,
-            '12-13 tahun' => 0,
-            '14-15 tahun' => 0,
-            '16-17 tahun' => 0,
-            '> 17 tahun' => 0
-        ];
+    public function getByJarak()
+    {
+        return $this->json($this->hitungKategori('jarak_ke_sekolah', FormPendaftaran::JARAK));
+    }
 
-        foreach ($pendaftarData as $row) {
-            if (!empty($row['tanggal_lahir'])) {
-                $birthDate = new \DateTime($row['tanggal_lahir']);
-                $today = new \DateTime();
-                $age = $today->diff($birthDate)->y;
+    public function getByWaktuTempuh()
+    {
+        return $this->json($this->hitungKategori('waktu_tempuh', FormPendaftaran::WAKTU_TEMPUH));
+    }
 
-                if ($age < 12) {
-                    $ageRanges['< 12 tahun']++;
-                } elseif ($age >= 12 && $age <= 13) {
-                    $ageRanges['12-13 tahun']++;
-                } elseif ($age >= 14 && $age <= 15) {
-                    $ageRanges['14-15 tahun']++;
-                } elseif ($age >= 16 && $age <= 17) {
-                    $ageRanges['16-17 tahun']++;
-                } else {
-                    $ageRanges['> 17 tahun']++;
-                }
+    public function getByStatusSekolah()
+    {
+        return $this->json($this->dataStatusSekolah());
+    }
+
+    public function getByPenghasilan()
+    {
+        return $this->json($this->dataPenghasilan());
+    }
+
+    public function getTableData()
+    {
+        $jalur = strtoupper((string) ($this->request->getGet('jalur') ?? 'all'));
+
+        return $this->json($this->dataTabel(array_key_exists($jalur, self::JALUR) ? $jalur : null));
+    }
+
+    private function json(array $data)
+    {
+        return $this->response->setJSON(['success' => true, 'data' => $data]);
+    }
+
+    // =====================================================================
+    // Perhitungan
+    // =====================================================================
+
+    /**
+     * Angka ringkas untuk kartu di bagian atas.
+     */
+    private function dataRingkasan(?array $periode): array
+    {
+        $rows = $this->scopePendaftar($this->db->table('pendaftar'))
+            ->select('jalur_pendaftaran, jenis_kelamin, COUNT(*) AS total')
+            ->groupBy(['jalur_pendaftaran', 'jenis_kelamin'])
+            ->get()->getResultArray();
+
+        $hasil = ['total' => 0, 'TSANAWIYYAH' => 0, 'MUALLIMIN' => 0, 'L' => 0, 'P' => 0];
+        foreach ($rows as $r) {
+            $n = (int) $r['total'];
+            $hasil['total'] += $n;
+            if (isset($hasil[$r['jalur_pendaftaran']])) {
+                $hasil[$r['jalur_pendaftaran']] += $n;
+            }
+            if (isset($hasil[$r['jenis_kelamin']])) {
+                $hasil[$r['jenis_kelamin']] += $n;
             }
         }
 
-        return $this->response->setJSON([
-            'success' => true,
-            'data' => [
-                'labels' => array_keys($ageRanges),
-                'values' => array_values($ageRanges)
-            ]
-        ]);
-    }
+        $hasil['hari_ini'] = (int) $this->scopePendaftar($this->db->table('pendaftar'))
+            ->where('DATE(tanggal_daftar)', date('Y-m-d'))
+            ->countAllResults();
+        $hasil['tujuh_hari'] = (int) $this->scopePendaftar($this->db->table('pendaftar'))
+            ->where('tanggal_daftar >=', date('Y-m-d 00:00:00', strtotime('-6 days')))
+            ->countAllResults();
 
-    /**
-     * API: Get statistics by desa (village)
-     *
-     * @return \CodeIgniter\HTTP\ResponseInterface
-     */
-    public function getByDesa()
-    {
-        $db = \Config\Database::connect();
+        $terakhir = $this->scopePendaftar($this->db->table('pendaftar'))
+            ->selectMax('tanggal_daftar', 'terakhir')
+            ->get()->getRowArray();
+        $hasil['terakhir'] = $terakhir['terakhir'] ?? null;
 
-        $desaStats = $this->scopeRelasi($db->table('alamat_pendaftar'), 'alamat_pendaftar')
-            ->select('desa, COUNT(*) as total')
-            ->groupBy('desa')
-            ->orderBy('total', 'DESC')
-            ->limit(10) // Top 10 desa
-            ->get()
-            ->getResultArray();
-
-        $data = [
-            'labels' => [],
-            'values' => []
+        $hasil['kuota'] = [
+            'TSANAWIYYAH' => !empty($periode['kuota_tsanawiyyah']) ? (int) $periode['kuota_tsanawiyyah'] : null,
+            'MUALLIMIN'   => !empty($periode['kuota_muallimin']) ? (int) $periode['kuota_muallimin'] : null,
         ];
 
-        foreach ($desaStats as $row) {
-            $data['labels'][] = $row['desa'] ?? 'Tidak diisi';
-            $data['values'][] = (int)$row['total'];
+        return $hasil;
+    }
+
+    /**
+     * Jumlah per jalur, dipecah per jenis kelamin. Kedua jalur selalu tampil walau 0.
+     */
+    private function dataJalur(): array
+    {
+        $rows = $this->scopePendaftar($this->db->table('pendaftar'))
+            ->select('jalur_pendaftaran, jenis_kelamin, COUNT(*) AS total')
+            ->groupBy(['jalur_pendaftaran', 'jenis_kelamin'])
+            ->get()->getResultArray();
+
+        $per = [];
+        foreach (array_keys(self::JALUR) as $j) {
+            $per[$j] = ['L' => 0, 'P' => 0];
+        }
+        foreach ($rows as $r) {
+            if (isset($per[$r['jalur_pendaftaran']][$r['jenis_kelamin']])) {
+                $per[$r['jalur_pendaftaran']][$r['jenis_kelamin']] = (int) $r['total'];
+            }
         }
 
-        return $this->response->setJSON([
-            'success' => true,
-            'data' => $data
-        ]);
+        return [
+            'labels'    => array_values(self::JALUR),
+            'values'    => array_map(static fn($x) => $x['L'] + $x['P'], array_values($per)),
+            'laki'      => array_column(array_values($per), 'L'),
+            'perempuan' => array_column(array_values($per), 'P'),
+        ];
     }
 
     /**
-     * API: Get statistics by jarak ke sekolah (kategori sesuai pilihan EMIS)
-     *
-     * @return \CodeIgniter\HTTP\ResponseInterface
+     * Pendaftar per hari (tanggal tanpa pendaftar tetap muncul dengan nilai 0) + kumulatif.
      */
-    public function getByJarak()
+    private function dataTanggal(): array
     {
-        return $this->response->setJSON([
-            'success' => true,
-            'data'    => $this->hitungKategori('jarak_ke_sekolah', FormPendaftaran::JARAK),
-        ]);
+        $rows = $this->scopePendaftar($this->db->table('pendaftar'))
+            ->select('DATE(tanggal_daftar) AS tgl, COUNT(*) AS total')
+            ->groupBy('DATE(tanggal_daftar)')
+            ->orderBy('tgl', 'ASC')
+            ->get()->getResultArray();
+
+        $data = ['labels' => [], 'values' => [], 'kumulatif' => []];
+        if ($rows === []) {
+            return $data;
+        }
+
+        $map = array_column($rows, 'total', 'tgl');
+        $mulai = new \DateTimeImmutable($rows[0]['tgl']);
+        $akhir = new \DateTimeImmutable(max(end($rows)['tgl'], date('Y-m-d')));
+        // Batasi rentang agar grafik tetap terbaca bila data sangat panjang
+        if ($mulai->diff($akhir)->days > 365) {
+            $mulai = $akhir->modify('-365 days');
+        }
+
+        $jumlah = 0;
+        foreach ($map as $tgl => $n) {
+            if ($tgl < $mulai->format('Y-m-d')) {
+                $jumlah += (int) $n;
+            }
+        }
+
+        for ($d = $mulai; $d <= $akhir; $d = $d->modify('+1 day')) {
+            $n = (int) ($map[$d->format('Y-m-d')] ?? 0);
+            $jumlah += $n;
+            $data['labels'][]    = $d->format('j') . ' ' . self::BULAN[(int) $d->format('n') - 1] . ' ' . $d->format('Y');
+            $data['values'][]    = $n;
+            $data['kumulatif'][] = $jumlah;
+        }
+
+        return $data;
     }
 
     /**
-     * API: Get statistics by waktu tempuh (kategori sesuai pilihan EMIS)
-     *
-     * @return \CodeIgniter\HTTP\ResponseInterface
+     * Usia pendaftar per 1 Juli tahun ajaran (saat mulai masuk), bukan per hari ini.
      */
-    public function getByWaktuTempuh()
+    private function dataUsia(): array
     {
-        return $this->response->setJSON([
-            'success' => true,
-            'data'    => $this->hitungKategori('waktu_tempuh', FormPendaftaran::WAKTU_TEMPUH),
-        ]);
+        $rows = $this->scopePendaftar($this->db->table('pendaftar'))
+            ->select('tanggal_lahir')
+            ->where('tanggal_lahir IS NOT NULL')
+            ->get()->getResultArray();
+
+        $kelompok = ['≤ 11 tahun' => 0, '12 tahun' => 0, '13 tahun' => 0, '14 tahun' => 0, '15 tahun' => 0, '16 tahun' => 0, '≥ 17 tahun' => 0];
+        $acuan = new \DateTimeImmutable(periode_tahun_mulai() . '-07-01');
+
+        foreach ($rows as $r) {
+            try {
+                $usia = (new \DateTimeImmutable($r['tanggal_lahir']))->diff($acuan)->y;
+            } catch (\Throwable $e) {
+                continue;
+            }
+            if ($usia <= 11) {
+                $kelompok['≤ 11 tahun']++;
+            } elseif ($usia >= 17) {
+                $kelompok['≥ 17 tahun']++;
+            } else {
+                $kelompok[$usia . ' tahun']++;
+            }
+        }
+
+        return ['labels' => array_keys($kelompok), 'values' => array_values($kelompok)];
+    }
+
+    /**
+     * 10 desa/kelurahan asal terbanyak (penulisan huruf besar/kecil disatukan).
+     */
+    private function dataDesa(): array
+    {
+        $rows = $this->scopeRelasi($this->db->table('alamat_pendaftar'), 'alamat_pendaftar')
+            ->select('UPPER(TRIM(alamat_pendaftar.desa)) AS desa, COUNT(*) AS total', false)
+            ->where("TRIM(COALESCE(alamat_pendaftar.desa, '')) !=", '')
+            ->groupBy('UPPER(TRIM(alamat_pendaftar.desa))', false)
+            ->orderBy('total', 'DESC')
+            ->limit(10)
+            ->get()->getResultArray();
+
+        return [
+            'labels' => array_map(static fn($r) => ucwords(strtolower($r['desa'])), $rows),
+            'values' => array_map(static fn($r) => (int) $r['total'], $rows),
+        ];
+    }
+
+    /**
+     * Status asal sekolah (Negeri / Swasta).
+     */
+    private function dataStatusSekolah(): array
+    {
+        return $this->hitungKolomSekolah('status_sekolah', ['Negeri', 'Swasta']);
+    }
+
+    /**
+     * Jenjang asal sekolah (SD, MI, SMP, MTs, Paket A/B, ...).
+     */
+    private function dataJenjangSekolah(): array
+    {
+        return $this->hitungKolomSekolah('jenjang_sekolah', ['SD', 'MI', 'SMP', 'MTs', 'Paket A', 'Paket B', 'Lainnya']);
+    }
+
+    private function hitungKolomSekolah(string $kolom, array $urutan): array
+    {
+        $rows = $this->scopeRelasi($this->db->table('asal_sekolah'), 'asal_sekolah')
+            ->select("asal_sekolah.{$kolom} AS nilai, COUNT(*) AS total")
+            ->where("asal_sekolah.{$kolom} IS NOT NULL")
+            ->where("asal_sekolah.{$kolom} !=", '')
+            ->groupBy("asal_sekolah.{$kolom}")
+            ->get()->getResultArray();
+
+        $hitung = [];
+        foreach ($urutan as $u) {
+            $hitung[$u] = 0;
+        }
+        foreach ($rows as $r) {
+            $hitung[$r['nilai']] = ($hitung[$r['nilai']] ?? 0) + (int) $r['total'];
+        }
+        $hitung = array_filter($hitung); // sembunyikan kategori kosong
+
+        return ['labels' => array_keys($hitung), 'values' => array_values($hitung)];
+    }
+
+    /**
+     * Penghasilan orang tua per kategori EMIS (ayah; bila kosong pakai ibu, lalu wali).
+     */
+    private function dataPenghasilan(): array
+    {
+        $builder = $this->db->table('pendaftar p')
+            ->select('a.penghasilan_ayah AS ayah, i.penghasilan_ibu AS ibu, w.penghasilan_wali AS wali')
+            ->join('data_ayah a', 'a.id_pendaftar = p.id_pendaftar', 'left')
+            ->join('data_ibu i', 'i.id_pendaftar = p.id_pendaftar', 'left')
+            ->join('data_wali w', 'w.id_pendaftar = p.id_pendaftar', 'left');
+        $rows = $this->scopePendaftar($builder, 'p')->get()->getResultArray();
+
+        $kategori = FormPendaftaran::PENGHASILAN;
+        $hitung = array_fill_keys(array_values($kategori), 0);
+        $lainnya = 0;
+
+        foreach ($rows as $r) {
+            $nilai = '';
+            foreach (['ayah', 'ibu', 'wali'] as $k) {
+                if (trim((string) $r[$k]) !== '') {
+                    $nilai = trim((string) $r[$k]);
+                    break;
+                }
+            }
+            if ($nilai === '') {
+                continue;
+            }
+            if (isset($kategori[$nilai])) {
+                $hitung[$kategori[$nilai]]++;
+            } elseif (in_array($nilai, $kategori, true)) {
+                $hitung[$nilai]++;
+            } else {
+                $lainnya++;
+            }
+        }
+        if ($lainnya > 0) {
+            $hitung['Lainnya (data lama)'] = $lainnya;
+        }
+
+        return ['labels' => array_keys($hitung), 'values' => array_values($hitung)];
     }
 
     /**
@@ -210,13 +362,10 @@ class StatisticsPublic extends BaseController
      */
     private function hitungKategori(string $kolom, array $kategori): array
     {
-        $db = \Config\Database::connect();
-
-        $rows = $this->scopeRelasi($db->table('alamat_pendaftar'), 'alamat_pendaftar')
+        $rows = $this->scopeRelasi($this->db->table('alamat_pendaftar'), 'alamat_pendaftar')
             ->select("alamat_pendaftar.{$kolom} AS nilai, COUNT(*) AS total")
             ->groupBy("alamat_pendaftar.{$kolom}")
-            ->get()
-            ->getResultArray();
+            ->get()->getResultArray();
 
         $hitung = array_fill_keys($kategori, 0);
         $lainnya = 0;
@@ -235,120 +384,39 @@ class StatisticsPublic extends BaseController
     }
 
     /**
-     * API: Get statistics by status asal sekolah
-     *
-     * @return \CodeIgniter\HTTP\ResponseInterface
+     * Daftar pendaftar untuk tabel publik.
      */
-    public function getByStatusSekolah()
+    private function dataTabel(?string $jalur = null): array
     {
-        $db = \Config\Database::connect();
-
-        // Get jenjang_sekolah as status
-        $sekolahStats = $this->scopeRelasi($db->table('asal_sekolah'), 'asal_sekolah')
-            ->select('jenjang_sekolah, COUNT(*) as total')
-            ->groupBy('jenjang_sekolah')
-            ->get()
-            ->getResultArray();
-
-        $data = [
-            'labels' => [],
-            'values' => []
-        ];
-
-        foreach ($sekolahStats as $row) {
-            $data['labels'][] = $row['jenjang_sekolah'] ?? 'Tidak diisi';
-            $data['values'][] = (int)$row['total'];
-        }
-
-        return $this->response->setJSON([
-            'success' => true,
-            'data' => $data
-        ]);
-    }
-
-    /**
-     * API: Get statistics by penghasilan ayah (family income)
-     *
-     * @return \CodeIgniter\HTTP\ResponseInterface
-     */
-    public function getByPenghasilan()
-    {
-        $db = \Config\Database::connect();
-
-        $incomeData = $this->scopeRelasi($db->table('data_ayah'), 'data_ayah')
-            ->select('penghasilan_ayah')
-            ->get()
-            ->getResultArray();
-
-        $incomeRanges = [
-            '< Rp 1 juta' => 0,
-            'Rp 1-3 juta' => 0,
-            'Rp 3-5 juta' => 0,
-            '> Rp 5 juta' => 0
-        ];
-
-        foreach ($incomeData as $row) {
-            $income = (int)$row['penghasilan_ayah'];
-
-            if ($income < 1000000) {
-                $incomeRanges['< Rp 1 juta']++;
-            } elseif ($income >= 1000000 && $income < 3000000) {
-                $incomeRanges['Rp 1-3 juta']++;
-            } elseif ($income >= 3000000 && $income < 5000000) {
-                $incomeRanges['Rp 3-5 juta']++;
-            } else {
-                $incomeRanges['> Rp 5 juta']++;
-            }
-        }
-
-        return $this->response->setJSON([
-            'success' => true,
-            'data' => [
-                'labels' => array_keys($incomeRanges),
-                'values' => array_values($incomeRanges)
-            ]
-        ]);
-    }
-
-    /**
-     * API: Get registrant data table by jalur
-     *
-     * @return \CodeIgniter\HTTP\ResponseInterface
-     */
-    public function getTableData()
-    {
-        $jalur = $this->request->getGet('jalur') ?? 'all';
-
-        $db = \Config\Database::connect();
-
-        $builder = $db->table('pendaftar p')
-            ->select('p.nomor_pendaftaran, p.nama_lengkap, p.jenis_kelamin, p.jalur_pendaftaran, s.nama_asal_sekolah')
+        $builder = $this->db->table('pendaftar p')
+            ->select('p.nomor_pendaftaran, p.nama_lengkap, p.jenis_kelamin, p.jalur_pendaftaran, p.tanggal_daftar, s.nama_asal_sekolah')
             ->join('asal_sekolah s', 's.id_pendaftar = p.id_pendaftar', 'left')
             ->orderBy('p.tanggal_daftar', 'DESC');
         $this->scopePendaftar($builder, 'p');
-
-        if ($jalur !== 'all') {
-            $builder->where('p.jalur_pendaftaran', strtoupper($jalur));
+        if ($jalur !== null) {
+            $builder->where('p.jalur_pendaftaran', $jalur);
         }
 
-        $results = $builder->get()->getResultArray();
-
         $data = [];
-        foreach ($results as $row) {
+        foreach ($builder->get()->getResultArray() as $r) {
             $data[] = [
-                'nomor_pendaftaran' => $row['nomor_pendaftaran'],
-                'nama_lengkap' => $row['nama_lengkap'],
-                'jenis_kelamin' => $row['jenis_kelamin'],
-                'jalur_pendaftaran' => ucfirst(strtolower($row['jalur_pendaftaran'])),
-                'asal_sekolah' => $row['nama_asal_sekolah'] ?? '-'
+                'nomor_pendaftaran' => $r['nomor_pendaftaran'],
+                'nama_lengkap'      => $r['nama_lengkap'],
+                'jenis_kelamin'     => self::JK[$r['jenis_kelamin']] ?? (string) $r['jenis_kelamin'],
+                'jk'                => $r['jenis_kelamin'],
+                'jalur'             => $r['jalur_pendaftaran'],
+                'jalur_pendaftaran' => self::JALUR[$r['jalur_pendaftaran']] ?? ucfirst(strtolower((string) $r['jalur_pendaftaran'])),
+                'asal_sekolah'      => trim((string) $r['nama_asal_sekolah']) !== '' ? $r['nama_asal_sekolah'] : '-',
+                'tanggal'           => $r['tanggal_daftar'] ? date('d/m/Y', strtotime($r['tanggal_daftar'])) : '-',
             ];
         }
 
-        return $this->response->setJSON([
-            'success' => true,
-            'data' => $data
-        ]);
+        return $data;
     }
+
+    // =====================================================================
+    // Pembatas periode
+    // =====================================================================
 
     /**
      * Batasi query tabel pendaftar ke periode aktif.
